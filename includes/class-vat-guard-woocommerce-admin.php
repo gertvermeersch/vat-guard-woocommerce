@@ -14,6 +14,10 @@ class VAT_Guard_WooCommerce_Admin {
             'type' => 'boolean',
             'default' => true
         ]);
+        register_setting('vat_guard_woocommerce_options', 'vat_guard_woocommerce_require_vies', [
+            'type' => 'boolean',
+            'default' => false
+        ]);
     }
 
     public static function add_admin_menu() {
@@ -51,6 +55,13 @@ class VAT_Guard_WooCommerce_Admin {
                         <td>
                             <input type="checkbox" name="vat_guard_woocommerce_require_vat" value="1" <?php checked(1, get_option('vat_guard_woocommerce_require_vat', 1)); ?> />
                             <label for="vat_guard_woocommerce_require_vat"><?php _e('Make VAT number a required field', 'vat-guard-woocommerce'); ?></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?php _e('Validate VAT Number with VIES', 'vat-guard-woocommerce'); ?></th>
+                        <td>
+                            <input type="checkbox" name="vat_guard_woocommerce_require_vies" value="1" <?php checked(1, get_option('vat_guard_woocommerce_require_vies', 0)); ?> />
+                            <label for="vat_guard_woocommerce_require_vies"><?php _e('Check VAT number validity with the official VIES service', 'vat-guard-woocommerce'); ?></label>
                         </td>
                     </tr>
                 </table>

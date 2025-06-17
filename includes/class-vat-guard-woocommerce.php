@@ -28,6 +28,8 @@ class VAT_Guard_WooCommerce {
         if (is_admin()) {
             require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-admin.php';
         }
+        // VIES logic
+        require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-vies.php';
     }
 
     public function add_registration_fields() {
@@ -79,6 +81,7 @@ class VAT_Guard_WooCommerce {
     public function validate_registration_fields($errors, $username, $email) {
         $require_company = get_option('vat_guard_woocommerce_require_company', 1);
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
+        $require_vies = get_option('vat_guard_woocommerce_require_vies', 0);
         if ($require_company && empty($_POST['company_name'])) {
             $errors->add('company_name_error', __('Please enter your company name.', 'vat-guard-woocommerce'));
         }
@@ -86,6 +89,16 @@ class VAT_Guard_WooCommerce {
             $errors->add('vat_number_error', __('Please enter your VAT number.', 'vat-guard-woocommerce'));
         } elseif (!empty($_POST['vat_number']) && !$this->is_valid_eu_vat_number($_POST['vat_number'])) {
             $errors->add('vat_number_error', __('Please enter a valid EU VAT number.', 'vat-guard-woocommerce'));
+        } elseif ($require_vies && !empty($_POST['vat_number'])) {
+            $vat = strtoupper(str_replace([' ', '-', '.'], '', $_POST['vat_number']));
+            $country = substr($vat, 0, 2);
+            $number = substr($vat, 2);
+            $vies_result = VAT_Guard_WooCommerce_VIES::check_vat($country, $number);
+            if ($vies_result === false) {
+                $errors->add('vat_number_error', __('This VAT number could not be validated with the VIES service.', 'vat-guard-woocommerce'));
+            } elseif ($vies_result === null) {
+                $errors->add('vat_number_error', __('VIES validation is currently unavailable. Please try again later or contact support.', 'vat-guard-woocommerce'));
+            }
         }
         return $errors;
     }
@@ -127,6 +140,7 @@ class VAT_Guard_WooCommerce {
     public function save_fields($customer_id) {
         $require_company = get_option('vat_guard_woocommerce_require_company', 1);
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
+        $require_vies = get_option('vat_guard_woocommerce_require_vies', 0);
         // Validate VAT number on account edit
         if ($require_vat && isset($_POST['vat_number']) && empty($_POST['vat_number'])) {
             wc_add_notice(__('Please enter your VAT number.', 'vat-guard-woocommerce'), 'error');
@@ -135,6 +149,19 @@ class VAT_Guard_WooCommerce {
         if (!empty($_POST['vat_number']) && !$this->is_valid_eu_vat_number($_POST['vat_number'])) {
             wc_add_notice(__('Please enter a valid EU VAT number.', 'vat-guard-woocommerce'), 'error');
             return;
+        }
+        if ($require_vies && !empty($_POST['vat_number'])) {
+            $vat = strtoupper(str_replace([' ', '-', '.'], '', $_POST['vat_number']));
+            $country = substr($vat, 0, 2);
+            $number = substr($vat, 2);
+            $vies_result = VAT_Guard_WooCommerce_VIES::check_vat($country, $number);
+            if ($vies_result === false) {
+                wc_add_notice(__('This VAT number could not be validated with the VIES service.', 'vat-guard-woocommerce'), 'error');
+                return;
+            } elseif ($vies_result === null) {
+                wc_add_notice(__('VIES validation is currently unavailable. Please try again later or contact support.', 'vat-guard-woocommerce'), 'error');
+                return;
+            }
         }
         if ($require_company && isset($_POST['company_name']) && empty($_POST['company_name'])) {
             wc_add_notice(__('Please enter your company name.', 'vat-guard-woocommerce'), 'error');
