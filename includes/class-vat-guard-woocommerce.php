@@ -1,10 +1,10 @@
 <?php
-// EU VAT Manager Main Class
+// VAT Guard for WooCommerce Main Class
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class EU_VAT_Manager {
+class VAT_Guard_WooCommerce {
     private static $instance = null;
 
     public static function instance() {
@@ -28,10 +28,10 @@ class EU_VAT_Manager {
     public function add_registration_fields() {
         ?>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-            <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="company_name" id="company_name" placeholder="<?php _e('Company Name', 'eu-vat-manager'); ?> *" required value="<?php if (!empty($_POST['company_name'])) esc_attr_e($_POST['company_name']); ?>" />
+            <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="company_name" id="company_name" placeholder="<?php _e('Company Name', 'vat-guard-woocommerce'); ?> *" required value="<?php if (!empty($_POST['company_name'])) esc_attr_e($_POST['company_name']); ?>" />
         </p>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-            <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number" placeholder="<?php _e('VAT Number', 'eu-vat-manager'); ?> *" required value="<?php if (!empty($_POST['vat_number'])) esc_attr_e($_POST['vat_number']); ?>" />
+            <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number" placeholder="<?php _e('VAT Number', 'vat-guard-woocommerce'); ?> *" required value="<?php if (!empty($_POST['vat_number'])) esc_attr_e($_POST['vat_number']); ?>" />
         </p>
         <?php
     }
@@ -41,11 +41,11 @@ class EU_VAT_Manager {
         $vat_number = get_user_meta(get_current_user_id(), 'vat_number', true);
         ?>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-            <label for="company_name"><?php _e('Company Name', 'eu-vat-manager'); ?> <span class="required">*</span></label>
+            <label for="company_name"><?php _e('Company Name', 'vat-guard-woocommerce'); ?> <span class="required">*</span></label>
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="company_name" id="company_name" value="<?php esc_attr_e($company_name); ?>" />
         </p>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-            <label for="vat_number"><?php _e('VAT Number', 'eu-vat-manager'); ?> <span class="required">*</span></label>
+            <label for="vat_number"><?php _e('VAT Number', 'vat-guard-woocommerce'); ?> <span class="required">*</span></label>
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number" value="<?php esc_attr_e($vat_number); ?>" />
         </p>
         <?php
@@ -53,15 +53,56 @@ class EU_VAT_Manager {
 
     public function validate_registration_fields($errors, $username, $email) {
         if (empty($_POST['company_name'])) {
-            $errors->add('company_name_error', __('Please enter your company name.', 'eu-vat-manager'));
+            $errors->add('company_name_error', __('Please enter your company name.', 'vat-guard-woocommerce'));
         }
         if (empty($_POST['vat_number'])) {
-            $errors->add('vat_number_error', __('Please enter your VAT number.', 'eu-vat-manager'));
+            $errors->add('vat_number_error', __('Please enter your VAT number.', 'vat-guard-woocommerce'));
+        } else if (!$this->is_valid_eu_vat_number($_POST['vat_number'])) {
+            $errors->add('vat_number_error', __('Please enter a valid EU VAT number.', 'vat-guard-woocommerce'));
         }
         return $errors;
     }
 
+    /**
+     * Basic offline validation for EU VAT numbers (structure only, not VIES check)
+     */
+    private function is_valid_eu_vat_number($vat) {
+        $vat = strtoupper(str_replace([' ', '-', '.'], '', $vat));
+        // List of EU country codes
+        $eu_countries = [
+            'AT','BE','BG','CY','CZ','DE','DK','EE','EL','ES','FI','FR','HR','HU','IE','IT','LT','LU','LV','MT','NL','PL','PT','RO','SE','SI','SK'
+        ];
+        $country = substr($vat, 0, 2);
+        if (!in_array($country, $eu_countries)) {
+            return false;
+        }
+        // Basic length check (8-14 chars typical)
+        if (strlen($vat) < 8 || strlen($vat) > 14) {
+            return false;
+        }
+        // Country-specific regex (partial, extend as needed)
+        $patterns = [
+            'BE' => '/^BE0?\d{9}$/',
+            'DE' => '/^DE[0-9]{9}$/',
+            'FR' => '/^FR[0-9A-Z]{2}\d{9}$/',
+            'NL' => '/^NL[0-9]{9}B[0-9]{2}$/',
+            'IT' => '/^IT[0-9]{11}$/',
+            'ES' => '/^ES[A-Z0-9][0-9]{7}[A-Z0-9]$/',
+            // ...add more as needed
+        ];
+        if (isset($patterns[$country])) {
+            return preg_match($patterns[$country], $vat) === 1;
+        }
+        // Fallback: just check country code and length
+        return true;
+    }
+
     public function save_fields($customer_id) {
+        // Validate VAT number on account edit
+        if (isset($_POST['vat_number']) && !$this->is_valid_eu_vat_number($_POST['vat_number'])) {
+            wc_add_notice(__('Please enter a valid EU VAT number.', 'vat-guard-woocommerce'), 'error');
+            return;
+        }
         if (isset($_POST['company_name'])) {
             update_user_meta($customer_id, 'company_name', sanitize_text_field($_POST['company_name']));
         }
