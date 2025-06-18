@@ -23,6 +23,8 @@ class VAT_Guard_WooCommerce {
         add_action('woocommerce_save_account_details', array($this, 'save_fields'));
         add_filter('woocommerce_checkout_get_value', array($this, 'preload_checkout_fields'), 10, 2);
         add_filter('woocommerce_default_address_fields', array($this, 'default_billing_company'));
+        add_filter('woocommerce_checkout_fields', array($this, 'add_checkout_vat_field'));
+        add_action('woocommerce_after_checkout_validation', array($this, 'validate_checkout_vat_field'), 10, 2);
 
         // Admin logic moved to VAT_Guard_WooCommerce_Admin
         if (is_admin()) {
@@ -195,5 +197,37 @@ class VAT_Guard_WooCommerce {
             }
         }
         return $fields;
+    }
+
+    public function add_checkout_vat_field($fields) {
+        $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
+        $fields['billing']['billing_eu_vat_number'] = array(
+            'type'        => 'text',
+            'label'       => __('VAT Number', 'vat-guard-woocommerce'),
+            'placeholder' => __('VAT Number', 'vat-guard-woocommerce'),
+            'required'    => (bool)$require_vat,
+            'class'       => array('form-row-wide'),
+            'priority'    => 120,
+        );
+        return $fields;
+    }
+
+    public function validate_checkout_vat_field($data, $errors) {
+        $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
+        $vat = isset($_POST['billing_eu_vat_number']) ? trim($_POST['billing_eu_vat_number']) : '';
+        if ($require_vat && empty($vat)) {
+            $errors->add('vat_number_error', __('Please enter your VAT number.', 'vat-guard-woocommerce'));
+        } elseif (!empty($vat)) {
+            $error_message = '';
+            if (!$this->is_valid_eu_vat_number($vat, $error_message)) {
+                $errors->add('vat_number_error', $error_message);
+            }
+        }
+    }
+
+    public function save_checkout_vat_field($order_id) {
+        if (isset($_POST['billing_eu_vat_number'])) {
+            update_post_meta($order_id, 'billing_eu_vat_number', sanitize_text_field($_POST['billing_eu_vat_number']));
+        }
     }
 }
