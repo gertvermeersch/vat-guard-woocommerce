@@ -25,6 +25,7 @@ class VAT_Guard_WooCommerce {
         add_filter('woocommerce_default_address_fields', array($this, 'default_billing_company'));
         add_filter('woocommerce_checkout_fields', array($this, 'add_checkout_vat_field'));
         add_action('woocommerce_after_checkout_validation', array($this, 'validate_checkout_vat_field'), 10, 2);
+        add_action('woocommerce_checkout_update_order_meta', array($this, 'save_checkout_vat_field'));
 
         // Admin logic moved to VAT_Guard_WooCommerce_Admin
         if (is_admin()) {
@@ -32,6 +33,22 @@ class VAT_Guard_WooCommerce {
         }
         // VIES logic
         require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-vies.php';
+
+        // Show VAT number in the WooCommerce admin order edit screen (billing section)
+        add_action('woocommerce_admin_order_data_after_billing_address', function($order){
+            $vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
+            if ($vat) {
+                echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($vat) . '</p>';
+            }
+        });
+
+        // Show VAT number in WooCommerce order emails (customer & admin)
+        add_action('woocommerce_email_customer_details', function($order, $sent_to_admin, $plain_text, $email) {
+            $vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
+            if ($vat) {
+                echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($vat) . '</p>';
+            }
+        }, 20, 4);
     }
 
     public function add_registration_fields() {
