@@ -18,6 +18,10 @@ class VAT_Guard_WooCommerce_Admin {
             'type' => 'boolean',
             'default' => false
         ]);
+        register_setting('vat_guard_woocommerce_options', 'vat_guard_woocommerce_ignore_vies_error', [
+            'type' => 'boolean',
+            'default' => false
+        ]);
     }
 
     public static function add_admin_menu() {
@@ -62,6 +66,13 @@ class VAT_Guard_WooCommerce_Admin {
                         <td>
                             <input type="checkbox" name="vat_guard_woocommerce_require_vies" value="1" <?php checked(1, get_option('vat_guard_woocommerce_require_vies', 0)); ?> />
                             <label for="vat_guard_woocommerce_require_vies"><?php _e('Check VAT number validity with the official VIES service', 'vat-guard-woocommerce'); ?></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?php _e('Ignore VIES errors', 'vat-guard-woocommerce'); ?></th>
+                        <td>
+                            <input type="checkbox" name="vat_guard_woocommerce_ignore_vies_error" value="1" <?php checked(1, get_option('vat_guard_woocommerce_ignore_vies_error', 0)); ?> />
+                            <label for="vat_guard_woocommerce_ignore_vies_error"><?php _e('Allow checkout if VIES is unavailable or returns an error', 'vat-guard-woocommerce'); ?></label>
                         </td>
                     </tr>
                 </table>

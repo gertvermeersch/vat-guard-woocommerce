@@ -133,13 +133,18 @@ class VAT_Guard_WooCommerce {
         }
         // VIES check if required
         if ($require_vies) {
+            $ignore_vies_error = get_option('vat_guard_woocommerce_ignore_vies_error', 0);
             $number = substr($vat, 2);
             $vies_result = VAT_Guard_WooCommerce_VIES::check_vat($country, $number);
             if ($vies_result === false) {
                 $error_message = __('This VAT number could not be validated with the VIES service.', 'vat-guard-woocommerce');
                 return false;
             } elseif ($vies_result === null) {
-                $error_message = __('VIES validation is currently unavailable. Please try again later or contact support.', 'vat-guard-woocommerce');
+                if ($ignore_vies_error) {
+                    // Allow checkout if VIES is unavailable and option is enabled
+                    return true;
+                }
+                $error_message = __('VAT number validation is currently unavailable. Please try again later or contact the website owner.', 'vat-guard-woocommerce');
                 return false;
             }
         }
