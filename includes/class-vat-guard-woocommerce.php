@@ -34,8 +34,9 @@ class VAT_Guard_WooCommerce {
         add_action('woocommerce_checkout_update_order_review', array($this, 'validate_and_exempt_vat_checkout'), 20);
         //add_action('woocommerce_checkout_after_order_review', array($this, 'validate_and_exempt_vat_checkout'), 20);
         // Checkout validation and saving, run after the default WooCommerce validation
-        // callend on wc-ajax=checkout
-        //add_action('woocommerce_after_checkout_validation', array($this, 'validate_and_exempt_vat_checkout'), 10, 2);
+        // called on wc-ajax=checkout
+        add_action('woocommerce_after_checkout_validation', array($this, 'validate_checkout_vat_field'), 10, 2);
+        //add_action('woocommerce_checkout_create_order', array($this, 'validate_and_exempt_vat_checkout'), 10, 2);
 
         // Admin logic moved to VAT_Guard_WooCommerce_Admin
         if (is_admin()) {
@@ -245,8 +246,8 @@ class VAT_Guard_WooCommerce {
         return $fields;
     }
 
-    /*public function validate_checkout_vat_field($data, $errors) {
-        /*$require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
+    public function validate_checkout_vat_field($data, $errors) {
+        $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         $vat = isset($_POST['billing_eu_vat_number']) ? trim($_POST['billing_eu_vat_number']) : '';
         if ($require_vat && empty($vat)) {
             $errors->add('vat_number_error', __('Please enter your VAT number.', 'vat-guard-woocommerce'));
@@ -266,7 +267,7 @@ class VAT_Guard_WooCommerce {
         } else {
             WC()->customer->set_is_vat_exempt(false);
         }
-    }*/
+    }
 
     public function save_checkout_vat_field($order_id) {
         if (isset($_POST['billing_eu_vat_number'])) {
