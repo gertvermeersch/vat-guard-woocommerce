@@ -31,13 +31,12 @@ class VAT_Guard_WooCommerce {
         // runs every time the checkout is updated (e.g. when shipping changes)
         // This is where we check the VAT number and potentially exempt VAT
         // Called on wc-ajax=update_order_review
-        add_action('woocommerce_checkout_update_order_review', array($this, 'validate_and_exempt_vat_checkout'), 20);
-        //add_action('woocommerce_checkout_after_order_review', array($this, 'validate_and_exempt_vat_checkout'), 20);
-        // Checkout validation and saving, run after the default WooCommerce validation
+        add_action('woocommerce_checkout_update_order_review', array($this, 'ajax_validate_and_exempt_vat'), 20);
+       
+        // Checkout validation and saving, run after the default WooCommerce validation, this is needed when users ignore the VAT error messages (they can still submit the form)
         // called on wc-ajax=checkout
-        add_action('woocommerce_after_checkout_validation', array($this, 'validate_checkout_vat_field'), 10, 2);
-        //add_action('woocommerce_checkout_create_order', array($this, 'validate_and_exempt_vat_checkout'), 10, 2);
-
+        add_action('woocommerce_after_checkout_validation', array($this, 'on_checkout_vat_field'), 10, 2);
+        
         // Admin logic moved to VAT_Guard_WooCommerce_Admin
         if (is_admin()) {
             require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-admin.php';
@@ -246,7 +245,13 @@ class VAT_Guard_WooCommerce {
         return $fields;
     }
 
-    public function validate_checkout_vat_field($data, $errors) {
+
+    public function save_checkout_vat_field($order_id) {
+        if (isset($_POST['billing_eu_vat_number'])) {
+            update_post_meta($order_id, 'billing_eu_vat_number', sanitize_text_field($_POST['billing_eu_vat_number']));
+        }
+    }
+    public function on_checkout_vat_field($data, $errors) {
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         $vat = isset($_POST['billing_eu_vat_number']) ? trim($_POST['billing_eu_vat_number']) : '';
         if ($require_vat && empty($vat)) {
@@ -269,11 +274,6 @@ class VAT_Guard_WooCommerce {
         }
     }
 
-    public function save_checkout_vat_field($order_id) {
-        if (isset($_POST['billing_eu_vat_number'])) {
-            update_post_meta($order_id, 'billing_eu_vat_number', sanitize_text_field($_POST['billing_eu_vat_number']));
-        }
-    }
 
    
 
@@ -281,7 +281,7 @@ class VAT_Guard_WooCommerce {
      * This runs after the default WooCommerce validation.
      * It checks the VAT number, validates it, and sets the exemption status.
      */
-    public function validate_and_exempt_vat_checkout($post_data) {
+    public function ajax_validate_and_exempt_vat($post_data) {
         parse_str($post_data, $data);
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         $vat = isset($data['billing_eu_vat_number']) ? trim($data['billing_eu_vat_number']) : '';
