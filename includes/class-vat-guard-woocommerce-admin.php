@@ -55,7 +55,7 @@ class VAT_Guard_WooCommerce_Admin {
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row"><?php _e('Require VAT Number', 'vat-guard-woocommerce'); ?></th>
+                        <th scope="row"><?php _e('Require VAT Number - only sell B2B', 'vat-guard-woocommerce'); ?></th>
                         <td>
                             <input type="checkbox" name="vat_guard_woocommerce_require_vat" value="1" <?php checked(1, get_option('vat_guard_woocommerce_require_vat', 1)); ?> />
                             <label for="vat_guard_woocommerce_require_vat"><?php _e('Make VAT number a required field', 'vat-guard-woocommerce'); ?></label>
