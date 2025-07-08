@@ -37,6 +37,18 @@ class VAT_Guard_WooCommerce {
         // called on wc-ajax=checkout
         add_action('woocommerce_after_checkout_validation', array($this, 'on_checkout_vat_field'), 10, 2);
         
+        add_action('wp_enqueue_scripts', function() {
+        if (is_checkout()) {
+            wp_enqueue_script(
+                'vat-guard-checkout',
+                plugin_dir_url(dirname(__FILE__)) . '/assets/js/vat-guard-checkout.js',
+                array('jquery'),
+                '1.0',
+                true
+            );
+        }
+});
+
         // Admin logic moved to VAT_Guard_WooCommerce_Admin
         if (is_admin()) {
             require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-admin.php';
