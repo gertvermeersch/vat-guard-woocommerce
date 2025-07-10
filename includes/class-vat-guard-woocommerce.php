@@ -5,6 +5,10 @@ if (!defined('ABSPATH')) {
 }
 
 class VAT_Guard_WooCommerce {
+    /**
+     * Show a VAT exempt notice in the order review totals if VAT is removed.
+     */
+    
     private static $instance = null;
 
     public static function instance() {
@@ -48,6 +52,9 @@ class VAT_Guard_WooCommerce {
             );
         }
 });
+
+        // Show VAT exempt notice in the order review totals (before shipping row)
+        add_action('woocommerce_review_order_before_shipping', array($this, 'show_vat_exempt_notice_checkout'), 5);
 
         // Admin logic moved to VAT_Guard_WooCommerce_Admin
         if (is_admin()) {
@@ -263,6 +270,11 @@ class VAT_Guard_WooCommerce {
             update_post_meta($order_id, 'billing_eu_vat_number', sanitize_text_field($_POST['billing_eu_vat_number']));
         }
     }
+    /**
+     * Validate VAT number during checkout and set VAT exemption status.
+     * This runs after the default WooCommerce validation.
+     * It checks the VAT number, validates it, and sets the exemption status.
+     */
     public function on_checkout_vat_field($data, $errors) {
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         $vat = isset($_POST['billing_eu_vat_number']) ? trim($_POST['billing_eu_vat_number']) : '';
@@ -289,7 +301,7 @@ class VAT_Guard_WooCommerce {
 
    
 
-    /*    * Validate VAT number and set VAT exemption during checkout.
+    /* Validate VAT number and set VAT exemption during checkout.
      * This runs after the default WooCommerce validation.
      * It checks the VAT number, validates it, and sets the exemption status.
      */
@@ -319,6 +331,12 @@ class VAT_Guard_WooCommerce {
             WC()->customer->set_is_vat_exempt(true);
         } else {
             WC()->customer->set_is_vat_exempt(false);
+        }
+    }
+
+    public function show_vat_exempt_notice_checkout() {
+        if (WC()->customer && WC()->customer->get_is_vat_exempt()) {
+            echo '<tr class="vat-exempt"><th>' . esc_html__('VAT', 'vat-guard-woocommerce') . '</th><td><strong>' . esc_html__('VAT exempt', 'vat-guard-woocommerce') . '</strong></td></tr>';
         }
     }
 }
