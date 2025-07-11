@@ -51,7 +51,7 @@ class VAT_Guard_WooCommerce {
                 true
             );
         }
-});
+        });
 
         // Show VAT exempt notice in the order review totals (before shipping row)
         add_action('woocommerce_review_order_before_shipping', array($this, 'show_vat_exempt_notice_checkout'), 5);
@@ -68,6 +68,10 @@ class VAT_Guard_WooCommerce {
             $vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
             if ($vat) {
                 echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($vat) . '</p>';
+                $is_exempt = get_post_meta($order->get_id(), '_vat_guard_woocommerce_is_vat_exempt', true);
+                if ($is_exempt === 'yes') {
+                 echo '<p style="color: #008000;"><strong>' . esc_html__('VAT exempt for this order', 'vat-guard-woocommerce') . '</strong></p>';
+                }
             }
         });
 
@@ -101,7 +105,7 @@ class VAT_Guard_WooCommerce {
                name="vat_number"
                id="vat_number"
                placeholder="<?php _e('VAT Number', 'vat-guard-woocommerce'); ?><?php echo $require_vat ? ' *' : ''; ?>"
-               <?php if ($require_vat) echo 'required'; ?>
+               <?php if ($require_vat) { echo 'required'; } ?>
                value="<?php if (!empty($_POST['vat_number'])) esc_attr_e($_POST['vat_number']); ?>" />
         </p>
         <?php
@@ -267,7 +271,11 @@ class VAT_Guard_WooCommerce {
 
     public function save_checkout_vat_field($order_id) {
         if (isset($_POST['billing_eu_vat_number'])) {
-            update_post_meta($order_id, 'billing_eu_vat_number', sanitize_text_field($_POST['billing_eu_vat_number']));
+            $vat_number = sanitize_text_field($_POST['billing_eu_vat_number']);
+            update_post_meta($order_id, 'billing_eu_vat_number', $vat_number);
+            // Save VAT exemption status as order meta using WC()->customer->get_is_vat_exempt()
+            $is_exempt = (WC()->customer && WC()->customer->get_is_vat_exempt());
+            update_post_meta($order_id, '_vat_guard_woocommerce_is_vat_exempt', $is_exempt ? 'yes' : 'no');
         }
     }
     /**
