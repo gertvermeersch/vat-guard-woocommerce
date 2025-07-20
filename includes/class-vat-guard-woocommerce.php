@@ -30,7 +30,7 @@ class VAT_Guard_WooCommerce
         add_action('woocommerce_save_account_details', array($this, 'save_fields'));
         add_filter('woocommerce_checkout_get_value', array($this, 'preload_checkout_fields'), 10, 2);
         add_filter('woocommerce_default_address_fields', array($this, 'default_billing_company'));
-        add_filter('woocommerce_checkout_fields', array($this, 'add_checkout_vat_field'));
+        add_filter('woocommerce_checkout_fields', array($this, 'add_checkout_vat_field'), 99);
 
         // Runs when the order is created, saves the VAT number to the order meta
         add_action('woocommerce_checkout_update_order_meta', array($this, 'save_checkout_vat_field'));
@@ -55,6 +55,26 @@ class VAT_Guard_WooCommerce
                 );
             }
         });
+
+
+        //for block based checkout
+        add_action('woocommerce_init', function () {
+            if (!function_exists('woocommerce_register_additional_checkout_field')) {
+                return;
+            }
+
+            woocommerce_register_additional_checkout_field(
+                array(
+                    'id'       => 'vat-guard-woocommerce/vat_number',
+                    'label'    => __('VAT Number', 'vat-guard-woocommerce'),
+                    'location' => 'contact',
+                    'type'     => 'text',
+                    'required' => (bool) get_option('vat_guard_woocommerce_require_vat', 1),
+                )
+            );
+        });
+
+
 
         // Show VAT exempt notice in the order review totals (before shipping row)
         add_action('woocommerce_review_order_before_shipping', array($this, 'show_vat_exempt_notice_checkout'), 5);
@@ -89,7 +109,7 @@ class VAT_Guard_WooCommerce
 
     public function add_registration_fields()
     {
-        ?>
+?>
         <?php
         $require_company = get_option('vat_guard_woocommerce_require_company', 1);
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
@@ -100,16 +120,16 @@ class VAT_Guard_WooCommerce
                 placeholder="<?php _e('Company Name', 'vat-guard-woocommerce'); ?><?php echo $require_company ? ' *' : ''; ?>"
                 <?php if ($require_company)
                     echo 'required'; ?> value="<?php if (!empty($_POST['company_name']))
-                           esc_attr_e($_POST['company_name']); ?>" />
+                                                    esc_attr_e($_POST['company_name']); ?>" />
         </p>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number"
                 placeholder="<?php _e('VAT Number', 'vat-guard-woocommerce'); ?><?php echo $require_vat ? ' *' : ''; ?>" value="<?php if (!empty($_POST['vat_number']))
-                              esc_attr_e($_POST['vat_number']); ?>" <?php if ($require_vat) {
-                                   echo 'required';
-                               } ?> />
+                                                                                                                                    esc_attr_e($_POST['vat_number']); ?>" <?php if ($require_vat) {
+                                                                                                                                                                                echo 'required';
+                                                                                                                                                                            } ?> />
         </p>
-        <?php
+    <?php
     }
 
     public function add_account_fields()
@@ -119,20 +139,20 @@ class VAT_Guard_WooCommerce
 
         $require_company = get_option('vat_guard_woocommerce_require_company', 1);
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
-        ?>
+    ?>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
             <label for="company_name"><?php _e('Company Name', 'vat-guard-woocommerce');
-            if ($require_company) { ?><span class="required">*</span> <?php } ?></label>
+                                        if ($require_company) { ?><span class="required">*</span> <?php } ?></label>
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="company_name"
                 id="company_name" value="<?php esc_attr_e($company_name); ?>" />
         </p>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
             <label for="vat_number"><?php _e('VAT Number', 'vat-guard-woocommerce');
-            if ($require_vat) { ?><span class="required">*</span> <?php } ?></label>
+                                    if ($require_vat) { ?><span class="required">*</span> <?php } ?></label>
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number"
                 value="<?php esc_attr_e($vat_number); ?>" />
         </p>
-        <?php
+<?php
     }
 
     /**
@@ -202,7 +222,7 @@ class VAT_Guard_WooCommerce
             $number = substr($vat, 2);
             $vies_result = VAT_Guard_WooCommerce_VIES::check_vat($country, $number);
             if ($vies_result === false) {
-                $error_message = __('This VAT number could not be validated with the VIES service.', 'vat-guard-woocommerce');
+                $error_message = __('This VAT number is not valid according to the VIES service.', 'vat-guard-woocommerce');
                 return false;
             } elseif ($vies_result === null) {
                 if ($ignore_vies_error) {
@@ -291,7 +311,7 @@ class VAT_Guard_WooCommerce
 
     public function add_checkout_vat_field($fields)
     {
-       
+
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         $require_company = get_option('vat_guard_woocommerce_require_company', 1);
 
@@ -299,18 +319,14 @@ class VAT_Guard_WooCommerce
         $fields['billing']['billing_company']['required'] = (bool) $require_company;
         $fields['billing']['billing_company']['priority'] = 25; // After name fields
 
-        $default_vat = '';
-        if (is_user_logged_in()) {
-            $default_vat = get_user_meta(get_current_user_id(), 'vat_number', true);
-        }
         $fields['billing']['billing_eu_vat_number'] = array(
             'type' => 'text',
             'label' => __('VAT Number', 'vat-guard-woocommerce'),
             'placeholder' => __('VAT Number', 'vat-guard-woocommerce'),
             'required' => (bool) $require_vat,
             'class' => array('form-row-wide', 'update_totals_on_change'),
-            'priority' => 120,
-            'default' => $default_vat,
+            'priority' => 26,
+            'default' => '',
         );
         return $fields;
     }

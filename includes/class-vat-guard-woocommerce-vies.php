@@ -21,6 +21,10 @@ class VAT_Guard_WooCommerce_VIES {
             ]);
             return $result->valid ? true : false;
         } catch (Exception $e) {
+            if (ini_get('display_errors')) {
+                // Show the actual error if display_errors is enabled
+                echo '<div style="color:red;font-size:small;">VIES error: ' . htmlspecialchars($e->getMessage()) . '</div>';
+            }
             return null; // VIES unavailable or error
         }
     }
