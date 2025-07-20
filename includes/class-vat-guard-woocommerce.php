@@ -22,28 +22,30 @@ class VAT_Guard_WooCommerce
 
     private function __construct()
     {
-        // Add hooks here (registration fields, account fields, etc.)
+        // VIES logic
+        require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-vies.php';
+        // Account and registration hooks
         add_action('woocommerce_register_form', array($this, 'add_registration_fields'));
         add_action('woocommerce_edit_account_form_start', array($this, 'add_account_fields'));
         add_filter('woocommerce_registration_errors', array($this, 'validate_registration_fields'), 10, 3);
         add_action('woocommerce_created_customer', array($this, 'save_fields'));
         add_action('woocommerce_save_account_details', array($this, 'save_fields'));
+        
+        // Classic checkout hooks
         add_filter('woocommerce_checkout_get_value', array($this, 'preload_checkout_fields'), 10, 2);
         add_filter('woocommerce_default_address_fields', array($this, 'default_billing_company'));
         add_filter('woocommerce_checkout_fields', array($this, 'add_checkout_vat_field'), 99);
-
         // Runs when the order is created, saves the VAT number to the order meta
         add_action('woocommerce_checkout_update_order_meta', array($this, 'save_checkout_vat_field'));
-
         // runs every time the checkout is updated (e.g. when shipping changes)
         // This is where we check the VAT number and potentially exempt VAT
         // Called on wc-ajax=update_order_review
         add_action('woocommerce_checkout_update_order_review', array($this, 'ajax_validate_and_exempt_vat'), 20);
-
         // Checkout validation and saving, run after the default WooCommerce validation, this is needed when users ignore the VAT error messages (they can still submit the form)
         // called on wc-ajax=checkout
         add_action('woocommerce_after_checkout_validation', array($this, 'on_checkout_vat_field'), 10, 2);
 
+        //Disable place order button with javascript when validation fails on the frontend
         add_action('wp_enqueue_scripts', function () {
             if (is_checkout()) {
                 wp_enqueue_script(
@@ -60,7 +62,42 @@ class VAT_Guard_WooCommerce
 
         // Conditionally enable block-based checkout support
         if (get_option('vat_guard_woocommerce_enable_block_checkout', 0)) {
-            add_action('woocommerce_init', function () {
+            $this->setup_block_checkout_support();
+        }
+
+
+        // Show VAT exempt notice in the order review totals (before shipping row)
+        add_action('woocommerce_review_order_before_shipping', array($this, 'show_vat_exempt_notice_checkout'), 5);
+
+        // Admin logic moved to VAT_Guard_WooCommerce_Admin
+        if (is_admin()) {
+            require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-admin.php';
+        }
+        
+
+        // Show VAT number in the WooCommerce admin order edit screen (billing section)
+        add_action('woocommerce_admin_order_data_after_billing_address', function ($order) {
+            $vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
+            if ($vat) {
+                echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($vat) . '</p>';
+                $is_exempt = get_post_meta($order->get_id(), '_vat_guard_woocommerce_is_vat_exempt', true);
+                if ($is_exempt === 'yes') {
+                    echo '<p style="color: #008000;"><strong>' . esc_html__('VAT exempt for this order', 'vat-guard-woocommerce') . '</strong></p>';
+                }
+            }
+        });
+
+        // Show VAT number in WooCommerce order emails (customer & admin)
+        add_action('woocommerce_email_customer_details', function ($order, $sent_to_admin, $plain_text, $email) {
+            $vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
+            if ($vat) {
+                echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($vat) . '</p>';
+            }
+        }, 20, 4);
+    }
+
+    public function setup_block_checkout_support() {
+        add_action('woocommerce_init', function () {
                 if (!function_exists('woocommerce_register_additional_checkout_field')) {
                     return;
                 }
@@ -90,40 +127,7 @@ class VAT_Guard_WooCommerce
                 10,
                 3
             );
-        }
-
-
-        // Show VAT exempt notice in the order review totals (before shipping row)
-        add_action('woocommerce_review_order_before_shipping', array($this, 'show_vat_exempt_notice_checkout'), 5);
-
-        // Admin logic moved to VAT_Guard_WooCommerce_Admin
-        if (is_admin()) {
-            require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-admin.php';
-        }
-        // VIES logic
-        require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-vies.php';
-
-        // Show VAT number in the WooCommerce admin order edit screen (billing section)
-        add_action('woocommerce_admin_order_data_after_billing_address', function ($order) {
-            $vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
-            if ($vat) {
-                echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($vat) . '</p>';
-                $is_exempt = get_post_meta($order->get_id(), '_vat_guard_woocommerce_is_vat_exempt', true);
-                if ($is_exempt === 'yes') {
-                    echo '<p style="color: #008000;"><strong>' . esc_html__('VAT exempt for this order', 'vat-guard-woocommerce') . '</strong></p>';
-                }
-            }
-        });
-
-        // Show VAT number in WooCommerce order emails (customer & admin)
-        add_action('woocommerce_email_customer_details', function ($order, $sent_to_admin, $plain_text, $email) {
-            $vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
-            if ($vat) {
-                echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($vat) . '</p>';
-            }
-        }, 20, 4);
     }
-
 
     /**
      * Set VAT exempt status on the customer based on VAT number and shop base country
@@ -438,12 +442,20 @@ class VAT_Guard_WooCommerce
     {
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         $vat = isset($_POST['billing_eu_vat_number']) ? trim($_POST['billing_eu_vat_number']) : '';
+        $shipping_country = isset($_POST['shipping_country']) ? strtoupper(trim($_POST['shipping_country'])) : '';
         if ($require_vat && empty($vat)) {
             $errors->add('vat_number_error', __('Please enter your VAT number.', 'vat-guard-woocommerce'));
         } elseif (!empty($vat)) {
             $error_message = '';
             if (!$this->is_valid_eu_vat_number($vat, $error_message)) {
                 $errors->add('vat_number_error', $error_message);
+                WC()->customer->set_is_vat_exempt(false);
+                return;
+            }
+            // Check shipping country matches VAT country
+            $vat_country = substr($vat, 0, 2);
+            if (!empty($shipping_country) && $shipping_country !== $vat_country) {
+                $errors->add('vat_number_error', __('The shipping country must match the country of the VAT number.', 'vat-guard-woocommerce'));
                 WC()->customer->set_is_vat_exempt(false);
                 return;
             }
@@ -469,6 +481,7 @@ class VAT_Guard_WooCommerce
         parse_str($post_data, $data);
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         $vat = isset($data['billing_eu_vat_number']) ? trim($data['billing_eu_vat_number']) : '';
+        $shipping_country = isset($data['shipping_country']) ? strtoupper(trim($data['shipping_country'])) : '';
 
         // Validation
         if ($require_vat && empty($vat)) {
@@ -479,6 +492,13 @@ class VAT_Guard_WooCommerce
             $error_message = '';
             if (!$this->is_valid_eu_vat_number($vat, $error_message)) {
                 wc_add_notice($error_message, 'error');
+                $this->set_vat_exempt_status('');
+                return;
+            }
+            // Check shipping country matches VAT country
+            $vat_country = substr($vat, 0, 2);
+            if (!empty($shipping_country) && $shipping_country !== $vat_country) {
+                wc_add_notice(__('The shipping country must match the country of the VAT number.', 'vat-guard-woocommerce'), 'error');
                 $this->set_vat_exempt_status('');
                 return;
             }
@@ -494,10 +514,17 @@ class VAT_Guard_WooCommerce
      * @return WP_Error|true Returns true if valid, WP_Error if invalid
      * This function validates the VAT number, checks its validity, and sets the VAT exemption status
      */
-    public function ajax_validate_and_exempt_vat_block($value)
+    public function ajax_validate_and_exempt_vat_block($value, $all_values = null)
     {
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         $main = VAT_Guard_WooCommerce::instance();
+        // Try to get shipping country from $all_values if available (Blocks API passes all fields as 2nd arg)
+        $shipping_country = '';
+        if (is_array($all_values) && isset($all_values['shipping_country'])) {
+            $shipping_country = strtoupper(trim($all_values['shipping_country']));
+        } elseif (isset($_POST['shipping_country'])) {
+            $shipping_country = strtoupper(trim($_POST['shipping_country']));
+        }
         if ($require_vat && empty($value)) {
             $main->set_vat_exempt_status('');
             return new WP_Error('vat_number_error', __('Please enter your VAT number.', 'vat-guard-woocommerce'));
@@ -507,6 +534,12 @@ class VAT_Guard_WooCommerce
             if (!$main->is_valid_eu_vat_number($value, $error_message)) {
                 $main->set_vat_exempt_status('');
                 return new WP_Error('vat_number_error', $error_message);
+            }
+            // Check shipping country matches VAT country
+            $vat_country = substr($value, 0, 2);
+            if (!empty($shipping_country) && $shipping_country !== $vat_country) {
+                $main->set_vat_exempt_status('');
+                return new WP_Error('vat_number_error', __('The shipping country must match the country of the VAT number.', 'vat-guard-woocommerce'));
             }
             // Set VAT exempt status if valid
             $main->set_vat_exempt_status($value);
