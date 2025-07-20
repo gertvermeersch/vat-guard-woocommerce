@@ -73,8 +73,35 @@ class VAT_Guard_WooCommerce
                     'validate_callback' => array($this, 'ajax_validate_and_exempt_vat_block')
                 )
             );
-
         });
+
+        // Add VAT number to the order meta when saving the checkout field in block based checkout
+        // add_action(
+        //     'vat-guard-woocommerce/vat_number',
+        //     function ($key, $value, $group, $wc_object) {
+        //         if ('vat-guard-woocommerce/vat_number' !== $key) {
+        //             return;
+        //         }
+        //         $wc_object->update_meta_data('billing_eu_vat_number', $value, true);
+        //     },
+        //     10,
+        //     4
+        // );
+
+        // Preload the VAT number field with user meta data if available
+        add_filter(
+            "woocommerce_get_default_value_for_vat-guard-woocommerce/vat_number",
+            function ($value, $group, $wc_object) {
+
+                $vat = get_user_meta(get_current_user_id(), 'vat_number', true);
+                if (!empty($vat)) {
+                    $value = $vat;
+                }
+                return $value;
+            },
+            10,
+            3
+        );
 
 
         // Show VAT exempt notice in the order review totals (before shipping row)
