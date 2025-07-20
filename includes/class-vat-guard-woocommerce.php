@@ -57,51 +57,40 @@ class VAT_Guard_WooCommerce
         });
 
 
-        //for block based checkout
-        add_action('woocommerce_init', function () {
-            if (!function_exists('woocommerce_register_additional_checkout_field')) {
-                return;
-            }
-            woocommerce_register_additional_checkout_field(
-                array(
-                    'id'       => 'vat-guard-woocommerce/vat_number',
-                    'label'    => __('VAT Number', 'vat-guard-woocommerce'),
-                    'location' => 'contact',
-                    'type'     => 'text',
-                    'required' => (bool) get_option('vat_guard_woocommerce_require_vat', 1),
-                    'sanitize_callback' => 'sanitize_text_field',
-                    'validate_callback' => array($this, 'ajax_validate_and_exempt_vat_block')
-                )
-            );
-        });
 
-        // Add VAT number to the order meta when saving the checkout field in block based checkout
-        // add_action(
-        //     'vat-guard-woocommerce/vat_number',
-        //     function ($key, $value, $group, $wc_object) {
-        //         if ('vat-guard-woocommerce/vat_number' !== $key) {
-        //             return;
-        //         }
-        //         $wc_object->update_meta_data('billing_eu_vat_number', $value, true);
-        //     },
-        //     10,
-        //     4
-        // );
-
-        // Preload the VAT number field with user meta data if available
-        add_filter(
-            "woocommerce_get_default_value_for_vat-guard-woocommerce/vat_number",
-            function ($value, $group, $wc_object) {
-
-                $vat = get_user_meta(get_current_user_id(), 'vat_number', true);
-                if (!empty($vat)) {
-                    $value = $vat;
+        // Conditionally enable block-based checkout support
+        if (get_option('vat_guard_woocommerce_enable_block_checkout', 0)) {
+            add_action('woocommerce_init', function () {
+                if (!function_exists('woocommerce_register_additional_checkout_field')) {
+                    return;
                 }
-                return $value;
-            },
-            10,
-            3
-        );
+                woocommerce_register_additional_checkout_field(
+                    array(
+                        'id'       => 'vat-guard-woocommerce/vat_number',
+                        'label'    => __('VAT Number', 'vat-guard-woocommerce'),
+                        'location' => 'contact',
+                        'type'     => 'text',
+                        'required' => (bool) get_option('vat_guard_woocommerce_require_vat', 1),
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'validate_callback' => array($this, 'ajax_validate_and_exempt_vat_block')
+                    )
+                );
+            });
+
+            // Preload the VAT number field with user meta data if available
+            add_filter(
+                "woocommerce_get_default_value_for_vat-guard-woocommerce/vat_number",
+                function ($value, $group, $wc_object) {
+                    $vat = get_user_meta(get_current_user_id(), 'vat_number', true);
+                    if (!empty($vat)) {
+                        $value = $vat;
+                    }
+                    return $value;
+                },
+                10,
+                3
+            );
+        }
 
 
         // Show VAT exempt notice in the order review totals (before shipping row)
@@ -248,13 +237,35 @@ class VAT_Guard_WooCommerce
             $error_message = __('Please enter a valid EU VAT number.', 'vat-guard-woocommerce');
             return false;
         }
+        // VAT number regex patterns for all EU countries
         $patterns = [
-            'BE' => '/^BE0?\d{9}$/',
-            'DE' => '/^DE[0-9]{9}$/',
-            'FR' => '/^FR[0-9A-Z]{2}\d{9}$/',
-            'NL' => '/^NL[0-9]{9}B[0-9]{2}$/',
-            'IT' => '/^IT[0-9]{11}$/',
-            'ES' => '/^ES[A-Z0-9][0-9]{7}[A-Z0-9]$/',
+            'AT' => '/^ATU\d{8}$/',                  // Austria
+            'BE' => '/^BE0?\d{9}$/',                 // Belgium
+            'BG' => '/^BG\d{9,10}$/',                // Bulgaria
+            'CY' => '/^CY\d{8}[A-Z]$/',              // Cyprus
+            'CZ' => '/^CZ\d{8,10}$/',                // Czech Republic
+            'DE' => '/^DE\d{9}$/',                   // Germany
+            'DK' => '/^DK\d{8}$/',                   // Denmark
+            'EE' => '/^EE\d{9}$/',                   // Estonia
+            'EL' => '/^EL\d{9}$/',                   // Greece
+            'ES' => '/^ES[A-Z0-9]\d{7}[A-Z0-9]$/',   // Spain
+            'FI' => '/^FI\d{8}$/',                   // Finland
+            'FR' => '/^FR[A-HJ-NP-Z0-9]{2}\d{9}$/',  // France
+            'HR' => '/^HR\d{11}$/',                  // Croatia
+            'HU' => '/^HU\d{8}$/',                   // Hungary
+            'IE' => '/^IE\d{7}[A-W][A-I0-9]?$/',     // Ireland
+            'IT' => '/^IT\d{11}$/',                  // Italy
+            'LT' => '/^LT(\d{9}|\d{12})$/',          // Lithuania
+            'LU' => '/^LU\d{8}$/',                   // Luxembourg
+            'LV' => '/^LV\d{11}$/',                  // Latvia
+            'MT' => '/^MT\d{8}$/',                   // Malta
+            'NL' => '/^NL\d{9}B\d{2}$/',             // Netherlands
+            'PL' => '/^PL\d{10}$/',                  // Poland
+            'PT' => '/^PT\d{9}$/',                   // Portugal
+            'RO' => '/^RO\d{2,10}$/',                // Romania
+            'SE' => '/^SE\d{10}01$/',                // Sweden
+            'SI' => '/^SI\d{8}$/',                   // Slovenia
+            'SK' => '/^SK\d{10}$/',                  // Slovakia
         ];
         if (isset($patterns[$country]) && preg_match($patterns[$country], $vat) !== 1) {
             $error_message = __('Please enter a valid EU VAT number.', 'vat-guard-woocommerce');

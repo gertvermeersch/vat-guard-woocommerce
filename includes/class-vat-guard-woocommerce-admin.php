@@ -22,6 +22,10 @@ class VAT_Guard_WooCommerce_Admin {
             'type' => 'boolean',
             'default' => false
         ]);
+        register_setting('vat_guard_woocommerce_options', 'vat_guard_woocommerce_enable_block_checkout', [
+            'type' => 'boolean',
+            'default' => false
+        ]);
     }
 
     public static function add_admin_menu() {
@@ -47,6 +51,13 @@ class VAT_Guard_WooCommerce_Admin {
             <form method="post" action="options.php">
                 <?php settings_fields('vat_guard_woocommerce_options'); ?>
                 <table class="form-table" role="presentation">
+                    <tr>
+                        <th scope="row"><?php _e('Enable Block-based Checkout Support', 'vat-guard-woocommerce'); ?></th>
+                        <td>
+                            <input type="checkbox" name="vat_guard_woocommerce_enable_block_checkout" value="1" <?php checked(1, get_option('vat_guard_woocommerce_enable_block_checkout', 0)); ?> />
+                            <label for="vat_guard_woocommerce_enable_block_checkout"><?php _e('Enable support for WooCommerce Block-based Checkout (Cart & Checkout Blocks)', 'vat-guard-woocommerce'); ?></label>
+                        </td>
+                    </tr>
                     <tr>
                         <th scope="row"><?php _e('Require Company Name', 'vat-guard-woocommerce'); ?></th>
                         <td>
