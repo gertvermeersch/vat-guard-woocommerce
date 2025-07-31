@@ -571,6 +571,15 @@ class VAT_Guard_WooCommerce
                 $this->set_vat_exempt_status('');
                 return;
             }
+            // Check billing country matches VAT country
+            if (isset($data['billing_country'])) {
+                $billing_country = strtoupper(trim($data['billing_country']));
+                if ($billing_country !== $vat_country) {
+                    wc_add_notice(__('The billing country must match the country of the VAT number.', 'vat-guard-woocommerce'), 'error');
+                    $this->set_vat_exempt_status('');
+                    return;
+                }
+            }
         }
 
         // Exemption
