@@ -24,6 +24,13 @@ class VAT_Guard_WooCommerce
     {
         // VIES logic
         require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-vies.php';
+
+        // Add VAT number to the billing address format
+        add_filter('woocommerce_localisation_address_formats', array($this, 'add_vat_to_address_format'));
+        add_filter('woocommerce_formatted_address_replacements', array($this, 'add_vat_number_replacement'), 10, 2);
+        add_filter('woocommerce_order_formatted_billing_address', array($this, 'add_vat_to_formatted_address'), 10, 2);
+        add_filter('woocommerce_my_account_my_address_formatted_address', array($this, 'add_vat_to_my_account_address'), 10, 3);
+        
         // Account and registration hooks
         add_action('woocommerce_register_form', array($this, 'add_registration_fields'));
         add_action('woocommerce_edit_account_form_start', array($this, 'add_account_fields'));
@@ -102,6 +109,71 @@ class VAT_Guard_WooCommerce
                 echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($vat) . '</p>';
             }
         }, 20, 4);
+
+       
+
+        
+
+        
+    }
+
+    /**
+     * Add VAT number to address formats
+     */
+    public function add_vat_to_address_format($formats) {
+        foreach ($formats as $country => &$format) {
+            if (strpos($format, '{vat_number}') === false) {
+                // Add VAT number after company if exists
+                $format = str_replace('{company}', "{company}\n{vat_number}", $format);
+            }
+        }
+        return $formats;
+    }
+
+    /**
+     * Add VAT number replacement
+     */
+    public function add_vat_number_replacement($replacements, $args) {
+        $replacements['{vat_number}'] = !empty($args['vat_number']) ? 
+            __('VAT Number:', 'vat-guard-woocommerce') . ' ' . $args['vat_number'] : '';
+        return $replacements;
+    }
+
+    /**
+     * Add VAT number to order's formatted address
+     */
+    public function add_vat_to_formatted_address($address, $order) {
+        $vat = $order->get_meta('billing_eu_vat_number');
+        if (empty($vat)) {
+            $vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
+        }
+        
+        if (!empty($vat)) {
+            $address['vat_number'] = $vat;
+
+            // Add VAT exempt status if applicable
+            $is_exempt = $order->get_meta('billing_is_vat_exempt');
+            if (empty($is_exempt)) {
+                $is_exempt = get_post_meta($order->get_id(), 'billing_is_vat_exempt', true);
+            }
+            if ($is_exempt === 'yes') {
+                $address['vat_status'] = __('VAT exempt', 'vat-guard-woocommerce');
+            }
+        }
+        return $address;
+    }
+
+    /**
+     * Add VAT number to My Account formatted address
+     */
+    public function add_vat_to_my_account_address($address, $customer_id, $address_type) {
+        if ($address_type === 'billing') {
+            $vat = get_user_meta($customer_id, 'vat_number', true);
+            if (!empty($vat)) {
+                $address['vat_number'] = $vat;
+            }
+        }
+        return $address;
     }
 
     /**
