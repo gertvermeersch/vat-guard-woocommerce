@@ -125,38 +125,39 @@ class VAT_Guard_WooCommerce
                     'validate_callback' => array($this, 'ajax_validate_and_exempt_vat_block')
                 )
             );
-
-            // Add a handler to save the VAT number to user meta when the field is updated
-            // I prefer to use this action since we can also save the VAT number to the customer object
-            add_action(
-                'woocommerce_set_additional_field_value',
-                function ($key, $value, $group, $wc_object) {
-                    if ('vat-guard-woocommerce/vat_number' !== $key) {
-                        return;
-                    }
-                    $wc_object->update_meta_data('billing_eu_vat_number', $value, true);
-                    $is_exempt = WC()->customer->get_is_vat_exempt();
-                    $wc_object->update_meta_data('billing_is_vat_exempt', $is_exempt ? 'yes' : 'no');
-                },
-                10,
-                4
-            );
-
-
-            // Add a submission handler to save VAT number and exemption status
-            // Drawback: this method doesn't update the customer object, so we need to handle that separately
-            // add_action('woocommerce_store_api_checkout_update_order_from_request', function ($order, $request) {
-            //     $fields = $request->get_json_params();
-            //     if (isset($fields['additional_fields']['vat-guard-woocommerce/vat_number'])) {
-            //         $vat_number = sanitize_text_field($fields['additional_fields']['vat-guard-woocommerce/vat_number']);
-            //         $order->update_meta_data('billing_eu_vat_number', $vat_number);
-
-            //         // Also save VAT exemption status
-            //         $is_exempt = WC()->customer->get_is_vat_exempt();
-            //         $order->update_meta_data('billing_is_vat_exempt', $is_exempt ? 'yes' : 'no');
-            //     }
-            // }, 10, 2);
         });
+
+        // Add a handler to save the VAT number to user meta when the field is updated
+        // I prefer to use this action since we can also save the VAT number to the customer object
+        add_action(
+            'woocommerce_set_additional_field_value',
+            function ($key, $value, $group, $wc_object) {
+                if ('vat-guard-woocommerce/vat_number' !== $key) {
+                    return;
+                }
+                $wc_object->update_meta_data('billing_eu_vat_number', $value, true);
+                $is_exempt = WC()->customer->get_is_vat_exempt();
+                $wc_object->update_meta_data('billing_is_vat_exempt', $is_exempt ? 'yes' : 'no');
+            },
+            10,
+            4
+        );
+
+
+        // Add a submission handler to save VAT number and exemption status
+        // Drawback: this method doesn't update the customer object, so we need to handle that separately
+        // add_action('woocommerce_store_api_checkout_update_order_from_request', function ($order, $request) {
+        //     $fields = $request->get_json_params();
+        //     if (isset($fields['additional_fields']['vat-guard-woocommerce/vat_number'])) {
+        //         $vat_number = sanitize_text_field($fields['additional_fields']['vat-guard-woocommerce/vat_number']);
+        //         $order->update_meta_data('billing_eu_vat_number', $vat_number);
+
+        //         // Also save VAT exemption status
+        //         $is_exempt = WC()->customer->get_is_vat_exempt();
+        //         $order->update_meta_data('billing_is_vat_exempt', $is_exempt ? 'yes' : 'no');
+        //     }
+        // }, 10, 2);
+
 
         // Preload the VAT number field with user meta data if available
         add_filter(
@@ -499,7 +500,7 @@ class VAT_Guard_WooCommerce
     {
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         $vat = isset($_POST['billing_eu_vat_number']) ? trim($_POST['billing_eu_vat_number']) : '';
-        $shipping_country = isset($_POST['shipping_country']) ? strtoupper(trim($_POST['shipping_country'])) : '';
+       // $shipping_country = isset($_POST['shipping_country']) ? strtoupper(trim($_POST['shipping_country'])) : '';
         if ($require_vat && empty($vat)) {
             $errors->add('vat_number_error', __('Please enter your VAT number.', 'vat-guard-woocommerce'));
         } elseif (!empty($vat)) {
@@ -511,7 +512,12 @@ class VAT_Guard_WooCommerce
             }
             // Check shipping country matches VAT country
             $vat_country = substr($vat, 0, 2);
-            if (!empty($shipping_country) && $shipping_country !== $vat_country) {
+            $ship_to_different_address = isset($_POST['ship_to_different_address']) && $_POST['ship_to_different_address'] === '1';
+            $country_to_check = $ship_to_different_address && !empty($shipping_country) ? 
+                $shipping_country : 
+                (isset($_POST['billing_country']) ? strtoupper(trim($_POST['billing_country'])) : '');
+            
+            if (!empty($country_to_check) && $country_to_check !== $vat_country) {
                 $errors->add('vat_number_error', __('The shipping country must match the country of the VAT number.', 'vat-guard-woocommerce'));
                 WC()->customer->set_is_vat_exempt(false);
                 return;
@@ -538,7 +544,13 @@ class VAT_Guard_WooCommerce
         parse_str($post_data, $data);
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         $vat = isset($data['billing_eu_vat_number']) ? trim($data['billing_eu_vat_number']) : '';
-        $shipping_country = isset($data['shipping_country']) ? strtoupper(trim($data['shipping_country'])) : '';
+        $ship_to_different_address = isset($data['ship_to_different_address']) && $data['ship_to_different_address'] === '1';
+        // Get shipping country from the data
+        // If shipping address is different, use that, otherwise use billing country
+        // This is needed for the classic checkout where shipping country is not always set
+        $shipping_country = $ship_to_different_address && isset($data['shipping_country']) ? 
+            strtoupper(trim($data['shipping_country'])) : 
+            (isset($data['billing_country']) ? strtoupper(trim($data['billing_country'])) : '');
 
         // Validation
         if ($require_vat && empty($vat)) {
