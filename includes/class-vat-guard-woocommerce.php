@@ -87,18 +87,25 @@ class VAT_Guard_WooCommerce
 
         // Show VAT number in the WooCommerce admin order edit screen (billing section)
         add_action('woocommerce_admin_order_data_after_billing_address', function ($order) {
-            // If Block checkout support is enabled, the VAT number will be automatically shown in the billing section
-            if (!get_option('vat_guard_woocommerce_enable_block_checkout', 0)) {
-                // Try both direct meta access and order getter methods
-                $vat = $order->get_meta('billing_eu_vat_number'); //new method
-                if (empty($vat)) {
-                    $vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true); //classic way
-                }
-
-                if ($vat) {
-                    echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($vat) . '</p>';
-                }
+            // Check if this order has VAT data from block checkout (additional fields)
+            $block_vat = '';
+            if (function_exists('woocommerce_get_order_additional_field_value')) {
+                $block_vat = woocommerce_get_order_additional_field_value($order, 'vat-guard-woocommerce/vat_number');
             }
+
+            // Get VAT from custom meta (classic checkout or block fallback)
+            $custom_vat = $order->get_meta('billing_eu_vat_number');
+            if (empty($custom_vat)) {
+                $custom_vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
+            }
+
+            // Only show custom VAT display if WooCommerce hasn't already shown it via additional fields
+            // We check if block VAT exists - if it does, WooCommerce will handle the display automatically
+            if (empty($block_vat) && !empty($custom_vat)) {
+                echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($custom_vat) . '</p>';
+            }
+
+            // Always show VAT exempt status regardless of checkout type
             $is_exempt = $order->get_meta('billing_is_vat_exempt');
             if (empty($is_exempt)) {
                 $is_exempt = get_post_meta($order->get_id(), 'billing_is_vat_exempt', true);
@@ -110,7 +117,8 @@ class VAT_Guard_WooCommerce
 
         // Show VAT number in WooCommerce order emails (customer & admin)
         add_action('woocommerce_email_customer_details', function ($order, $sent_to_admin, $plain_text, $email) {
-            $vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
+            $vat = $this->get_order_vat_number($order);
+
             if ($vat) {
                 echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($vat) . '</p>';
             }
@@ -124,10 +132,19 @@ class VAT_Guard_WooCommerce
                 if ($order) {
                     $vat_meta = $order->get_meta('billing_eu_vat_number');
                     $vat_post = get_post_meta($order_id, 'billing_eu_vat_number', true);
+
+                    // Check for block checkout additional field
+                    $vat_block = '';
+                    if (function_exists('woocommerce_get_order_additional_field_value')) {
+                        $vat_block = woocommerce_get_order_additional_field_value($order, 'vat-guard-woocommerce/vat_number');
+                    }
+
                     echo '<div class="notice notice-info"><p>';
                     echo '<strong>VAT Debug:</strong> ';
                     echo 'Order Meta: ' . ($vat_meta ?: 'empty') . ' | ';
-                    echo 'Post Meta: ' . ($vat_post ?: 'empty');
+                    echo 'Post Meta: ' . ($vat_post ?: 'empty') . ' | ';
+                    echo 'Block Field: ' . ($vat_block ?: 'empty') . ' | ';
+                    echo 'Checkout Type: ' . (!empty($vat_block) ? 'Block' : 'Classic');
                     echo '</p></div>';
                 }
             }
@@ -163,10 +180,7 @@ class VAT_Guard_WooCommerce
      */
     public function add_vat_to_formatted_address($address, $order)
     {
-        $vat = $order->get_meta('billing_eu_vat_number');
-        if (empty($vat)) {
-            $vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
-        }
+        $vat = $this->get_order_vat_number($order);
 
         if (!empty($vat)) {
             $address['vat_number'] = $vat;
@@ -211,6 +225,30 @@ class VAT_Guard_WooCommerce
         // Initialize the block integration with access to main class methods
         $block_integration = new VAT_Guard_Block_Integration($this);
         $block_integration->init();
+    }
+
+    /**
+     * Get VAT number from order, checking both block and classic checkout sources
+     * @param WC_Order $order
+     * @return string VAT number or empty string
+     */
+    public function get_order_vat_number($order)
+    {
+        // Try to get VAT from block checkout additional fields first
+        $vat = '';
+        if (function_exists('woocommerce_get_order_additional_field_value')) {
+            $vat = woocommerce_get_order_additional_field_value($order, 'vat-guard-woocommerce/vat_number');
+        }
+
+        // Fallback to custom meta field (classic checkout or block fallback)
+        if (empty($vat)) {
+            $vat = $order->get_meta('billing_eu_vat_number');
+            if (empty($vat)) {
+                $vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
+            }
+        }
+
+        return $vat;
     }
 
     /**
@@ -571,8 +609,8 @@ class VAT_Guard_WooCommerce
         }
     }
 
- 
-  
+
+
 
     /**
      * Validate VAT number during checkout and set VAT exemption status.
