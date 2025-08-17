@@ -118,6 +118,14 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             'data_callback' => [$this, 'extend_cart_data'],
             'schema_callback' => [$this, 'extend_cart_schema'],
         ]);
+        
+        // Also register for batch endpoint to ensure data is available everywhere
+        woocommerce_store_api_register_endpoint_data([
+            'endpoint' => \Automattic\WooCommerce\StoreApi\Schemas\V1\BatchSchema::IDENTIFIER,
+            'namespace' => $this->get_name(),
+            'data_callback' => [$this, 'extend_cart_data'],
+            'schema_callback' => [$this, 'extend_cart_schema'],
+        ]);
     }
 
     /**
@@ -125,9 +133,11 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
      */
     public function extend_checkout_data()
     {
+        $is_exempt = WC()->customer ? WC()->customer->get_is_vat_exempt() : false;
         return [
-            'vat_exempt' => WC()->customer ? WC()->customer->get_is_vat_exempt() : false,
+            'vat_exempt' => $is_exempt,
             'vat_number' => $this->get_customer_vat_number(),
+            'vat_exempt_message' => $is_exempt ? __('VAT exempt for this order', 'vat-guard-woocommerce') : '',
         ];
     }
 
@@ -136,9 +146,11 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
      */
     public function extend_cart_data()
     {
+        $is_exempt = WC()->customer ? WC()->customer->get_is_vat_exempt() : false;
         return [
-            'vat_exempt' => WC()->customer ? WC()->customer->get_is_vat_exempt() : false,
+            'vat_exempt' => $is_exempt,
             'vat_number' => $this->get_customer_vat_number(),
+            'vat_exempt_message' => $is_exempt ? __('VAT exempt for this order', 'vat-guard-woocommerce') : '',
         ];
     }
 
@@ -155,6 +167,11 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             ],
             'vat_number' => [
                 'description' => __('Customer VAT number', 'vat-guard-woocommerce'),
+                'type' => 'string',
+                'readonly' => true,
+            ],
+            'vat_exempt_message' => [
+                'description' => __('VAT exempt message to display', 'vat-guard-woocommerce'),
                 'type' => 'string',
                 'readonly' => true,
             ],

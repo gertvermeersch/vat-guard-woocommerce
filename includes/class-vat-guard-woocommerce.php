@@ -251,7 +251,8 @@ class VAT_Guard_WooCommerce
 
         // Extend Store API for block checkout
         add_action('woocommerce_blocks_loaded', array($this, 'register_block_checkout_integration'));
-    }
+
+       }
 
     /**
      * Set VAT exempt status on the customer based on VAT number and shop base country
@@ -661,7 +662,7 @@ class VAT_Guard_WooCommerce
         $this->set_vat_exempt_status($vat);
     }
 
-    
+
 
     /**
      * Enqueue scripts for block checkout
@@ -780,6 +781,9 @@ class VAT_Guard_WooCommerce
     }
 
     /**
+
+
+    /**
      * Show VAT exempt notice in checkout totals for classic checkout
      */
     public function show_vat_exempt_notice_checkout()
@@ -840,6 +844,4 @@ class VAT_Guard_WooCommerce
         }
         return true;
     }
-
-   
 }

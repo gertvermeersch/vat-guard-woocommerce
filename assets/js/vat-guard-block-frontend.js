@@ -149,28 +149,38 @@
                     }
                     return field;
                 });
-            }
+            },
+            
+
         });
 
         // Show VAT exempt notice in totals
         let lastVatExemptStatus = false;
+        let lastVatExemptMessage = '';
         
         const updateVatExemptNotice = () => {
             const cartData = select('wc/store/cart')?.getCartData?.() || {};
-            const isVatExempt = cartData.extensions?.['vat-guard-woocommerce']?.vat_exempt || false;
+            const vatGuardData = cartData.extensions?.['vat-guard-woocommerce'] || {};
+            const isVatExempt = vatGuardData.vat_exempt || false;
+            const vatExemptMessage = vatGuardData.vat_exempt_message || vatGuardBlockIntegration.messages.exempt;
             
-            if (isVatExempt !== lastVatExemptStatus) {
+            if (isVatExempt !== lastVatExemptStatus || vatExemptMessage !== lastVatExemptMessage) {
                 lastVatExemptStatus = isVatExempt;
+                lastVatExemptMessage = vatExemptMessage;
                 
                 setTimeout(() => {
-                    const totalsWrapper = document.querySelector('.wc-block-components-totals-wrapper');
+                    // Try multiple selectors for the totals wrapper
+                    const totalsWrapper = document.querySelector('.wc-block-components-totals-wrapper') ||
+                                        document.querySelector('.wp-block-woocommerce-checkout-totals-block .wc-block-components-totals-wrapper') ||
+                                        document.querySelector('.wc-block-checkout__totals');
+                    
                     const existingNotice = document.querySelector('.vat-exempt-notice');
                     
                     if (existingNotice) {
                         existingNotice.remove();
                     }
                     
-                    if (isVatExempt && totalsWrapper) {
+                    if (isVatExempt && totalsWrapper && vatExemptMessage) {
                         const notice = document.createElement('div');
                         notice.className = 'wc-block-components-totals-item vat-exempt-notice';
                         notice.style.cssText = `
@@ -181,16 +191,27 @@
                             border-radius: 3px;
                             color: #00a32a;
                             font-weight: bold;
+                            text-align: center;
+                            font-size: 0.9em;
                         `;
-                        notice.innerHTML = '✓ ' + vatGuardBlockIntegration.messages.exempt;
+                        notice.innerHTML = '✓ ' + vatExemptMessage;
+                        
+                        // Insert at the top of totals
                         totalsWrapper.insertBefore(notice, totalsWrapper.firstChild);
                     }
-                }, 100);
+                }, 150);
             }
         };
 
-        // Subscribe to cart changes
+        // Subscribe to cart and checkout changes
         subscribe(updateVatExemptNotice);
+        
+        // Also run on initial load and when checkout updates
+        setTimeout(updateVatExemptNotice, 500);
+        
+        // Listen for checkout updates
+        document.addEventListener('wc-blocks_checkout_updated', updateVatExemptNotice);
+        document.addEventListener('wc-blocks_cart_updated', updateVatExemptNotice);
     };
 
     // Initialize when DOM is ready
