@@ -189,55 +189,56 @@ class VAT_Guard_WooCommerce
             woocommerce_register_additional_checkout_field(
                 array(
                     'id'       => 'vat-guard-woocommerce/vat_number',
-                    'label'    => __('VAT Number BLOCK', 'vat-guard-woocommerce'),
+                    'label'    => __('VAT Number', 'vat-guard-woocommerce'),
                     'location' => 'contact',
                     'type'     => 'text',
                     'required' => (bool) get_option('vat_guard_woocommerce_require_vat', 1),
                     'sanitize_callback' => 'sanitize_text_field',
+                    //'validate_callback' => array($this, 'validate_vat_block_checkout'),
                     'validate_callback' => array($this, 'ajax_validate_and_exempt_vat_block')
                 )
             );
         });
 
-        // Add a handler to save the VAT number to user meta when the field is updated
-        // I prefer to use this action since we can also save the VAT number to the customer object
+        // Handle VAT number updates and exemption status
         add_action(
             'woocommerce_set_additional_field_value',
             function ($key, $value, $group, $wc_object) {
                 if ('vat-guard-woocommerce/vat_number' !== $key) {
                     return;
                 }
-                $wc_object->update_meta_data('billing_eu_vat_number', $value, true);
+                
+                // Clean and validate VAT number
+                $vat = strtoupper(str_replace([' ', '-', '.'], '', $value));
+                $wc_object->update_meta_data('billing_eu_vat_number', $vat, true);
+                
+                // Set VAT exemption status
+                $this->set_vat_exempt_status($vat);
                 $is_exempt = WC()->customer->get_is_vat_exempt();
                 $wc_object->update_meta_data('billing_is_vat_exempt', $is_exempt ? 'yes' : 'no');
+                
+                // Update user meta if logged in
+                if (is_user_logged_in() && !empty($vat)) {
+                    $user_id = get_current_user_id();
+                    $current_vat = get_user_meta($user_id, 'vat_number', true);
+                    if ($vat !== $current_vat) {
+                        update_user_meta($user_id, 'vat_number', $vat);
+                    }
+                }
             },
             10,
             4
         );
 
-
-        // Add a submission handler to save VAT number and exemption status
-        // Drawback: this method doesn't update the customer object, so we need to handle that separately
-        // add_action('woocommerce_store_api_checkout_update_order_from_request', function ($order, $request) {
-        //     $fields = $request->get_json_params();
-        //     if (isset($fields['additional_fields']['vat-guard-woocommerce/vat_number'])) {
-        //         $vat_number = sanitize_text_field($fields['additional_fields']['vat-guard-woocommerce/vat_number']);
-        //         $order->update_meta_data('billing_eu_vat_number', $vat_number);
-
-        //         // Also save VAT exemption status
-        //         $is_exempt = WC()->customer->get_is_vat_exempt();
-        //         $order->update_meta_data('billing_is_vat_exempt', $is_exempt ? 'yes' : 'no');
-        //     }
-        // }, 10, 2);
-
-
         // Preload the VAT number field with user meta data if available
         add_filter(
             "woocommerce_get_default_value_for_vat-guard-woocommerce/vat_number",
             function ($value, $group, $wc_object) {
-                $vat = get_user_meta(get_current_user_id(), 'vat_number', true);
-                if (!empty($vat)) {
-                    $value = $vat;
+                if (is_user_logged_in()) {
+                    $vat = get_user_meta(get_current_user_id(), 'vat_number', true);
+                    if (!empty($vat)) {
+                        return $vat;
+                    }
                 }
                 return $value;
             },
@@ -245,7 +246,14 @@ class VAT_Guard_WooCommerce
             3
         );
 
-        //TOOD: Add a validation on the shipping country to make sure it matches the VAT number stored
+        // Add block checkout specific scripts
+        add_action('wp_enqueue_scripts', array($this, 'enqueue_block_checkout_scripts'));
+        
+        // Add REST API endpoint for real-time validation
+        add_action('rest_api_init', array($this, 'register_vat_validation_endpoint'));
+        
+        // Extend Store API for block checkout
+        add_action('woocommerce_blocks_loaded', array($this, 'register_block_checkout_integration'));
     }
 
     /**
@@ -658,8 +666,182 @@ class VAT_Guard_WooCommerce
         $this->set_vat_exempt_status($vat);
     }
 
-    /* 
-     * very similar to the above function, but for block based checkout
+    /**
+     * Validate VAT number for block checkout
+     * @param mixed $value The VAT number value
+     * @param WP_Error $errors Error object to add validation errors
+     * @return mixed
+     */
+    public function validate_vat_block_checkout($value, $errors = null)
+    {
+        $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
+        $vat = trim($value);
+        
+        // Check if VAT is required but empty
+        if ($require_vat && empty($vat)) {
+            if ($errors) {
+                $errors->add('vat_number_error', __('Please enter your VAT number.', 'vat-guard-woocommerce'));
+            }
+            return false;
+        }
+        
+        // Validate VAT format if provided
+        if (!empty($vat)) {
+            $error_message = '';
+            if (!$this->is_valid_eu_vat_number($vat, $error_message)) {
+                if ($errors) {
+                    $errors->add('vat_number_error', $error_message);
+                }
+                return false;
+            }
+            
+            // Validate country matching with billing address
+            $vat_country = substr(strtoupper(str_replace([' ', '-', '.'], '', $vat)), 0, 2);
+            $billing_country = WC()->customer ? WC()->customer->get_billing_country() : '';
+            
+            if (!empty($billing_country) && $billing_country !== $vat_country) {
+                if ($errors) {
+                    $errors->add('vat_number_error', __('The billing country must match the country of the VAT number.', 'vat-guard-woocommerce'));
+                }
+                return false;
+            }
+        }
+        
+        return $value;
+    }
+
+    /**
+     * Enqueue scripts for block checkout
+     */
+    public function enqueue_block_checkout_scripts()
+    {
+        if (!has_block('woocommerce/checkout') && !has_block('woocommerce/cart')) {
+            return;
+        }
+        
+        // Fallback script for when Store API integration is not available
+        wp_enqueue_script(
+            'vat-guard-block-checkout-fallback',
+            plugin_dir_url(dirname(__FILE__)) . 'assets/js/vat-guard-block-checkout.js',
+            array('wp-element', 'wp-hooks', 'wp-data'),
+            '1.0.0',
+            true
+        );
+        
+        wp_localize_script('vat-guard-block-checkout-fallback', 'vatGuardBlock', array(
+            'restUrl' => rest_url('vat-guard/v1/validate'),
+            'nonce' => wp_create_nonce('wp_rest'),
+            'messages' => array(
+                'validating' => __('Validating VAT number...', 'vat-guard-woocommerce'),
+                'valid' => __('VAT number is valid', 'vat-guard-woocommerce'),
+                'exempt' => __('VAT exempt for this order', 'vat-guard-woocommerce'),
+                'invalid' => __('Invalid VAT number', 'vat-guard-woocommerce')
+            )
+        ));
+    }
+
+    /**
+     * Register REST API endpoint for VAT validation
+     */
+    public function register_vat_validation_endpoint()
+    {
+        register_rest_route('vat-guard/v1', '/validate', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'rest_validate_vat'),
+            'permission_callback' => '__return_true',
+            'args' => array(
+                'vat_number' => array(
+                    'required' => true,
+                    'sanitize_callback' => 'sanitize_text_field'
+                ),
+                'billing_country' => array(
+                    'sanitize_callback' => 'sanitize_text_field'
+                )
+            )
+        ));
+    }
+
+    /**
+     * REST API callback for VAT validation
+     */
+    public function rest_validate_vat($request)
+    {
+        $vat = $request->get_param('vat_number');
+        $billing_country = $request->get_param('billing_country');
+        
+        if (empty($vat)) {
+            return new WP_REST_Response(array(
+                'valid' => true,
+                'exempt' => false,
+                'message' => ''
+            ), 200);
+        }
+        
+        $error_message = '';
+        $is_valid = $this->is_valid_eu_vat_number($vat, $error_message);
+        
+        if (!$is_valid) {
+            return new WP_REST_Response(array(
+                'valid' => false,
+                'exempt' => false,
+                'message' => $error_message
+            ), 200);
+        }
+        
+        // Check country matching
+        $vat_country = substr(strtoupper(str_replace([' ', '-', '.'], '', $vat)), 0, 2);
+        if (!empty($billing_country) && $billing_country !== $vat_country) {
+            return new WP_REST_Response(array(
+                'valid' => false,
+                'exempt' => false,
+                'message' => __('The billing country must match the country of the VAT number.', 'vat-guard-woocommerce')
+            ), 200);
+        }
+        
+        // Check if VAT exempt
+        $shop_base_country = wc_get_base_location()['country'];
+        $is_exempt = !empty($vat) && $vat_country && $vat_country !== $shop_base_country;
+        
+        return new WP_REST_Response(array(
+            'valid' => true,
+            'exempt' => $is_exempt,
+            'message' => $is_exempt ? __('VAT exempt for this order', 'vat-guard-woocommerce') : __('VAT number is valid', 'vat-guard-woocommerce')
+        ), 200);
+    }
+
+    /**
+     * Register Store API integration for block checkout
+     */
+    public function register_block_checkout_integration()
+    {
+        if (!class_exists('Automattic\WooCommerce\Blocks\Integrations\IntegrationInterface')) {
+            return;
+        }
+
+        add_action('woocommerce_blocks_checkout_block_registration', function($integration_registry) {
+            if (!class_exists('VAT_Guard_Block_Integration')) {
+                require_once plugin_dir_path(__FILE__) . 'class-vat-guard-block-integration.php';
+            }
+            $integration_registry->register(new VAT_Guard_Block_Integration());
+        });
+    }
+
+    /**
+     * Show VAT exempt notice in checkout totals for classic checkout
+     */
+    public function show_vat_exempt_notice_checkout()
+    {
+        if (WC()->customer && WC()->customer->get_is_vat_exempt()) {
+            echo '<tr class="vat-exempt-notice">';
+            echo '<th colspan="2" style="color: #00a32a; font-weight: bold; text-align: center; padding: 10px;">';
+            echo '✓ ' . esc_html__('VAT exempt for this order', 'vat-guard-woocommerce');
+            echo '</th>';
+            echo '</tr>';
+        }
+    }
+
+    /**
+     * Show VAT exempt notice in checkout totalsimilar to the above function, but for block based checkout
      * @param string $value The VAT number entered in the block checkout
      * @return WP_Error|true Returns true if valid, WP_Error if invalid
      * This function validates the VAT number, checks its validity, and sets the VAT exemption status
@@ -706,10 +888,5 @@ class VAT_Guard_WooCommerce
         return true;
     }
 
-    public function show_vat_exempt_notice_checkout()
-    {
-        if (WC()->customer && WC()->customer->get_is_vat_exempt()) {
-            echo '<tr class="vat-exempt"><th>' . esc_html__('VAT', 'vat-guard-woocommerce') . '</th><td><strong>' . esc_html__('VAT exempt', 'vat-guard-woocommerce') . '</strong></td></tr>';
-        }
-    }
+
 }
