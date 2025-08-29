@@ -37,6 +37,9 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         $this->setup_block_checkout_scripts();
         $this->setup_rest_api();
         $this->setup_store_api_integration();
+        
+        // Also call the interface initialize method for Store API integration
+        $this->initialize();
     }
     /**
      * The name of the integration.
@@ -174,6 +177,10 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
     public function extend_cart_data()
     {
         $is_exempt = WC()->customer ? WC()->customer->get_is_vat_exempt() : false;
+        
+        // Debug: Log the VAT exempt status
+        error_log('VAT Guard: Cart data - VAT exempt status: ' . ($is_exempt ? 'true' : 'false'));
+        
         return [
             'vat_exempt' => $is_exempt,
             'vat_number' => $this->get_customer_vat_number(),
@@ -267,6 +274,9 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             10,
             3
         );
+
+        // Add VAT exempt notice to block checkout
+        add_action('wp_footer', array($this, 'add_vat_exempt_notice_to_blocks'));
     }
 
     /**
@@ -494,5 +504,71 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         add_action('woocommerce_blocks_checkout_block_registration', function ($integration_registry) {
             $integration_registry->register($this);
         });
+    }
+
+    /**
+     * Add VAT exempt notice to block checkout via JavaScript injection
+     */
+    public function add_vat_exempt_notice_to_blocks()
+    {
+        // Only on checkout page with blocks
+        if (!is_checkout() || !has_block('woocommerce/checkout')) {
+            return;
+        }
+
+        $is_exempt = WC()->customer ? WC()->customer->get_is_vat_exempt() : false;
+        
+        ?>
+        <script type="text/javascript">
+        (function() {
+            const isVatExempt = <?php echo $is_exempt ? 'true' : 'false'; ?>;
+            const exemptMessage = '<?php echo esc_js(__('VAT exempt for this order', 'vat-guard-woocommerce')); ?>';
+            
+            function addVatExemptNotice() {
+                // Remove existing notice
+                const existingNotice = document.querySelector('.vat-guard-exempt-notice-php');
+                if (existingNotice) {
+                    existingNotice.remove();
+                }
+                
+                if (isVatExempt) {
+                    // Find the checkout totals area
+                    const totalsArea = document.querySelector('.wc-block-components-totals-wrapper, .wp-block-woocommerce-checkout-order-summary-block, .wc-block-checkout__sidebar');
+                    if (totalsArea) {
+                        const notice = document.createElement('div');
+                        notice.className = 'vat-guard-exempt-notice-php';
+                        notice.style.cssText = `
+                            background: #f0f9ff;
+                            border: 1px solid #00a32a;
+                            border-radius: 4px;
+                            padding: 12px;
+                            margin: 15px 0;
+                            color: #00a32a;
+                            font-weight: bold;
+                            text-align: center;
+                            font-size: 14px;
+                        `;
+                        notice.innerHTML = '✓ ' + exemptMessage;
+                        
+                        // Insert at the top of the totals area
+                        totalsArea.insertBefore(notice, totalsArea.firstChild);
+                    }
+                }
+            }
+            
+            // Add notice when page loads
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(addVatExemptNotice, 1000);
+                });
+            } else {
+                setTimeout(addVatExemptNotice, 1000);
+            }
+            
+            // Re-add notice periodically in case checkout updates
+            setInterval(addVatExemptNotice, 2000);
+        })();
+        </script>
+        <?php
     }
 }

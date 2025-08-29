@@ -3,7 +3,7 @@
  * Provides real-time VAT validation and exemption status for WooCommerce Block Checkout
  */
 
-(function() {
+(function () {
     'use strict';
 
     // Wait for WooCommerce blocks to be available
@@ -39,7 +39,7 @@
             }
 
             callback({ isValidating: true, isValid: false, isExempt: false, message: vatGuardBlock.messages.validating });
-            
+
             try {
                 const response = await fetch(vatGuardBlock.restUrl, {
                     method: 'POST',
@@ -54,7 +54,7 @@
                 });
 
                 const data = await response.json();
-                
+
                 callback({
                     isValidating: false,
                     isValid: data.valid,
@@ -113,28 +113,28 @@
             }
 
             if (validationState.isValidating) {
-                return createElement('div', { 
+                return createElement('div', {
                     className: 'vat-guard-validation-message validating',
                     style: { color: '#666', fontSize: '0.9em', marginTop: '5px' }
                 }, validationState.message);
             }
 
             if (!validationState.isValid) {
-                return createElement('div', { 
+                return createElement('div', {
                     className: 'vat-guard-validation-message error',
                     style: { color: '#d63638', fontSize: '0.9em', marginTop: '5px' }
                 }, validationState.message);
             }
 
             if (validationState.isExempt) {
-                return createElement('div', { 
+                return createElement('div', {
                     className: 'vat-guard-validation-message exempt',
                     style: { color: '#00a32a', fontSize: '0.9em', marginTop: '5px', fontWeight: 'bold' }
                 }, '✓ ' + vatGuardBlock.messages.exempt);
             }
 
             if (vatNumber.length >= 4) {
-                return createElement('div', { 
+                return createElement('div', {
                     className: 'vat-guard-validation-message valid',
                     style: { color: '#00a32a', fontSize: '0.9em', marginTop: '5px' }
                 }, '✓ ' + vatGuardBlock.messages.valid);
@@ -150,9 +150,10 @@
                 return additionalFields.map(field => {
                     if (field.id === 'vat-guard-woocommerce/vat_number') {
                         const billingAddress = select('wc/store/cart')?.getBillingAddress?.() || {};
-                        const extensionData = select('wc/store/checkout')?.getExtensionData?.() || {};
-                        
-                        const vatNumber = extensionData['vat-guard-woocommerce/vat_number'] || '';
+                        const checkoutData = select('wc/store/checkout')?.getCheckoutData?.() || {};
+
+                        // Get VAT number from additional fields
+                        const vatNumber = checkoutData?.additional_fields?.['vat-guard-woocommerce/vat_number'] || '';
                         const billingCountry = billingAddress.country || '';
 
                         return {
@@ -167,21 +168,60 @@
                 });
             },
 
-            // Add VAT exempt notice to totals
-            totalLabel: (value, extension, args) => {
-                if (args?.cart?.extensions?.['vat-guard-woocommerce']?.vat_exempt) {
-                    return value + ' ' + createElement('div', {
-                        style: { 
-                            color: '#00a32a', 
-                            fontWeight: 'bold', 
-                            fontSize: '0.9em',
-                            marginTop: '5px'
-                        }
-                    }, '✓ ' + vatGuardBlock.messages.exempt);
-                }
-                return value;
-            }
+
         });
+
+        // Add VAT exempt notice to checkout summary
+        const addVatExemptNotice = () => {
+            const cartData = select('wc/store/cart')?.getCartData?.() || {};
+            const isVatExempt = cartData?.extensions?.['vat-guard-woocommerce']?.vat_exempt;
+
+            // Remove existing notice
+            const existingNotice = document.querySelector('.vat-guard-exempt-notice');
+            if (existingNotice) {
+                existingNotice.remove();
+            }
+
+            if (isVatExempt) {
+                // Find the checkout totals area
+                const totalsArea = document.querySelector('.wc-block-components-totals-wrapper, .wp-block-woocommerce-checkout-order-summary-block');
+                if (totalsArea) {
+                    const notice = document.createElement('div');
+                    notice.className = 'vat-guard-exempt-notice';
+                    notice.style.cssText = `
+                        background: #f0f9ff;
+                        border: 1px solid #00a32a;
+                        border-radius: 4px;
+                        padding: 10px;
+                        margin: 10px 0;
+                        color: #00a32a;
+                        font-weight: bold;
+                        text-align: center;
+                    `;
+                    notice.innerHTML = '✓ ' + vatGuardBlock.messages.exempt;
+                    totalsArea.insertBefore(notice, totalsArea.firstChild);
+                }
+            }
+        };
+
+        // Monitor for cart changes
+        let lastCartData = null;
+        const monitorCartChanges = () => {
+            const cartData = select('wc/store/cart')?.getCartData?.() || {};
+            const currentVatExempt = cartData?.extensions?.['vat-guard-woocommerce']?.vat_exempt;
+
+            // Debug: Log cart data
+            console.log('VAT Guard: Cart data extensions:', cartData?.extensions);
+            console.log('VAT Guard: VAT exempt status:', currentVatExempt);
+
+            if (lastCartData !== currentVatExempt) {
+                lastCartData = currentVatExempt;
+                setTimeout(addVatExemptNotice, 100); // Small delay to ensure DOM is updated
+            }
+        };
+
+        // Check for changes periodically
+        setInterval(monitorCartChanges, 500);
 
         // Add CSS for validation messages
         const style = document.createElement('style');
@@ -203,6 +243,16 @@
             .vat-guard-validation-message.exempt {
                 color: #00a32a;
                 font-weight: bold;
+            }
+            .vat-guard-exempt-notice {
+                background: #f0f9ff;
+                border: 1px solid #00a32a;
+                border-radius: 4px;
+                padding: 10px;
+                margin: 10px 0;
+                color: #00a32a;
+                font-weight: bold;
+                text-align: center;
             }
         `;
         document.head.appendChild(style);
