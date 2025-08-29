@@ -22,15 +22,92 @@ class VAT_Guard_WooCommerce
 
     private function __construct()
     {
-        // VIES logic
-        require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-vies.php';
+        // Load block integration early if enabled (needs to be before woocommerce_init)
+        add_action('plugins_loaded', array($this, 'maybe_init_block_support'), 20);
 
-        // Add VAT number to the billing address format
-        //add_filter('woocommerce_localisation_address_formats', array($this, 'add_vat_to_address_format'));
-        //add_filter('woocommerce_formatted_address_replacements', array($this, 'add_vat_number_replacement'), 10, 2);
-        add_filter('woocommerce_order_formatted_billing_address', array($this, 'add_vat_to_formatted_address'), 10, 2);
-        add_filter('woocommerce_my_account_my_address_formatted_address', array($this, 'add_vat_to_my_account_address'), 10, 3);
+        // Hook into WordPress init to set up the plugin after all plugins are loaded
+        add_action('init', array($this, 'init'), 10);
+    }
 
+    /**
+     * Maybe initialize block support early (before woocommerce_init)
+     */
+    public function maybe_init_block_support()
+    {
+        // Only proceed if WooCommerce is active
+        if (!class_exists('WooCommerce')) {
+            return;
+        }
+
+        // Load block integration if enabled - needs to happen early
+        if (get_option('vat_guard_woocommerce_enable_block_checkout', 0)) {
+            $this->init_block_checkout_support();
+        }
+    }
+
+    /**
+     * Initialize the plugin - called on 'init' hook
+     */
+    public function init()
+    {
+        // Only proceed if WooCommerce is active
+        if (!class_exists('WooCommerce')) {
+            return;
+        }
+
+        // Load dependencies based on context
+        $this->load_dependencies();
+
+        // Set up hooks based on current request context
+        $this->setup_hooks();
+    }
+
+    /**
+     * Load required dependencies based on context
+     */
+    private function load_dependencies()
+    {
+        // Always load VIES for validation (lightweight)
+        if (!class_exists('VAT_Guard_WooCommerce_VIES')) {
+            require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-vies.php';
+        }
+
+        // Load admin functionality only in admin
+        if (is_admin()) {
+            require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-admin.php';
+        }
+
+        // Block integration is loaded earlier in maybe_init_block_support()
+    }
+
+    /**
+     * Set up hooks based on current request context
+     */
+    private function setup_hooks()
+    {
+        // Always needed hooks (lightweight)
+        //add_filter('woocommerce_order_formatted_billing_address', array($this, 'add_vat_to_formatted_address'), 10, 2);
+        //add_filter('woocommerce_my_account_my_address_formatted_address', array($this, 'add_vat_to_my_account_address'), 10, 3);
+
+        // Frontend-specific hooks
+        if (!is_admin() || wp_doing_ajax()) {
+            $this->setup_frontend_hooks();
+        }
+
+        // Admin-specific hooks
+        if (is_admin()) {
+            $this->setup_admin_hooks();
+        }
+
+        // Email hooks (needed for both frontend and admin)
+        add_action('woocommerce_email_customer_details', array($this, 'show_vat_in_emails'), 20, 4);
+    }
+
+    /**
+     * Set up frontend-specific hooks
+     */
+    private function setup_frontend_hooks()
+    {
         // Account and registration hooks
         add_action('woocommerce_register_form', array($this, 'add_registration_fields'));
         add_action('woocommerce_edit_account_form_start', array($this, 'add_account_fields'));
@@ -38,46 +115,65 @@ class VAT_Guard_WooCommerce
         add_action('woocommerce_created_customer', array($this, 'save_fields_registration'));
         add_action('woocommerce_save_account_details', array($this, 'save_fields_registration'));
 
-        // Classic checkout hooks
-        add_filter('woocommerce_checkout_get_value', array($this, 'preload_checkout_fields'), 10, 2);
-        add_filter('woocommerce_default_address_fields', array($this, 'default_billing_company'));
-        add_filter('woocommerce_checkout_fields', array($this, 'add_checkout_vat_field'), 99);
-        // Runs when the order is created, saves the VAT number to the order meta
-        add_action('woocommerce_checkout_update_order_meta', array($this, 'save_checkout_vat_field'));
-        // Additional hook to ensure data is saved - this runs after order creation
-        //add_action('woocommerce_checkout_order_processed', array($this, 'save_checkout_vat_field_fallback'), 10, 3);
-        // Another fallback hook that runs when order is created
-        //add_action('woocommerce_new_order', array($this, 'save_vat_on_new_order'), 10, 2);
-        // Final fallback hook that runs after order is created and saved
-        //add_action('woocommerce_checkout_order_created', array($this, 'save_vat_on_order_created'), 10, 1);
-        // runs every time the checkout is updated (e.g. when shipping changes)
-        // This is where we check the VAT number and potentially exempt VAT
-        // Called on wc-ajax=update_order_review
-        add_action('woocommerce_checkout_update_order_review', array($this, 'ajax_validate_and_exempt_vat'), 20);
-        // Checkout validation and saving, run after the default WooCommerce validation, this is needed when users ignore the VAT error messages (they can still submit the form)
-        // called on wc-ajax=checkout
-        add_action('woocommerce_after_checkout_validation', array($this, 'on_checkout_vat_field'), 10, 2);
+        // Checkout hooks - only load when actually needed
+        add_action('wp', array($this, 'maybe_setup_checkout_hooks'));
+    }
 
-        //Disable place order button with javascript when validation fails on the frontend
-        add_action('wp_enqueue_scripts', function () {
-            if (is_checkout()) {
-                wp_enqueue_script(
-                    'vat-guard-checkout',
-                    plugin_dir_url(dirname(__FILE__)) . '/assets/js/vat-guard-checkout.js',
-                    array('jquery'),
-                    '1.0',
-                    true
-                );
-            }
-        });
+    /**
+     * Set up admin-specific hooks
+     */
+    private function setup_admin_hooks()
+    {
+        // Order display hooks
+        add_action('woocommerce_admin_order_data_after_billing_address', array($this, 'show_vat_in_admin_order'));
 
-        // Conditionally enable block-based checkout support
-        if (get_option('vat_guard_woocommerce_enable_block_checkout', 0)) {
-            $this->init_block_checkout_support();
+        // Debugging notice (temporary)
+        add_action('admin_notices', array($this, 'show_debug_notice'));
+    }
+
+    /**
+     * Conditionally set up checkout hooks only when on checkout page or processing checkout
+     */
+    public function maybe_setup_checkout_hooks()
+    {
+        if (is_checkout() || wp_doing_ajax()) {
+            // Classic checkout hooks
+            add_filter('woocommerce_checkout_get_value', array($this, 'preload_checkout_fields'), 10, 2);
+            add_filter('woocommerce_default_address_fields', array($this, 'default_billing_company'));
+            add_filter('woocommerce_checkout_fields', array($this, 'add_checkout_vat_field'), 99);
+
+            // Order saving hooks
+            add_action('woocommerce_checkout_update_order_meta', array($this, 'save_checkout_vat_field'));
+            // add_action('woocommerce_checkout_order_processed', array($this, 'save_checkout_vat_field_fallback'), 10, 3);
+            // add_action('woocommerce_new_order', array($this, 'save_vat_on_new_order'), 10, 2);
+            // add_action('woocommerce_checkout_order_created', array($this, 'save_vat_on_order_created'), 10, 1);
+
+            // Validation hooks
+            add_action('woocommerce_checkout_update_order_review', array($this, 'ajax_validate_and_exempt_vat'), 20);
+            add_action('woocommerce_after_checkout_validation', array($this, 'on_checkout_vat_field'), 10, 2);
+
+            // VAT exempt notice
+            add_action('woocommerce_review_order_before_shipping', array($this, 'show_vat_exempt_notice_checkout'), 5);
+
+            // Enqueue checkout scripts
+            add_action('wp_enqueue_scripts', array($this, 'enqueue_checkout_scripts'));
         }
+    }
 
-        // Show VAT exempt notice in the order review totals (before shipping row)
-        add_action('woocommerce_review_order_before_shipping', array($this, 'show_vat_exempt_notice_checkout'), 5);
+    /**
+     * Enqueue checkout scripts only when needed
+     */
+    public function enqueue_checkout_scripts()
+    {
+        if (is_checkout()) {
+            wp_enqueue_script(
+                'vat-guard-checkout',
+                plugin_dir_url(dirname(__FILE__)) . '/assets/js/vat-guard-checkout.js',
+                array('jquery'),
+                '1.0',
+                true
+            );
+        }
 
         // Admin logic moved to VAT_Guard_WooCommerce_Admin
         if (is_admin()) {
@@ -713,6 +809,79 @@ class VAT_Guard_WooCommerce
         }
     }
 
+
+    /**
+     * Show VAT number in admin order screen
+     */
+    public function show_vat_in_admin_order($order)
+    {
+        // Check if this order has VAT data from block checkout (additional fields)
+        $block_vat = '';
+        if (function_exists('woocommerce_get_order_additional_field_value')) {
+            $block_vat = woocommerce_get_order_additional_field_value($order, 'vat-guard-woocommerce/vat_number');
+        }
+
+        // Get VAT from custom meta (classic checkout or block fallback)
+        $custom_vat = $order->get_meta('billing_eu_vat_number');
+        if (empty($custom_vat)) {
+            $custom_vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
+        }
+
+        // Only show custom VAT display if WooCommerce hasn't already shown it via additional fields
+        if (empty($block_vat) && !empty($custom_vat)) {
+            echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($custom_vat) . '</p>';
+        }
+
+        // Always show VAT exempt status regardless of checkout type
+        $is_exempt = $order->get_meta('billing_is_vat_exempt');
+        if (empty($is_exempt)) {
+            $is_exempt = get_post_meta($order->get_id(), 'billing_is_vat_exempt', true);
+        }
+        if ($is_exempt === 'yes') {
+            echo '<p style="color: #008000;"><strong>' . esc_html__('VAT exempt for this order', 'vat-guard-woocommerce') . '</strong></p>';
+        }
+    }
+
+    /**
+     * Show VAT number in order emails
+     */
+    public function show_vat_in_emails($order, $sent_to_admin, $plain_text, $email)
+    {
+        $vat = $this->get_order_vat_number($order);
+
+        if ($vat) {
+            echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($vat) . '</p>';
+        }
+    }
+
+    /**
+     * Show debugging notice in admin (temporary)
+     */
+    public function show_debug_notice()
+    {
+        if (isset($_GET['post']) && get_post_type($_GET['post']) === 'shop_order') {
+            $order_id = $_GET['post'];
+            $order = wc_get_order($order_id);
+            if ($order) {
+                $vat_meta = $order->get_meta('billing_eu_vat_number');
+                $vat_post = get_post_meta($order_id, 'billing_eu_vat_number', true);
+
+                // Check for block checkout additional field
+                $vat_block = '';
+                if (function_exists('woocommerce_get_order_additional_field_value')) {
+                    $vat_block = woocommerce_get_order_additional_field_value($order, 'vat-guard-woocommerce/vat_number');
+                }
+
+                echo '<div class="notice notice-info"><p>';
+                echo '<strong>VAT Debug:</strong> ';
+                echo 'Order Meta: ' . ($vat_meta ?: 'empty') . ' | ';
+                echo 'Post Meta: ' . ($vat_post ?: 'empty') . ' | ';
+                echo 'Block Field: ' . ($vat_block ?: 'empty') . ' | ';
+                echo 'Checkout Type: ' . (!empty($vat_block) ? 'Block' : 'Classic');
+                echo '</p></div>';
+            }
+        }
+    }
 
     /**
      * Show VAT exempt notice in checkout totals for classic checkout
