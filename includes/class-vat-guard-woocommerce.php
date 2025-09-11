@@ -137,7 +137,7 @@ class VAT_Guard_WooCommerce
         if (is_checkout() || wp_doing_ajax()) {
             // Classic checkout hooks
             add_filter('woocommerce_checkout_get_value', array($this, 'preload_checkout_fields'), 10, 2);
-            add_filter('woocommerce_default_address_fields', array($this, 'default_billing_company'));
+            //add_filter('woocommerce_default_address_fields', array($this, 'default_billing_company'));
             add_filter('woocommerce_checkout_fields', array($this, 'add_checkout_vat_field'), 99);
 
             // Order saving hooks
@@ -271,7 +271,7 @@ class VAT_Guard_WooCommerce
     }
 
     /**
-     * Get VAT number from order, checking both block and classic checkout sources
+     * Get VAT number from existing order, checking both block and classic checkout sources
      * @param WC_Order $order
      * @return string VAT number or empty string
      */
@@ -324,6 +324,9 @@ class VAT_Guard_WooCommerce
             WC()->customer->set_is_vat_exempt(false);
         }
     }
+    /* adds registration field to create account 
+     * 
+     */
     public function add_registration_fields()
     {
         $require_company = get_option('vat_guard_woocommerce_require_company', 1);
@@ -543,6 +546,11 @@ class VAT_Guard_WooCommerce
             if (!empty($vat)) {
                 $value = $vat;
             }
+        } else if ($input == 'billing_company' && is_user_logged_in()) {
+            $company = get_user_meta(get_current_user_id(), 'company_name', true);
+            if (!empty($company)) {
+                $value = $company;
+            }
         } else if ($input == 'billing_email' && is_user_logged_in()) {
             $email = get_user_meta(get_current_user_id(), 'email', true);
             if (!empty($email)) {
@@ -556,6 +564,7 @@ class VAT_Guard_WooCommerce
      * Preload billing company field with user meta data if available
      * @param array $fields Current billing fields
      * @return array Modified billing fields
+     * TODO: might be not required
      */
     public function default_billing_company($fields)
     {
@@ -609,7 +618,9 @@ class VAT_Guard_WooCommerce
             $vat_number = sanitize_text_field($_POST['billing_eu_vat_number']);
         }
 
-        // If no VAT number in POST, try to get from customer session/data
+        // If no VAT number in POST, try to get from customer session/data - We shouldn't do this as 
+        // the user is required to enter it in the billing section ALWAYS
+        /*
         if (empty($vat_number) && WC()->customer) {
             // Check if there's a VAT number in the customer's billing data
             $billing_data = WC()->customer->get_billing();
@@ -626,11 +637,11 @@ class VAT_Guard_WooCommerce
         // If still no VAT number, try user meta for logged in users
         if (empty($vat_number) && is_user_logged_in()) {
             $vat_number = get_user_meta(get_current_user_id(), 'vat_number', true);
-        }
+        }*/
 
         if (!empty($vat_number)) {
             // Log for debugging
-            error_log("VAT Guard: Saving VAT number '{$vat_number}' for order {$order_id} via save_checkout_vat_field");
+            //error_log("VAT Guard: Saving VAT number '{$vat_number}' for order {$order_id} via save_checkout_vat_field");
 
             // Use both post meta and order meta for compatibility
             update_post_meta($order_id, 'billing_eu_vat_number', $vat_number);
