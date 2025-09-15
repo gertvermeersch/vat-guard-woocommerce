@@ -55,7 +55,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
     public function initialize()
     {
         $this->register_block_frontend_scripts();
-        $this->register_block_editor_scripts();
+      //  $this->register_block_editor_scripts();
         $this->register_main_integration();
     }
 
@@ -179,7 +179,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         $is_exempt = WC()->customer ? WC()->customer->get_is_vat_exempt() : false;
         
         // Debug: Log the VAT exempt status
-        error_log('VAT Guard: Cart data - VAT exempt status: ' . ($is_exempt ? 'true' : 'false'));
+        //error_log('VAT Guard: Cart data - VAT exempt status: ' . ($is_exempt ? 'true' : 'false'));
         
         return [
             'vat_exempt' => $is_exempt,

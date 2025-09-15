@@ -294,36 +294,7 @@ class VAT_Guard_WooCommerce
         return $vat;
     }
 
-    /**
-     * Set VAT exempt status on the customer based on VAT number and shop base country
-     * @param string $vat
-     */
-    public function set_vat_exempt_status($vat)
-    {
-        if (empty($vat)) {
-            WC()->customer->set_is_vat_exempt(false); //no VAT so no exemption
-            return;
-        }
 
-        // Check if local pickup is selected - never exempt VAT for local pickup
-        if (function_exists('wc_get_chosen_shipping_method_ids')) {
-            $chosen_methods = wc_get_chosen_shipping_method_ids();
-            $local_pickup_methods = apply_filters('woocommerce_local_pickup_methods', array('legacy_local_pickup', 'local_pickup'));
-
-            if (count(array_intersect($chosen_methods, $local_pickup_methods)) > 0) {
-                WC()->customer->set_is_vat_exempt(false);
-                return;
-            }
-        }
-
-        $vat_country = substr($vat, 0, 2);
-        $shop_base_country = wc_get_base_location()['country'];
-        if (!empty($vat) && $vat_country && $vat_country !== $shop_base_country) {
-            WC()->customer->set_is_vat_exempt(true);
-        } else {
-            WC()->customer->set_is_vat_exempt(false);
-        }
-    }
     /* adds registration field to create account 
      * 
      */
@@ -696,7 +667,7 @@ class VAT_Guard_WooCommerce
             $error_message = '';
             if (!$this->is_valid_eu_vat_number($vat, $error_message)) {
                 $errors->add('vat_number_error', $error_message);
-                WC()->customer->set_is_vat_exempt(false);
+                $this->set_vat_exempt_status('');
                 return;
             }
             // Check shipping country matches VAT country
@@ -707,11 +678,37 @@ class VAT_Guard_WooCommerce
 
             if (!empty($country_to_check) && $country_to_check !== $vat_country) {
                 $errors->add('vat_number_error', __('The shipping country must match the country of the VAT number.', 'vat-guard-woocommerce'));
-                WC()->customer->set_is_vat_exempt(false);
+                $this->set_vat_exempt_status('');
                 return;
             }
         }
         // Exemption
+        $this->set_vat_exempt_status($vat);
+    }
+    /**
+     * Set VAT exempt status on the customer based on VAT number, shop base country and selected shipping method
+     * This method does expect that basic checks on shipping/billing country have already been carried out
+     * It will not show any errors but just apply the exemption rules:
+     *      - if local pickup is selected, no exemption will occur
+     *      - if the VAT number provided is from a different country than the store, VAT exemption occurs
+     * @param string $vat
+     */
+    public function set_vat_exempt_status($vat)
+    {
+        if (empty($vat)) {
+            WC()->customer->set_is_vat_exempt(false); //no VAT so no exemption
+            return;
+        }
+
+        // Check if local pickup is selected - never exempt VAT for local pickup
+        $chosen_methods = $this->get_current_shipping_methods();
+        $local_pickup_methods = apply_filters('woocommerce_local_pickup_methods', array('local_pickup'));
+
+        if (count(array_intersect($chosen_methods, $local_pickup_methods)) > 0) {
+            WC()->customer->set_is_vat_exempt(false);
+            return;
+        }
+
         $vat_country = substr($vat, 0, 2);
         $shop_base_country = wc_get_base_location()['country'];
         if (!empty($vat) && $vat_country && $vat_country !== $shop_base_country) {
@@ -721,15 +718,15 @@ class VAT_Guard_WooCommerce
         }
     }
 
-
-
-
     /* Validate VAT number and set VAT exemption after editing the field
      * It checks the VAT number, validates it, and sets the exemption status.
      */
     public function ajax_validate_and_exempt_vat($post_data)
     {
         parse_str($post_data, $data);
+
+        // Store POST data temporarily for shipping method access
+        $this->current_post_data = $data;
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         $vat = isset($data['billing_eu_vat_number']) ? trim($data['billing_eu_vat_number']) : '';
         $ship_to_different_address = isset($data['ship_to_different_address']) && $data['ship_to_different_address'] === '1';
@@ -778,6 +775,9 @@ class VAT_Guard_WooCommerce
             WC()->session->set('billing_eu_vat_number', $vat);
             error_log("VAT Guard: Stored VAT number '{$vat}' in customer session");
         }
+
+        // Clear stored POST data
+        unset($this->current_post_data);
     }
 
 
@@ -786,34 +786,34 @@ class VAT_Guard_WooCommerce
      */
     public function show_vat_in_admin_order($order)
     {
-       // Check if this order has VAT data from block checkout (additional fields)
-       $block_vat = '';
-       if (function_exists('woocommerce_get_order_additional_field_value')) {
-           $block_vat = woocommerce_get_order_additional_field_value($order, 'vat-guard-woocommerce/vat_number');
-       }
+        // Check if this order has VAT data from block checkout (additional fields)
+        $block_vat = '';
+        if (function_exists('woocommerce_get_order_additional_field_value')) {
+            $block_vat = woocommerce_get_order_additional_field_value($order, 'vat-guard-woocommerce/vat_number');
+        }
 
-       // Only show custom VAT display if WooCommerce hasn't already shown it via additional fields
-       // We check if block VAT exists - if it does, WooCommerce will handle the display automatically
-       if (empty($block_vat)) {
-           // Get VAT from custom meta (classic checkout or block fallback)
-           $custom_vat = $order->get_meta('billing_eu_vat_number');
-           if (empty($custom_vat)) {
-               $custom_vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
-           }
+        // Only show custom VAT display if WooCommerce hasn't already shown it via additional fields
+        // We check if block VAT exists - if it does, WooCommerce will handle the display automatically
+        if (empty($block_vat)) {
+            // Get VAT from custom meta (classic checkout or block fallback)
+            $custom_vat = $order->get_meta('billing_eu_vat_number');
+            if (empty($custom_vat)) {
+                $custom_vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
+            }
 
-           if (!empty($custom_vat)) {
-               echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($custom_vat) . '</p>';
-           }
-       }
+            if (!empty($custom_vat)) {
+                echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($custom_vat) . '</p>';
+            }
+        }
 
-       // Always show VAT exempt status regardless of checkout type
-       $is_exempt = $order->get_meta('billing_is_vat_exempt');
-       if (empty($is_exempt)) {
-           $is_exempt = get_post_meta($order->get_id(), 'billing_is_vat_exempt', true);
-       }
-       if ($is_exempt === 'yes') {
-           echo '<p style="color: #008000;"><strong>' . esc_html__('VAT exempt for this order', 'vat-guard-woocommerce') . '</strong></p>';
-       }
+        // Always show VAT exempt status regardless of checkout type
+        $is_exempt = $order->get_meta('billing_is_vat_exempt');
+        if (empty($is_exempt)) {
+            $is_exempt = get_post_meta($order->get_id(), 'billing_is_vat_exempt', true);
+        }
+        if ($is_exempt === 'yes') {
+            echo '<p style="color: #008000;"><strong>' . esc_html__('VAT exempt for this order', 'vat-guard-woocommerce') . '</strong></p>';
+        }
     }
 
     /**
@@ -842,5 +842,49 @@ class VAT_Guard_WooCommerce
             echo '</th>';
             echo '</tr>';
         }
+    }
+
+    /**
+     * Get current shipping methods, checking POST data first for AJAX updates
+     * This ensures we get the newly selected shipping method during checkout updates
+     * Extracts method types from full IDs (e.g., 'flat_rate:2' -> 'flat_rate')
+     * 
+     * @return array Array of chosen shipping method IDs and method types
+     */
+    private function get_current_shipping_methods()
+    {
+        $chosen_methods = array();
+
+        // First, try to get from stored POST data (during AJAX processing)
+        if (isset($this->current_post_data['shipping_method'])) {
+            if (is_array($this->current_post_data['shipping_method'])) {
+                $chosen_methods = array_map('sanitize_text_field', $this->current_post_data['shipping_method']);
+            } else {
+                $chosen_methods = array(sanitize_text_field($this->current_post_data['shipping_method']));
+            }
+        }
+        // Then try direct POST data (for other contexts)
+        elseif (isset($_POST['shipping_method']) && is_array($_POST['shipping_method'])) {
+            $chosen_methods = array_map('sanitize_text_field', $_POST['shipping_method']);
+        } elseif (isset($_POST['shipping_method'])) {
+            $chosen_methods = array(sanitize_text_field($_POST['shipping_method']));
+        }
+
+        // If no POST data, fall back to session data
+        if (empty($chosen_methods) && function_exists('wc_get_chosen_shipping_method_ids')) {
+            $chosen_methods = wc_get_chosen_shipping_method_ids();
+        }
+
+        // Extract method types from full method IDs (e.g., 'flat_rate:2' -> 'flat_rate')
+        // Also keep the full IDs for backward compatibility
+        $method_types = array();
+        foreach ($chosen_methods as $method_id) {
+            $method_types[] = $method_id; // Keep full ID
+            if (strpos($method_id, ':') !== false) {
+                $method_types[] = substr($method_id, 0, strpos($method_id, ':')); // Add method type
+            }
+        }
+
+        return array_unique($method_types);
     }
 }

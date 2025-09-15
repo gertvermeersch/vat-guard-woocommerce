@@ -211,8 +211,8 @@
             const currentVatExempt = cartData?.extensions?.['vat-guard-woocommerce']?.vat_exempt;
 
             // Debug: Log cart data
-            console.log('VAT Guard: Cart data extensions:', cartData?.extensions);
-            console.log('VAT Guard: VAT exempt status:', currentVatExempt);
+            // console.log('VAT Guard: Cart data extensions:', cartData?.extensions);
+            // console.log('VAT Guard: VAT exempt status:', currentVatExempt);
 
             if (lastCartData !== currentVatExempt) {
                 lastCartData = currentVatExempt;
