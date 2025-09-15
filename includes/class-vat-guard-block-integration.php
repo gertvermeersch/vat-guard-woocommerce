@@ -37,7 +37,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         $this->setup_block_checkout_scripts();
         $this->setup_rest_api();
         $this->setup_store_api_integration();
-        
+
         // Also call the interface initialize method for Store API integration
         $this->initialize();
     }
@@ -55,7 +55,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
     public function initialize()
     {
         $this->register_block_frontend_scripts();
-      //  $this->register_block_editor_scripts();
+        //  $this->register_block_editor_scripts();
         $this->register_main_integration();
     }
 
@@ -177,10 +177,10 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
     public function extend_cart_data()
     {
         $is_exempt = WC()->customer ? WC()->customer->get_is_vat_exempt() : false;
-        
+
         // Debug: Log the VAT exempt status
         //error_log('VAT Guard: Cart data - VAT exempt status: ' . ($is_exempt ? 'true' : 'false'));
-        
+
         return [
             'vat_exempt' => $is_exempt,
             'vat_number' => $this->get_customer_vat_number(),
@@ -242,10 +242,10 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             }
             woocommerce_register_additional_checkout_field(
                 array(
-                    'id'       => 'vat-guard-woocommerce/vat_number',
-                    'label'    => __('VAT Number', 'vat-guard-woocommerce'),
+                    'id' => 'vat-guard-woocommerce/vat_number',
+                    'label' => __('VAT Number', 'vat-guard-woocommerce'),
                     'location' => 'contact',
-                    'type'     => 'text',
+                    'type' => 'text',
                     'required' => (bool) get_option('vat_guard_woocommerce_require_vat', 1),
                     'sanitize_callback' => 'sanitize_text_field',
                     'validate_callback' => array($this, 'validate_vat_field')
@@ -267,6 +267,8 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             4
         );
 
+
+
         // Preload the VAT number field with user meta data if available
         add_filter(
             "woocommerce_get_default_value_for_vat-guard-woocommerce/vat_number",
@@ -274,8 +276,6 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             10,
             3
         );
-
-
     }
 
     /**
@@ -303,32 +303,50 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
     }
 
     /**
-     * Handle VAT field updates
+     * Handle VAT field updates and re-evaluate exemption on any field change
      */
     public function handle_vat_field_update($key, $value, $group, $wc_object)
     {
-        if ('vat-guard-woocommerce/vat_number' !== $key) {
-            return;
-        }
+        // Handle VAT field specific updates
+        if ('vat-guard-woocommerce/vat_number' === $key) {
+            // Clean and validate VAT number
+            $vat = strtoupper(str_replace([' ', '-', '.'], '', $value));
+            $wc_object->update_meta_data('billing_eu_vat_number', $vat, true);
 
-        // Clean and validate VAT number
-        $vat = strtoupper(str_replace([' ', '-', '.'], '', $value));
-        $wc_object->update_meta_data('billing_eu_vat_number', $vat, true);
-
-        // Set VAT exemption status
-        $this->main_class->set_vat_exempt_status($vat);
-        $is_exempt = WC()->customer->get_is_vat_exempt();
-        $wc_object->update_meta_data('billing_is_vat_exempt', $is_exempt ? 'yes' : 'no');
-
-        // Update user meta if logged in
-        if (is_user_logged_in() && !empty($vat)) {
-            $user_id = get_current_user_id();
-            $current_vat = get_user_meta($user_id, 'vat_number', true);
-            if ($vat !== $current_vat) {
-                update_user_meta($user_id, 'vat_number', $vat);
+            // Update user meta if logged in
+            if (is_user_logged_in() && !empty($vat)) {
+                $user_id = get_current_user_id();
+                $current_vat = get_user_meta($user_id, 'vat_number', true);
+                if ($vat !== $current_vat) {
+                    update_user_meta($user_id, 'vat_number', $vat);
+                }
             }
         }
+
+        // Always re-evaluate VAT exemption status when any field changes
+        // Get current VAT number from various sources
+        $vat = '';
+
+        // If this is a VAT field update, use the new value
+        if ('vat-guard-woocommerce/vat_number' === $key) {
+            $vat = strtoupper(str_replace([' ', '-', '.'], '', $value));
+        } else {
+            // Get VAT from existing sources
+            if ($wc_object && method_exists($wc_object, 'get_meta')) {
+                $vat = $wc_object->get_meta('billing_eu_vat_number');
+            }
+
+            // Fallback to session
+            if (empty($vat) && WC()->session) {
+                $vat = WC()->session->get('billing_eu_vat_number');
+            }
+        }
+
+        // Perform comprehensive validation and exemption check
+        $this->perform_comprehensive_vat_validation($vat, $wc_object);
     }
+
+
 
     /**
      * Preload VAT field with user data
@@ -505,5 +523,74 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         });
     }
 
-   
+    /**
+     * Perform comprehensive VAT validation including country matching and exemption logic
+     */
+    private function perform_comprehensive_vat_validation($vat, $wc_object = null)
+    {
+        // If no VAT number, clear exemption and return
+        if (empty($vat)) {
+            $this->main_class->set_vat_exempt_status('');
+            if ($wc_object) {
+                $wc_object->update_meta_data('billing_is_vat_exempt', 'no');
+            }
+            return;
+        }
+
+        // Get shipping and billing countries from customer object
+        $billing_country = '';
+        $shipping_country = '';
+
+        if (WC()->customer) {
+            $billing_country = strtoupper(WC()->customer->get_billing_country());
+            $shipping_country = strtoupper(WC()->customer->get_shipping_country());
+        }
+
+        // Use shipping country if available, otherwise billing country
+        $country_to_check = !empty($shipping_country) ? $shipping_country : $billing_country;
+
+        // Perform full validation
+        if (!empty($vat)) {
+            $error_message = '';
+            if (!$this->main_class->is_valid_eu_vat_number($vat, $error_message)) {
+                $this->main_class->set_vat_exempt_status('');
+                if ($wc_object) {
+                    $wc_object->update_meta_data('billing_is_vat_exempt', 'no');
+                }
+                return;
+            }
+
+            // Check country matching
+            $vat_country = substr($vat, 0, 2);
+
+            // Check shipping country matches VAT country
+            if (!empty($country_to_check) && $country_to_check !== $vat_country) {
+                $this->main_class->set_vat_exempt_status('');
+                if ($wc_object) {
+                    $wc_object->update_meta_data('billing_is_vat_exempt', 'no');
+                }
+                return;
+            }
+
+            // Check billing country matches VAT country (if different from shipping)
+            if (!empty($billing_country) && $billing_country !== $vat_country) {
+                $this->main_class->set_vat_exempt_status('');
+                if ($wc_object) {
+                    $wc_object->update_meta_data('billing_is_vat_exempt', 'no');
+                }
+                return;
+            }
+        }
+
+        // All validations passed, set exemption status
+        // This will also handle local pickup checks with our improved shipping method detection
+        $this->main_class->set_vat_exempt_status($vat);
+
+        // Update meta data
+        if ($wc_object) {
+            $is_exempt = WC()->customer->get_is_vat_exempt();
+            $wc_object->update_meta_data('billing_is_vat_exempt', $is_exempt ? 'yes' : 'no');
+        }
+    }
+
 }
