@@ -851,7 +851,7 @@ class VAT_Guard_WooCommerce
      * 
      * @return array Array of chosen shipping method IDs and method types
      */
-    private function get_current_shipping_methods()
+    public function get_current_shipping_methods()
     {
         $chosen_methods = array();
 

@@ -211,8 +211,8 @@
             const currentVatExempt = cartData?.extensions?.['vat-guard-woocommerce']?.vat_exempt;
 
             // Debug: Log cart data
-            // console.log('VAT Guard: Cart data extensions:', cartData?.extensions);
-            // console.log('VAT Guard: VAT exempt status:', currentVatExempt);
+             console.log('VAT Guard: Cart data extensions:', cartData?.extensions);
+             console.log('VAT Guard: VAT exempt status:', currentVatExempt);
 
             if (lastCartData !== currentVatExempt) {
                 lastCartData = currentVatExempt;
@@ -227,7 +227,7 @@
         const style = document.createElement('style');
         style.textContent = `
             .vat-guard-validation-message {
-                margin-top: 5px;
+                margin: 5px;
                 font-size: 0.9em;
                 line-height: 1.4;
             }
