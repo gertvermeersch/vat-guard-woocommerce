@@ -387,11 +387,7 @@ class VAT_Guard_WooCommerce
             'SK'
         ];
         $country = substr($vat, 0, 2);
-        if (!in_array($country, $eu_countries)) {
-            $error_message = __('Please enter a valid EU VAT number.', 'vat-guard-woocommerce');
-            return false;
-        }
-        if (strlen($vat) < 8 || strlen($vat) > 14) {
+        if (!in_array($country, $eu_countries) || strlen($vat) < 8 || strlen($vat) > 14) {
             $error_message = __('Please enter a valid EU VAT number.', 'vat-guard-woocommerce');
             return false;
         }
