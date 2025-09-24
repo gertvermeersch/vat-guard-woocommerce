@@ -188,8 +188,8 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         $is_exempt = $this->calculate_current_exemption_status($vat);
 
         // Force cart recalculation when exemption status changes, this is actually only needed when shipping changes, because handle_vat_field_update is not called then
-        $this->main_class->set_vat_exempt_status($is_exempt? $vat : '');
-        $this->trigger_frontend_refresh(); //TODO: maybe it's enough that this is done in handle_vat_field_update
+        $this->main_class->set_vat_exempt_status($is_exempt ? $vat : '');
+      //  $this->trigger_frontend_refresh(); //TODO: maybe it's enough that this is done in handle_vat_field_update
 
         return [
             'vat_exempt' => $is_exempt,
@@ -257,7 +257,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
                     'location' => 'contact',
                     'type' => 'text',
                     'required' => (bool) get_option('vat_guard_woocommerce_require_vat', 1),
-                    'sanitize_callback' => array($this, 'sanitize_vat_field'),
+                    'sanitize_callback' => array($this->main_class, 'sanitize_vat_field'),
                     'validate_callback' => array($this, 'validate_vat_field')
                 )
             );
@@ -277,6 +277,13 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             4
         );
 
+        // Hook into Store API shipping rate selection for block checkout
+        add_action(
+            'woocommerce_store_api_cart_select_shipping_rate',
+            array($this, 'handle_shipping_method_change_store_api'),
+            10,
+            3
+        );
 
 
         // Preload the VAT number field with user meta data if available
@@ -333,14 +340,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             if (WC()->session) {
                 WC()->session->set('billing_eu_vat_number', $vat);
             }
-            // Update user meta if logged in
-            if (is_user_logged_in() && !empty($vat)) {
-                $user_id = get_current_user_id();
-                $current_vat = get_user_meta($user_id, 'vat_number', true);
-                if ($vat !== $current_vat) {
-                    update_user_meta($user_id, 'vat_number', $vat);
-                }
-            }
+           
         }
 
         // Always re-evaluate VAT exemption status when any field changes
@@ -436,7 +436,42 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
 
     }
 
+    /**
+     * Handle shipping method changes for Store API (block checkout)
+     * @param string $package_id
+     * @param string $rate_id
+     * @param array $request_data
+     */
+    public function handle_shipping_method_change_store_api($package_id, $rate_id, $request_data)
+    {
+        // Re-evaluate VAT exemption when shipping method changes
+          // Get current VAT number
+        $vat = $this->get_current_vat_number();
 
+        if (empty($vat)) {
+            return;
+        }
+
+        // Calculate current exemption status with new shipping method
+        $is_exempt = $this->calculate_current_exemption_status($vat);
+
+        // Update exemption status
+        $this->main_class->set_vat_exempt_status($is_exempt ? $vat : '');
+
+        // Trigger cart recalculation
+        if (WC()->cart) {
+            WC()->cart->calculate_totals();
+        }
+    }
+
+
+    /**
+     * Re-evaluate VAT exemption status when shipping method changes
+     */
+    private function reevaluate_vat_exemption()
+    {
+      
+    }
 
     /**
      * Preload VAT field with user data
@@ -452,26 +487,6 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         return $value;
     }
 
-    /**
-     * Sanitize VAT field input
-     * Removes dots, spaces, and other non-alphanumeric characters
-     * Converts to uppercase
-     * @param string $value The VAT number to sanitize
-     * @return string The sanitized VAT number
-     */
-    public function sanitize_vat_field($value)
-    {
-        if (empty($value)) {
-            return '';
-        }
-
-        // Remove dots, spaces, dashes, and other non-alphanumeric characters
-        // Keep only letters and numbers
-        $sanitized = preg_replace('/[^A-Za-z0-9]/', '', $value);
-
-        // Convert to uppercase
-        return strtoupper($sanitized);
-    }
 
     /**
      * Validate VAT field for block checkout

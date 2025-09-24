@@ -335,7 +335,10 @@ class VAT_Guard_WooCommerce
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="company_name"
                 id="company_name" value="<?php esc_attr_e($company_name); ?>" />
         </p>
-        <?php if (!get_option('vat_guard_woocommerce_enable_block_checkout', 0)) { ?>
+        <?php //if (!get_option('vat_guard_woocommerce_enable_block_checkout', 0)) { 
+        // TODO: check if we still need this condition check
+        // ?>
+ 
             <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                 <label for="vat_number"><?php _e('VAT Number', 'vat-guard-woocommerce');
                 if ($require_vat) { ?><span class="required">*</span> <?php } ?></label>
@@ -343,7 +346,7 @@ class VAT_Guard_WooCommerce
                     value="<?php esc_attr_e($vat_number); ?>" />
             </p>
             <?php
-        }
+      //  }
     }
 
     /**
@@ -496,9 +499,31 @@ class VAT_Guard_WooCommerce
             update_user_meta($customer_id, 'company_name', sanitize_text_field($_POST['company_name']));
         }
         if (isset($_POST['vat_number'])) {
-            update_user_meta($customer_id, 'vat_number', sanitize_text_field($_POST['vat_number']));
+            update_user_meta($customer_id, 'vat_number', $this->sanitize_vat_field($_POST['vat_number']));
         }
     }
+
+        /**
+     * Sanitize VAT field input
+     * Removes dots, spaces, and other non-alphanumeric characters
+     * Converts to uppercase
+     * @param string $value The VAT number to sanitize
+     * @return string The sanitized VAT number
+     */
+    public function sanitize_vat_field($value)
+    {
+        if (empty($value)) {
+            return '';
+        }
+
+        // Remove dots, spaces, dashes, and other non-alphanumeric characters
+        // Keep only letters and numbers
+        $sanitized = preg_replace('/[^A-Za-z0-9]/', '', $value);
+
+        // Convert to uppercase
+        return strtoupper($sanitized);
+    }
+
 
     /**
      * Preload checkout fields with user meta data if available
