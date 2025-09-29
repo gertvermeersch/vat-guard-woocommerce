@@ -1,0 +1,70 @@
+# Spanish (Spain) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Spanish\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "VAT Number:"
+msgstr "Número de IVA:"
+
+msgid "VAT exempt for this order"
+msgstr "Exento de IVA para este pedido"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Por favor, introduzca un número de IVA de la UE válido."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Este número de IVA no es válido según el servicio VIES."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "La validación del número de IVA no está disponible actualmente. Inténtelo de nuevo más tarde o contacte con el propietario del sitio web."
+
+msgid "Please enter your company name."
+msgstr "Por favor, introduzca el nombre de su empresa."
+
+msgid "Please enter your VAT number."
+msgstr "Por favor, introduzca su número de IVA."
+
+msgid "VAT Number"
+msgstr "Número de IVA"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "El país de envío debe coincidir con el país del número de IVA."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "El país de facturación debe coincidir con el país del número de IVA."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard para WooCommerce"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Validando número de IVA..."
+
+msgid "VAT number is valid"
+msgstr "El número de IVA es válido"
+
+msgid "Invalid VAT number"
+msgstr "Número de IVA inválido"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Si el cliente está exento de IVA"
+
+msgid "Customer VAT number"
+msgstr "Número de IVA del cliente"
+
+msgid "VAT exempt message to display"
+msgstr "Mensaje de exención de IVA a mostrar"

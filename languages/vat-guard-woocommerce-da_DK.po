@@ -1,0 +1,70 @@
+# Danish (Denmark) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Danish\n"
+"Language: da_DK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "VAT Number:"
+msgstr "CVR-nummer:"
+
+msgid "VAT exempt for this order"
+msgstr "Momsfritaget for denne ordre"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Indtast venligst et gyldigt EU-momsnummer."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Dette momsnummer er ikke gyldigt ifølge VIES-tjenesten."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "Validering af momsnummer er i øjeblikket ikke tilgængelig. Prøv igen senere eller kontakt hjemmesidens ejer."
+
+msgid "Please enter your company name."
+msgstr "Indtast venligst dit firmanavn."
+
+msgid "Please enter your VAT number."
+msgstr "Indtast venligst dit momsnummer."
+
+msgid "VAT Number"
+msgstr "CVR-nummer"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Forsendelseslandet skal matche landet for momsnummeret."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Faktureringslandet skal matche landet for momsnummeret."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard til WooCommerce"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Validerer momsnummer..."
+
+msgid "VAT number is valid"
+msgstr "Momsnummeret er gyldigt"
+
+msgid "Invalid VAT number"
+msgstr "Ugyldigt momsnummer"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Om kunden er momsfritaget"
+
+msgid "Customer VAT number"
+msgstr "Kundens momsnummer"
+
+msgid "VAT exempt message to display"
+msgstr "Momsfritagelsesbesked at vise"

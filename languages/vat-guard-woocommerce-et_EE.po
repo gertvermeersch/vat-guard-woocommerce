@@ -1,0 +1,70 @@
+# Estonian (Estonia) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Estonian\n"
+"Language: et_EE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "VAT Number:"
+msgstr "Käibemaksukohustuslase number:"
+
+msgid "VAT exempt for this order"
+msgstr "Käibemaksuvaba selle tellimuse jaoks"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Palun sisestage kehtiv EL käibemaksunumber."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "See käibemaksunumber ei ole kehtiv VIES teenuse kohaselt."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "Käibemaksunumbri kontrollimine ei ole praegu saadaval. Palun proovige hiljem uuesti või võtke ühendust veebisaidi omanikuga."
+
+msgid "Please enter your company name."
+msgstr "Palun sisestage oma ettevõtte nimi."
+
+msgid "Please enter your VAT number."
+msgstr "Palun sisestage oma käibemaksunumber."
+
+msgid "VAT Number"
+msgstr "Käibemaksunumber"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Tarnemaa peab vastama käibemaksunumbri riigile."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Arveldusmaa peab vastama käibemaksunumbri riigile."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard WooCommerce jaoks"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Käibemaksunumbri kontrollimine..."
+
+msgid "VAT number is valid"
+msgstr "Käibemaksunumber on kehtiv"
+
+msgid "Invalid VAT number"
+msgstr "Kehtetu käibemaksunumber"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Kas klient on käibemaksuvaba"
+
+msgid "Customer VAT number"
+msgstr "Kliendi käibemaksunumber"
+
+msgid "VAT exempt message to display"
+msgstr "Käibemaksuvabastuse sõnum kuvamiseks"

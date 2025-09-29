@@ -1,0 +1,70 @@
+# Hungarian (Hungary) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Hungarian\n"
+"Language: hu_HU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "VAT Number:"
+msgstr "Áfaszám:"
+
+msgid "VAT exempt for this order"
+msgstr "Áfamentes ennél a rendelésnél"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Kérjük, adjon meg egy érvényes EU áfaszámot."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Ez az áfaszám nem érvényes a VIES szolgáltatás szerint."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "Az áfaszám ellenőrzése jelenleg nem elérhető. Kérjük, próbálja újra később, vagy lépjen kapcsolatba a weboldal tulajdonosával."
+
+msgid "Please enter your company name."
+msgstr "Kérjük, adja meg a cég nevét."
+
+msgid "Please enter your VAT number."
+msgstr "Kérjük, adja meg az áfaszámát."
+
+msgid "VAT Number"
+msgstr "Áfaszám"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "A szállítási országnak meg kell egyeznie az áfaszám országával."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "A számlázási országnak meg kell egyeznie az áfaszám országával."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard WooCommerce-hez"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Áfaszám ellenőrzése..."
+
+msgid "VAT number is valid"
+msgstr "Az áfaszám érvényes"
+
+msgid "Invalid VAT number"
+msgstr "Érvénytelen áfaszám"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Hogy a vásárló áfamentes-e"
+
+msgid "Customer VAT number"
+msgstr "Vásárló áfaszáma"
+
+msgid "VAT exempt message to display"
+msgstr "Megjelenítendő áfamentességi üzenet"

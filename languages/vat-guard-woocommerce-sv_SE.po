@@ -1,0 +1,70 @@
+# Swedish (Sweden) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "VAT Number:"
+msgstr "Momsregistreringsnummer:"
+
+msgid "VAT exempt for this order"
+msgstr "Momsbefriad för denna beställning"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Vänligen ange ett giltigt EU-momsregistreringsnummer."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Detta momsregistreringsnummer är inte giltigt enligt VIES-tjänsten."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "Validering av momsregistreringsnummer är för närvarande inte tillgänglig. Försök igen senare eller kontakta webbplatsägaren."
+
+msgid "Please enter your company name."
+msgstr "Vänligen ange ditt företagsnamn."
+
+msgid "Please enter your VAT number."
+msgstr "Vänligen ange ditt momsregistreringsnummer."
+
+msgid "VAT Number"
+msgstr "Momsregistreringsnummer"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Leveranslandet måste matcha landet för momsregistreringsnumret."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Faktureringslandet måste matcha landet för momsregistreringsnumret."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard för WooCommerce"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Validerar momsregistreringsnummer..."
+
+msgid "VAT number is valid"
+msgstr "Momsregistreringsnumret är giltigt"
+
+msgid "Invalid VAT number"
+msgstr "Ogiltigt momsregistreringsnummer"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Om kunden är momsbefriad"
+
+msgid "Customer VAT number"
+msgstr "Kundens momsregistreringsnummer"
+
+msgid "VAT exempt message to display"
+msgstr "Momsbefrielsesmeddelande att visa"

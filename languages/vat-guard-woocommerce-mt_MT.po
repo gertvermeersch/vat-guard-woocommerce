@@ -1,0 +1,70 @@
+# Maltese (Malta) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Maltese\n"
+"Language: mt_MT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : n==0 || ( n%100>1 && n%100<11) ? 1 : (n%100>10 && n%100<20 ) ? 2 : 3);\n"
+
+msgid "VAT Number:"
+msgstr "Numru tal-VAT:"
+
+msgid "VAT exempt for this order"
+msgstr "Eżenti mill-VAT għal din l-ordni"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Jekk jogħġbok daħħal numru tal-VAT tal-UE validu."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Dan in-numru tal-VAT mhuwiex validu skont is-servizz VIES."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "Il-validazzjoni tan-numru tal-VAT bħalissa mhix disponibbli. Jekk jogħġbok erġa' pprova aktar tard jew ikkuntattja lis-sid tal-websajt."
+
+msgid "Please enter your company name."
+msgstr "Jekk jogħġbok daħħal l-isem tal-kumpanija tiegħek."
+
+msgid "Please enter your VAT number."
+msgstr "Jekk jogħġbok daħħal in-numru tal-VAT tiegħek."
+
+msgid "VAT Number"
+msgstr "Numru tal-VAT"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Il-pajjiż tal-konsenja għandu jaqbel mal-pajjiż tan-numru tal-VAT."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Il-pajjiż tal-kontijiet għandu jaqbel mal-pajjiż tan-numru tal-VAT."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard għal WooCommerce"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Qed jiġi vvalidat in-numru tal-VAT..."
+
+msgid "VAT number is valid"
+msgstr "In-numru tal-VAT huwa validu"
+
+msgid "Invalid VAT number"
+msgstr "Numru tal-VAT invalidu"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Jekk il-klijent huwiex eżenti mill-VAT"
+
+msgid "Customer VAT number"
+msgstr "Numru tal-VAT tal-klijent"
+
+msgid "VAT exempt message to display"
+msgstr "Messaġġ ta' eżenzjoni mill-VAT biex jintwerew"

@@ -1,0 +1,70 @@
+# Dutch (Netherlands) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Dutch\n"
+"Language: nl_NL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "VAT Number:"
+msgstr "BTW-nummer:"
+
+msgid "VAT exempt for this order"
+msgstr "BTW-vrijgesteld voor deze bestelling"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Voer een geldig EU BTW-nummer in."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Dit BTW-nummer is niet geldig volgens de VIES-service."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "BTW-nummer validatie is momenteel niet beschikbaar. Probeer het later opnieuw of neem contact op met de website eigenaar."
+
+msgid "Please enter your company name."
+msgstr "Voer uw bedrijfsnaam in."
+
+msgid "Please enter your VAT number."
+msgstr "Voer uw BTW-nummer in."
+
+msgid "VAT Number"
+msgstr "BTW-nummer"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Het verzendland moet overeenkomen met het land van het BTW-nummer."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Het facturatieadres moet overeenkomen met het land van het BTW-nummer."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard voor WooCommerce"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "BTW-nummer valideren..."
+
+msgid "VAT number is valid"
+msgstr "BTW-nummer is geldig"
+
+msgid "Invalid VAT number"
+msgstr "Ongeldig BTW-nummer"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Of de klant BTW-vrijgesteld is"
+
+msgid "Customer VAT number"
+msgstr "Klant BTW-nummer"
+
+msgid "VAT exempt message to display"
+msgstr "BTW-vrijstellingsbericht om weer te geven"

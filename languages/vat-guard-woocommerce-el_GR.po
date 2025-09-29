@@ -1,0 +1,70 @@
+# Greek (Greece) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Greek\n"
+"Language: el_GR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "VAT Number:"
+msgstr "Αριθμός ΦΠΑ:"
+
+msgid "VAT exempt for this order"
+msgstr "Απαλλαγή από ΦΠΑ για αυτή την παραγγελία"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Παρακαλώ εισάγετε έναν έγκυρο αριθμό ΦΠΑ ΕΕ."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Αυτός ο αριθμός ΦΠΑ δεν είναι έγκυρος σύμφωνα με την υπηρεσία VIES."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "Η επικύρωση του αριθμού ΦΠΑ δεν είναι διαθέσιμη αυτή τη στιγμή. Παρακαλώ δοκιμάστε ξανά αργότερα ή επικοινωνήστε με τον κάτοχο του ιστότοπου."
+
+msgid "Please enter your company name."
+msgstr "Παρακαλώ εισάγετε το όνομα της εταιρείας σας."
+
+msgid "Please enter your VAT number."
+msgstr "Παρακαλώ εισάγετε τον αριθμό ΦΠΑ σας."
+
+msgid "VAT Number"
+msgstr "Αριθμός ΦΠΑ"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Η χώρα αποστολής πρέπει να ταιριάζει με τη χώρα του αριθμού ΦΠΑ."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Η χώρα χρέωσης πρέπει να ταιριάζει με τη χώρα του αριθμού ΦΠΑ."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard για WooCommerce"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Επικύρωση αριθμού ΦΠΑ..."
+
+msgid "VAT number is valid"
+msgstr "Ο αριθμός ΦΠΑ είναι έγκυρος"
+
+msgid "Invalid VAT number"
+msgstr "Μη έγκυρος αριθμός ΦΠΑ"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Εάν ο πελάτης απαλλάσσεται από ΦΠΑ"
+
+msgid "Customer VAT number"
+msgstr "Αριθμός ΦΠΑ πελάτη"
+
+msgid "VAT exempt message to display"
+msgstr "Μήνυμα απαλλαγής ΦΠΑ προς εμφάνιση"

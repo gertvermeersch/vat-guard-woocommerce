@@ -1,0 +1,70 @@
+# Bulgarian (Bulgaria) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Bulgarian\n"
+"Language: bg_BG\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "VAT Number:"
+msgstr "ДДС номер:"
+
+msgid "VAT exempt for this order"
+msgstr "Освободен от ДДС за тази поръчка"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Моля, въведете валиден ЕС ДДС номер."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Този ДДС номер не е валиден според услугата VIES."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "Валидирането на ДДС номера в момента не е налично. Моля, опитайте отново по-късно или се свържете със собственика на уебсайта."
+
+msgid "Please enter your company name."
+msgstr "Моля, въведете името на вашата фирма."
+
+msgid "Please enter your VAT number."
+msgstr "Моля, въведете вашия ДДС номер."
+
+msgid "VAT Number"
+msgstr "ДДС номер"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Страната за доставка трябва да съвпада със страната на ДДС номера."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Страната за фактуриране трябва да съвпада със страната на ДДС номера."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard за WooCommerce"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Валидиране на ДДС номер..."
+
+msgid "VAT number is valid"
+msgstr "ДДС номерът е валиден"
+
+msgid "Invalid VAT number"
+msgstr "Невалиден ДДС номер"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Дали клиентът е освободен от ДДС"
+
+msgid "Customer VAT number"
+msgstr "ДДС номер на клиента"
+
+msgid "VAT exempt message to display"
+msgstr "Съобщение за освобождаване от ДДС за показване"

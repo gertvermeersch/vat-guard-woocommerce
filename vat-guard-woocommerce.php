@@ -14,6 +14,11 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
+// Load text domain for translations
+add_action('plugins_loaded', function() {
+    load_plugin_textdomain('vat-guard-woocommerce', false, dirname(plugin_basename(__FILE__)) . '/languages/');
+});
+
 // Include main plugin class
 require_once plugin_dir_path(__FILE__) . 'includes/class-vat-guard-woocommerce.php';
 
@@ -22,4 +27,4 @@ add_action('plugins_loaded', function() {
     if (class_exists('VAT_Guard_WooCommerce')) {
         VAT_Guard_WooCommerce::instance();
     }
-});
+}, 20); // Load after text domain

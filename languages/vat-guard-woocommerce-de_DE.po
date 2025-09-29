@@ -1,0 +1,70 @@
+# German (Germany) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "VAT Number:"
+msgstr "USt-IdNr.:"
+
+msgid "VAT exempt for this order"
+msgstr "Umsatzsteuerbefreit für diese Bestellung"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Bitte geben Sie eine gültige EU-Umsatzsteuer-Identifikationsnummer ein."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Diese Umsatzsteuer-Identifikationsnummer ist laut VIES-Dienst nicht gültig."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "Die Validierung der Umsatzsteuer-Identifikationsnummer ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut oder kontaktieren Sie den Website-Betreiber."
+
+msgid "Please enter your company name."
+msgstr "Bitte geben Sie Ihren Firmennamen ein."
+
+msgid "Please enter your VAT number."
+msgstr "Bitte geben Sie Ihre Umsatzsteuer-Identifikationsnummer ein."
+
+msgid "VAT Number"
+msgstr "USt-IdNr."
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Das Versandland muss mit dem Land der Umsatzsteuer-Identifikationsnummer übereinstimmen."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Das Rechnungsland muss mit dem Land der Umsatzsteuer-Identifikationsnummer übereinstimmen."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard für WooCommerce"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Validiere Umsatzsteuer-Identifikationsnummer..."
+
+msgid "VAT number is valid"
+msgstr "Umsatzsteuer-Identifikationsnummer ist gültig"
+
+msgid "Invalid VAT number"
+msgstr "Ungültige Umsatzsteuer-Identifikationsnummer"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Ob der Kunde umsatzsteuerbefreit ist"
+
+msgid "Customer VAT number"
+msgstr "Kunden-Umsatzsteuer-Identifikationsnummer"
+
+msgid "VAT exempt message to display"
+msgstr "Anzuzeigende Umsatzsteuerbefreiungsnachricht"

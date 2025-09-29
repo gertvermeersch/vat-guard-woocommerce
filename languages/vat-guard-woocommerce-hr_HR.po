@@ -1,0 +1,70 @@
+# Croatian (Croatia) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Croatian\n"
+"Language: hr_HR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "VAT Number:"
+msgstr "OIB:"
+
+msgid "VAT exempt for this order"
+msgstr "Oslobođen od PDV-a za ovu narudžbu"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Molimo unesite važeći EU PDV broj."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Ovaj PDV broj nije važeći prema VIES usluzi."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "Provjera PDV broja trenutno nije dostupna. Molimo pokušajte kasnije ili kontaktirajte vlasnika web stranice."
+
+msgid "Please enter your company name."
+msgstr "Molimo unesite naziv vaše tvrtke."
+
+msgid "Please enter your VAT number."
+msgstr "Molimo unesite vaš PDV broj."
+
+msgid "VAT Number"
+msgstr "OIB"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Zemlja dostave mora se podudarati sa zemljom PDV broja."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Zemlja naplate mora se podudarati sa zemljom PDV broja."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard za WooCommerce"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Provjera PDV broja..."
+
+msgid "VAT number is valid"
+msgstr "PDV broj je važeći"
+
+msgid "Invalid VAT number"
+msgstr "Neispravni PDV broj"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Je li kupac oslobođen od PDV-a"
+
+msgid "Customer VAT number"
+msgstr "PDV broj kupca"
+
+msgid "VAT exempt message to display"
+msgstr "Poruka o oslobađanju od PDV-a za prikaz"

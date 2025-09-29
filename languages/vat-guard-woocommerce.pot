@@ -1,0 +1,114 @@
+# VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Manual\n"
+
+#: includes/class-vat-guard-woocommerce.php:217
+msgid "VAT Number:"
+msgstr ""
+
+#: includes/class-vat-guard-woocommerce.php:237
+#: includes/class-vat-guard-woocommerce.php:836
+#: includes/class-vat-guard-woocommerce.php:862
+#: includes/class-vat-guard-block-integration.php:89
+#: includes/class-vat-guard-block-integration.php:172
+#: includes/class-vat-guard-block-integration.php:197
+#: includes/class-vat-guard-block-integration.php:522
+#: includes/class-vat-guard-block-integration.php:596
+msgid "VAT exempt for this order"
+msgstr ""
+
+#: includes/class-vat-guard-woocommerce.php:394
+#: includes/class-vat-guard-woocommerce.php:428
+msgid "Please enter a valid EU VAT number."
+msgstr ""
+
+#: includes/class-vat-guard-woocommerce.php:437
+msgid "This VAT number is not valid according to the VIES service."
+msgstr ""
+
+#: includes/class-vat-guard-woocommerce.php:444
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr ""
+
+#: includes/class-vat-guard-woocommerce.php:463
+#: includes/class-vat-guard-woocommerce.php:495
+msgid "Please enter your company name."
+msgstr ""
+
+#: includes/class-vat-guard-woocommerce.php:466
+#: includes/class-vat-guard-woocommerce.php:484
+#: includes/class-vat-guard-woocommerce.php:686
+#: includes/class-vat-guard-woocommerce.php:762
+#: includes/class-vat-guard-block-integration.php:480
+msgid "Please enter your VAT number."
+msgstr ""
+
+#: includes/class-vat-guard-woocommerce.php:589
+#: includes/class-vat-guard-woocommerce.php:590
+#: includes/class-vat-guard-woocommerce.php:826
+#: includes/class-vat-guard-woocommerce.php:848
+#: includes/class-vat-guard-block-integration.php:256
+msgid "VAT Number"
+msgstr ""
+
+#: includes/class-vat-guard-woocommerce.php:701
+#: includes/class-vat-guard-woocommerce.php:775
+#: includes/class-vat-guard-woocommerce.php:783
+#: includes/class-vat-guard-block-integration.php:390
+#: includes/class-vat-guard-block-integration.php:400
+#: includes/class-vat-guard-block-integration.php:585
+msgid "The shipping country must match the country of the VAT number."
+msgstr ""
+
+#: includes/class-vat-guard-woocommerce.php:783
+msgid "The billing country must match the country of the VAT number."
+msgstr ""
+
+#: includes/class-vat-guard-woocommerce-admin.php:34
+msgid "VAT Guard for WooCommerce"
+msgstr ""
+
+#: includes/class-vat-guard-woocommerce-admin.php:35
+msgid "VAT Guard"
+msgstr ""
+
+#: includes/class-vat-guard-block-integration.php:87
+#: includes/class-vat-guard-block-integration.php:520
+msgid "Validating VAT number..."
+msgstr ""
+
+#: includes/class-vat-guard-block-integration.php:88
+#: includes/class-vat-guard-block-integration.php:521
+#: includes/class-vat-guard-block-integration.php:596
+msgid "VAT number is valid"
+msgstr ""
+
+#: includes/class-vat-guard-block-integration.php:90
+#: includes/class-vat-guard-block-integration.php:523
+msgid "Invalid VAT number"
+msgstr ""
+
+#: includes/class-vat-guard-block-integration.php:208
+msgid "Whether the customer is VAT exempt"
+msgstr ""
+
+#: includes/class-vat-guard-block-integration.php:213
+msgid "Customer VAT number"
+msgstr ""
+
+#: includes/class-vat-guard-block-integration.php:218
+msgid "VAT exempt message to display"
+msgstr ""

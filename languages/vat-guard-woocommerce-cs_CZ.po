@@ -1,0 +1,70 @@
+# Czech (Czech Republic) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Czech\n"
+"Language: cs_CZ\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+msgid "VAT Number:"
+msgstr "DIČ:"
+
+msgid "VAT exempt for this order"
+msgstr "Osvobozeno od DPH pro tuto objednávku"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Zadejte prosím platné DIČ EU."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Toto DIČ není platné podle služby VIES."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "Ověření DIČ není momentálně dostupné. Zkuste to prosím později nebo kontaktujte majitele webu."
+
+msgid "Please enter your company name."
+msgstr "Zadejte prosím název vaší společnosti."
+
+msgid "Please enter your VAT number."
+msgstr "Zadejte prosím vaše DIČ."
+
+msgid "VAT Number"
+msgstr "DIČ"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Země doručení se musí shodovat se zemí DIČ."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Země fakturace se musí shodovat se zemí DIČ."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard pro WooCommerce"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Ověřování DIČ..."
+
+msgid "VAT number is valid"
+msgstr "DIČ je platné"
+
+msgid "Invalid VAT number"
+msgstr "Neplatné DIČ"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Zda je zákazník osvobozen od DPH"
+
+msgid "Customer VAT number"
+msgstr "DIČ zákazníka"
+
+msgid "VAT exempt message to display"
+msgstr "Zpráva o osvobození od DPH k zobrazení"

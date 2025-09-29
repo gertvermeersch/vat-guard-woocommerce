@@ -1,0 +1,70 @@
+# Slovenian (Slovenia) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Slovenian\n"
+"Language: sl_SI\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);\n"
+
+msgid "VAT Number:"
+msgstr "Davčna številka:"
+
+msgid "VAT exempt for this order"
+msgstr "Oproščen DDV za to naročilo"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Prosimo, vnesite veljavno EU davčno številko."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Ta davčna številka ni veljavna po storitvi VIES."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "Preverjanje davčne številke trenutno ni na voljo. Prosimo, poskusite znova pozneje ali se obrnite na lastnika spletne strani."
+
+msgid "Please enter your company name."
+msgstr "Prosimo, vnesite ime vašega podjetja."
+
+msgid "Please enter your VAT number."
+msgstr "Prosimo, vnesite vašo davčno številko."
+
+msgid "VAT Number"
+msgstr "Davčna številka"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Država dostave se mora ujemati z državo davčne številke."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Država računa se mora ujemati z državo davčne številke."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard za WooCommerce"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Preverjanje davčne številke..."
+
+msgid "VAT number is valid"
+msgstr "Davčna številka je veljavna"
+
+msgid "Invalid VAT number"
+msgstr "Neveljavna davčna številka"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Ali je kupec oproščen DDV"
+
+msgid "Customer VAT number"
+msgstr "Davčna številka kupca"
+
+msgid "VAT exempt message to display"
+msgstr "Sporočilo o oprostitvi DDV za prikaz"

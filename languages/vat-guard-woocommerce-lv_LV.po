@@ -1,0 +1,70 @@
+# Latvian (Latvia) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Latvian\n"
+"Language: lv_LV\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);\n"
+
+msgid "VAT Number:"
+msgstr "PVN reģistrācijas numurs:"
+
+msgid "VAT exempt for this order"
+msgstr "Atbrīvots no PVN šim pasūtījumam"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Lūdzu, ievadiet derīgu ES PVN numuru."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Šis PVN numurs nav derīgs saskaņā ar VIES pakalpojumu."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "PVN numura pārbaude pašlaik nav pieejama. Lūdzu, mēģiniet vēlāk vai sazinieties ar vietnes īpašnieku."
+
+msgid "Please enter your company name."
+msgstr "Lūdzu, ievadiet sava uzņēmuma nosaukumu."
+
+msgid "Please enter your VAT number."
+msgstr "Lūdzu, ievadiet savu PVN numuru."
+
+msgid "VAT Number"
+msgstr "PVN numurs"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Piegādes valstij jāatbilst PVN numura valstij."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Norēķinu valstij jāatbilst PVN numura valstij."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard priekš WooCommerce"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "PVN numura pārbaude..."
+
+msgid "VAT number is valid"
+msgstr "PVN numurs ir derīgs"
+
+msgid "Invalid VAT number"
+msgstr "Nederīgs PVN numurs"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Vai klients ir atbrīvots no PVN"
+
+msgid "Customer VAT number"
+msgstr "Klienta PVN numurs"
+
+msgid "VAT exempt message to display"
+msgstr "PVN atbrīvojuma ziņojums attēlošanai"

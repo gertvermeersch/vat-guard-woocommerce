@@ -1,0 +1,70 @@
+# Irish (Ireland) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Irish\n"
+"Language: ga_IE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=5; plural=(n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : 4);\n"
+
+msgid "VAT Number:"
+msgstr "Uimhir CBL:"
+
+msgid "VAT exempt for this order"
+msgstr "Díolmhaithe ó CBL don ordú seo"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Cuir isteach uimhir CBL bailí AE le do thoil."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Níl an uimhir CBL seo bailí de réir sheirbhís VIES."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "Níl bailíochtú uimhir CBL ar fáil faoi láthair. Bain triail eile as níos déanaí nó déan teagmháil le húinéir na láithreán gréasáin."
+
+msgid "Please enter your company name."
+msgstr "Cuir isteach ainm do chuideachta le do thoil."
+
+msgid "Please enter your VAT number."
+msgstr "Cuir isteach d'uimhir CBL le do thoil."
+
+msgid "VAT Number"
+msgstr "Uimhir CBL"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Caithfidh tír na loingseoireachta a bheith ag teacht leis an tír den uimhir CBL."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Caithfidh tír na billeoireachta a bheith ag teacht leis an tír den uimhir CBL."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard do WooCommerce"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Ag bailíochtú uimhir CBL..."
+
+msgid "VAT number is valid"
+msgstr "Tá an uimhir CBL bailí"
+
+msgid "Invalid VAT number"
+msgstr "Uimhir CBL neamhbhailí"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Cibé an bhfuil an custaiméir díolmhaithe ó CBL"
+
+msgid "Customer VAT number"
+msgstr "Uimhir CBL an chustaiméara"
+
+msgid "VAT exempt message to display"
+msgstr "Teachtaireacht díolmhaithe CBL le taispeáint"

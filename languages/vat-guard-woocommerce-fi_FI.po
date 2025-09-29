@@ -1,0 +1,70 @@
+# Finnish (Finland) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Finnish\n"
+"Language: fi_FI\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "VAT Number:"
+msgstr "ALV-numero:"
+
+msgid "VAT exempt for this order"
+msgstr "ALV-vapautettu tälle tilaukselle"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Anna kelvollinen EU ALV-numero."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Tämä ALV-numero ei ole kelvollinen VIES-palvelun mukaan."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "ALV-numeron vahvistus ei ole tällä hetkellä käytettävissä. Yritä myöhemmin uudelleen tai ota yhteyttä sivuston omistajaan."
+
+msgid "Please enter your company name."
+msgstr "Anna yrityksesi nimi."
+
+msgid "Please enter your VAT number."
+msgstr "Anna ALV-numerosi."
+
+msgid "VAT Number"
+msgstr "ALV-numero"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Toimitusmaan on vastattava ALV-numeron maata."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Laskutusmaan on vastattava ALV-numeron maata."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard WooCommercelle"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Vahvistetaan ALV-numeroa..."
+
+msgid "VAT number is valid"
+msgstr "ALV-numero on kelvollinen"
+
+msgid "Invalid VAT number"
+msgstr "Virheellinen ALV-numero"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Onko asiakas ALV-vapautettu"
+
+msgid "Customer VAT number"
+msgstr "Asiakkaan ALV-numero"
+
+msgid "VAT exempt message to display"
+msgstr "Näytettävä ALV-vapautusviesti"

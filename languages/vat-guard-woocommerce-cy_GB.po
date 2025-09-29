@@ -1,0 +1,70 @@
+# Welsh (United Kingdom) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Welsh\n"
+"Language: cy_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != 11) ? 2 : 3;\n"
+
+msgid "VAT Number:"
+msgstr "Rhif TAW:"
+
+msgid "VAT exempt for this order"
+msgstr "Wedi'i eithrio rhag TAW ar gyfer yr archeb hon"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Rhowch rif TAW UE dilys."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Nid yw'r rhif TAW hwn yn ddilys yn ôl gwasanaeth VIES."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "Nid yw dilysu rhif TAW ar gael ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen neu cysylltwch â pherchennog y wefan."
+
+msgid "Please enter your company name."
+msgstr "Rhowch enw eich cwmni."
+
+msgid "Please enter your VAT number."
+msgstr "Rhowch eich rhif TAW."
+
+msgid "VAT Number"
+msgstr "Rhif TAW"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Rhaid i'r wlad anfon gyd-fynd â gwlad y rhif TAW."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Rhaid i'r wlad bilio gyd-fynd â gwlad y rhif TAW."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard ar gyfer WooCommerce"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Yn dilysu rhif TAW..."
+
+msgid "VAT number is valid"
+msgstr "Mae'r rhif TAW yn ddilys"
+
+msgid "Invalid VAT number"
+msgstr "Rhif TAW annilys"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "A yw'r cwsmer wedi'i eithrio rhag TAW"
+
+msgid "Customer VAT number"
+msgstr "Rhif TAW y cwsmer"
+
+msgid "VAT exempt message to display"
+msgstr "Neges eithrio TAW i'w dangos"

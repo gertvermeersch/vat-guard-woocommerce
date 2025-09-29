@@ -1,0 +1,70 @@
+# Polish (Poland) translation for VAT Guard for WooCommerce
+# Copyright (C) 2025 Gert Vermeersch
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://stormlabs.be/\n"
+"POT-Creation-Date: 2025-01-29 12:00+0000\n"
+"PO-Revision-Date: 2025-01-29 12:00+0000\n"
+"Last-Translator: VAT Guard Team\n"
+"Language-Team: Polish\n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "VAT Number:"
+msgstr "Numer VAT:"
+
+msgid "VAT exempt for this order"
+msgstr "Zwolniony z VAT dla tego zamówienia"
+
+msgid "Please enter a valid EU VAT number."
+msgstr "Proszę wprowadzić prawidłowy numer VAT UE."
+
+msgid "This VAT number is not valid according to the VIES service."
+msgstr "Ten numer VAT nie jest prawidłowy według usługi VIES."
+
+msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
+msgstr "Walidacja numeru VAT jest obecnie niedostępna. Spróbuj ponownie później lub skontaktuj się z właścicielem strony."
+
+msgid "Please enter your company name."
+msgstr "Proszę wprowadzić nazwę firmy."
+
+msgid "Please enter your VAT number."
+msgstr "Proszę wprowadzić numer VAT."
+
+msgid "VAT Number"
+msgstr "Numer VAT"
+
+msgid "The shipping country must match the country of the VAT number."
+msgstr "Kraj dostawy musi być zgodny z krajem numeru VAT."
+
+msgid "The billing country must match the country of the VAT number."
+msgstr "Kraj rozliczeniowy musi być zgodny z krajem numeru VAT."
+
+msgid "VAT Guard for WooCommerce"
+msgstr "VAT Guard dla WooCommerce"
+
+msgid "VAT Guard"
+msgstr "VAT Guard"
+
+msgid "Validating VAT number..."
+msgstr "Walidacja numeru VAT..."
+
+msgid "VAT number is valid"
+msgstr "Numer VAT jest prawidłowy"
+
+msgid "Invalid VAT number"
+msgstr "Nieprawidłowy numer VAT"
+
+msgid "Whether the customer is VAT exempt"
+msgstr "Czy klient jest zwolniony z VAT"
+
+msgid "Customer VAT number"
+msgstr "Numer VAT klienta"
+
+msgid "VAT exempt message to display"
+msgstr "Komunikat o zwolnieniu z VAT do wyświetlenia"
