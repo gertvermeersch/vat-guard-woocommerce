@@ -331,6 +331,8 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
     public function handle_vat_field_update($key, $value, $group, $wc_object)
     {
         // Handle VAT field specific updates, happens AFTER validation
+
+        //possible bugfix: don't rely on the $value because this seems to contain outdated info sometimes, use the session data
         $vat = '';
         if ('vat-guard-woocommerce/vat_number' === $key) {
             // Clean and validate VAT number
@@ -342,25 +344,6 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             }
            
         }
-
-        // Always re-evaluate VAT exemption status when any field changes
-        // Get current VAT number from various sources
-
-        // If this is a VAT field update, use the new value
-        // if ('vat-guard-woocommerce/vat_number' === $key) {
-        //     $vat = strtoupper(str_replace([' ', '-', '.'], '', $value));
-        // } else {
-        //     // Get VAT from existing sources
-        //     if ($wc_order && method_exists($wc_order, 'get_meta')) {
-        //         $vat = $wc_order->get_meta('billing_eu_vat_number');
-        //     }
-
-        //     // Fallback to session
-        //     if (empty($vat) && WC()->session) {
-        //         $vat = WC()->session->get('billing_eu_vat_number');
-        //     }
-        // }
-
         // Perform comprehensive validation and exemption check because here we have shipping info
         // If no VAT number, clear exemption and return
         if (empty($vat)) {
@@ -465,13 +448,6 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
     }
 
 
-    /**
-     * Re-evaluate VAT exemption status when shipping method changes
-     */
-    private function reevaluate_vat_exemption()
-    {
-      
-    }
 
     /**
      * Preload VAT field with user data
