@@ -23,7 +23,10 @@ class VAT_Guard_WooCommerce
     private function __construct()
     {
         // Load block integration early if enabled (needs to be before woocommerce_init)
-        add_action('plugins_loaded', array($this, 'maybe_init_block_support'), 20);
+        add_action('plugins_loaded', array($this, 'maybe_init_block_support'), 50);
+
+        // Fallback: also try on woocommerce_loaded if plugins_loaded doesn't work
+        //add_action('woocommerce_loaded', array($this, 'maybe_init_block_support_fallback'));
 
         // Hook into WordPress init to set up the plugin after all plugins are loaded
         add_action('init', array($this, 'init'), 10);
@@ -34,14 +37,31 @@ class VAT_Guard_WooCommerce
      */
     public function maybe_init_block_support()
     {
+      
+
         // Only proceed if WooCommerce is active
         if (!class_exists('WooCommerce')) {
+            error_log('VAT Guard: WooCommerce class not found, skipping block support init');
             return;
         }
-
         // Load block integration if enabled - needs to happen early
         if (get_option('vat_guard_woocommerce_enable_block_checkout', 0)) {
             $this->init_block_checkout_support();
+        }
+    }
+
+    /**
+     * Fallback method to initialize block support if plugins_loaded didn't work
+     */
+    public function maybe_init_block_support_fallback()
+    {
+        error_log('VAT Guard: maybe_init_block_support_fallback called');
+
+        // Only initialize if not already done
+        if (!class_exists('VAT_Guard_Block_Integration')) {
+            $this->maybe_init_block_support();
+        } else {
+            error_log('VAT Guard: Block integration already loaded');
         }
     }
 
@@ -60,6 +80,8 @@ class VAT_Guard_WooCommerce
 
         // Set up hooks based on current request context
         $this->setup_hooks();
+
+
     }
 
     /**
@@ -336,17 +358,17 @@ class VAT_Guard_WooCommerce
                 id="company_name" value="<?php esc_attr_e($company_name); ?>" />
         </p>
         <?php //if (!get_option('vat_guard_woocommerce_enable_block_checkout', 0)) { 
-        // TODO: check if we still need this condition check
-        // ?>
- 
-            <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-                <label for="vat_number"><?php _e('VAT Number', 'vat-guard-woocommerce');
-                if ($require_vat) { ?><span class="required">*</span> <?php } ?></label>
-                <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number"
-                    value="<?php esc_attr_e($vat_number); ?>" />
-            </p>
-            <?php
-      //  }
+                // TODO: check if we still need this condition check
+                // ?>
+
+        <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+            <label for="vat_number"><?php _e('VAT Number', 'vat-guard-woocommerce');
+            if ($require_vat) { ?><span class="required">*</span> <?php } ?></label>
+            <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number"
+                value="<?php esc_attr_e($vat_number); ?>" />
+        </p>
+        <?php
+        //  }
     }
 
     /**
@@ -503,7 +525,7 @@ class VAT_Guard_WooCommerce
         }
     }
 
-        /**
+    /**
      * Sanitize VAT field input
      * Removes dots, spaces, and other non-alphanumeric characters
      * Converts to uppercase
