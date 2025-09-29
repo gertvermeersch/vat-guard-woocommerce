@@ -37,7 +37,6 @@ class VAT_Guard_WooCommerce
      */
     public function maybe_init_block_support()
     {
-      
 
         // Only proceed if WooCommerce is active
         if (!class_exists('WooCommerce')) {
@@ -50,20 +49,7 @@ class VAT_Guard_WooCommerce
         }
     }
 
-    /**
-     * Fallback method to initialize block support if plugins_loaded didn't work
-     */
-    public function maybe_init_block_support_fallback()
-    {
-        error_log('VAT Guard: maybe_init_block_support_fallback called');
-
-        // Only initialize if not already done
-        if (!class_exists('VAT_Guard_Block_Integration')) {
-            $this->maybe_init_block_support();
-        } else {
-            error_log('VAT Guard: Block integration already loaded');
-        }
-    }
+   
 
     /**
      * Initialize the plugin - called on 'init' hook

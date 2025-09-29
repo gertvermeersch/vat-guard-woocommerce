@@ -54,8 +54,10 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
      */
     public function initialize()
     {
-        $this->register_block_frontend_scripts();
-        //  $this->register_block_editor_scripts();
+        // Register scripts on proper hooks instead of immediately
+        add_action('wp_enqueue_scripts', [$this, 'register_block_frontend_scripts']);
+        add_action('enqueue_block_editor_assets', [$this, 'register_block_editor_scripts']);
+        
         $this->register_main_integration();
     }
 
@@ -95,35 +97,46 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
     /**
      * Register scripts for frontend.
      */
-    private function register_block_frontend_scripts()
+    public function register_block_frontend_scripts()
     {
+        // Only register if we're on a page that might use blocks
+        if (!has_block('woocommerce/checkout') && !has_block('woocommerce/cart') && !is_checkout() && !is_cart()) {
+            return;
+        }
+
         $script_path = plugin_dir_path(dirname(__FILE__)) . 'assets/js/vat-guard-block-frontend.js';
         $script_url = plugin_dir_url(dirname(__FILE__)) . 'assets/js/vat-guard-block-frontend.js';
 
-        wp_register_script(
-            'vat-guard-block-frontend',
-            $script_url,
-            ['wp-element', 'wp-i18n', 'wp-data'],
-            filemtime($script_path),
-            true
-        );
+        // Check if file exists before registering
+        if (file_exists($script_path)) {
+            wp_register_script(
+                'vat-guard-block-frontend',
+                $script_url,
+                ['wp-element', 'wp-i18n', 'wp-data'],
+                filemtime($script_path),
+                true
+            );
+        }
     }
 
     /**
      * Register scripts for editor.
      */
-    private function register_block_editor_scripts()
+    public function register_block_editor_scripts()
     {
         $script_path = plugin_dir_path(dirname(__FILE__)) . 'assets/js/vat-guard-block-editor.js';
         $script_url = plugin_dir_url(dirname(__FILE__)) . 'assets/js/vat-guard-block-editor.js';
 
-        wp_register_script(
-            'vat-guard-block-editor',
-            $script_url,
-            ['wp-element', 'wp-i18n'],
-            filemtime($script_path),
-            true
-        );
+        // Check if file exists before registering
+        if (file_exists($script_path)) {
+            wp_register_script(
+                'vat-guard-block-editor',
+                $script_url,
+                ['wp-element', 'wp-i18n'],
+                filemtime($script_path),
+                true
+            );
+        }
     }
 
     /**
