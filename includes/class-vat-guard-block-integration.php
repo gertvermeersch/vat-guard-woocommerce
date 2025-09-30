@@ -473,6 +473,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
                 return $vat;
             }
         }
+        //$this->trigger_frontend_refresh();
         return $value;
     }
 
