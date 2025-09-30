@@ -755,7 +755,7 @@ class VAT_Guard_WooCommerce
         parse_str($post_data, $data);
 
         // Store POST data temporarily for shipping method access
-        $this->current_post_data = $data;
+        //$this->current_post_data = $data;
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         $vat = isset($data['billing_eu_vat_number']) ? trim($data['billing_eu_vat_number']) : '';
         $ship_to_different_address = isset($data['ship_to_different_address']) && $data['ship_to_different_address'] === '1';
@@ -806,7 +806,7 @@ class VAT_Guard_WooCommerce
         }
 
         // Clear stored POST data
-        unset($this->current_post_data);
+       // unset($this->current_post_data);
     }
 
 
