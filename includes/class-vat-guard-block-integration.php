@@ -57,7 +57,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         // Register scripts on proper hooks instead of immediately
         add_action('wp_enqueue_scripts', [$this, 'register_block_frontend_scripts']);
         add_action('enqueue_block_editor_assets', [$this, 'register_block_editor_scripts']);
-        
+
         $this->register_main_integration();
     }
 
@@ -202,7 +202,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
 
         // Force cart recalculation when exemption status changes, this is actually only needed when shipping changes, because handle_vat_field_update is not called then
         $this->main_class->set_vat_exempt_status($is_exempt ? $vat : '');
-      //  $this->trigger_frontend_refresh(); //TODO: maybe it's enough that this is done in handle_vat_field_update
+        //  $this->trigger_frontend_refresh(); //TODO: maybe it's enough that this is done in handle_vat_field_update
 
         return [
             'vat_exempt' => $is_exempt,
@@ -298,6 +298,14 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             3
         );
 
+        // Hook into Store API customer address updates for block checkout
+        add_action(
+            'woocommerce_store_api_cart_update_customer',
+            array($this, 'handle_customer_address_update_store_api'),
+            10,
+            2
+        );
+
 
         // Preload the VAT number field with user meta data if available
         add_filter(
@@ -355,7 +363,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             if (WC()->session) {
                 WC()->session->set('billing_eu_vat_number', $vat);
             }
-           
+
         }
         // Perform comprehensive validation and exemption check because here we have shipping info
         // If no VAT number, clear exemption and return
@@ -441,7 +449,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
     public function handle_shipping_method_change_store_api($package_id, $rate_id, $request_data)
     {
         // Re-evaluate VAT exemption when shipping method changes
-          // Get current VAT number
+        // Get current VAT number
         $vat = $this->get_current_vat_number();
 
         if (empty($vat)) {
@@ -458,6 +466,37 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         if (WC()->cart) {
             WC()->cart->calculate_totals();
         }
+    }
+
+    /**
+     * Handle customer address updates for Store API (block checkout)
+     * Re-evaluates VAT exemption when customer changes their address
+     * @param array $customer_data Updated customer data
+     * @param array $request_data Full request data
+     */
+    public function handle_customer_address_update_store_api($customer_data, $request_data)
+    {
+        // Get current VAT number
+        $vat = $this->get_current_vat_number();
+
+        if (empty($vat)) {
+            return;
+        }
+
+        // Re-evaluate VAT exemption with updated address information
+        // The customer data should already be updated in WC()->customer at this point
+        $is_exempt = $this->calculate_current_exemption_status($vat);
+
+        // Update exemption status
+        $this->main_class->set_vat_exempt_status($is_exempt ? $vat : '');
+
+        // Trigger cart recalculation to reflect VAT changes
+        if (WC()->cart) {
+            WC()->cart->calculate_totals();
+        }
+
+        // Trigger frontend refresh to update VAT exempt status display
+        $this->trigger_frontend_refresh();
     }
 
 
