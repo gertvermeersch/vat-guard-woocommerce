@@ -794,6 +794,15 @@ class VAT_Guard_WooCommerce
     }
 
     /**
+     * Clear VAT exempt status (used when VAT validation fails or is incomplete)
+     * This is a lightweight function for cases where we don't have complete address info
+     */
+    public function clear_vat_exempt_status()
+    {
+        $this->set_customer_vat_exempt_status(false);
+    }
+
+    /**
      * Set VAT exempt status on the customer based on VAT number, shop base country and selected shipping method
      * This method does expect that basic checks on shipping/billing country have already been carried out
      * It will not show any errors but just apply the exemption rules:

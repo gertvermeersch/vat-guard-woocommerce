@@ -510,30 +510,30 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
      * Called when user changes the VAT number field
      * validation hook of field. supports error messages
      * But, we don't get info about the shipping country so we can only check validity of the VAT number itself
-     * Not possible to determine exemption status here
+     * Not possible to determine exemption status here - that happens later in handle_vat_field_update
      */
     public function validate_vat_field($value, $fields = null)
     {
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
 
         if ($require_vat && empty($value)) {
-            $this->main_class->set_vat_exempt_status('');
+            $this->main_class->clear_vat_exempt_status();
             return new WP_Error('vat_number_error', __('Please enter your VAT number.', 'vat-guard-woocommerce'));
         }
 
         if (!empty($value)) {
             $error_message = '';
             if (!$this->main_class->is_valid_eu_vat_number($value, $error_message)) {
-                $this->main_class->set_vat_exempt_status('');
+                $this->main_class->clear_vat_exempt_status();
                 return new WP_Error('vat_number_error', $error_message);
             }
         }
 
-        //workaround, store the VAT in session to handle old values being passed on  in handle_vat_field_update
+        // Store the VAT in session to handle old values being passed in handle_vat_field_update
         if (WC()->session) {
             WC()->session->set('billing_eu_vat_number', $value);
         }
-        return true; //no errors
+        return true; // No errors - exemption status will be determined later with complete address info
     }
 
     /**
