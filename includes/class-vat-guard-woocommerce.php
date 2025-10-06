@@ -49,7 +49,7 @@ class VAT_Guard_WooCommerce
         }
     }
 
-   
+
 
     /**
      * Initialize the plugin - called on 'init' hook
@@ -682,38 +682,117 @@ class VAT_Guard_WooCommerce
     /**
      * Validate VAT number during checkout and set VAT exemption status.
      * This runs after the default WooCommerce validation.
-     * It checks the VAT number, validates it, and sets the exemption status.
-     * TODO: Is this really needed? It seems to duplicate the AJAX validation logic which can't be skipped.
+     * Uses the centralized validation function for consistency.
      */
     public function on_checkout_vat_field($data, $errors)
     {
-        $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         $vat = isset($_POST['billing_eu_vat_number']) ? trim($_POST['billing_eu_vat_number']) : '';
-        // $shipping_country = isset($_POST['shipping_country']) ? strtoupper(trim($_POST['shipping_country'])) : '';
-        if ($require_vat && empty($vat)) {
-            $errors->add('vat_number_error', __('Please enter your VAT number.', 'vat-guard-woocommerce'));
-        } elseif (!empty($vat)) {
-            $error_message = '';
-            if (!$this->is_valid_eu_vat_number($vat, $error_message)) {
-                $errors->add('vat_number_error', $error_message);
-                $this->set_vat_exempt_status('');
-                return;
-            }
-            // Check shipping country matches VAT country
-            $vat_country = substr($vat, 0, 2);
-            $ship_to_different_address = isset($_POST['ship_to_different_address']) && $_POST['ship_to_different_address'] === '1';
-            $country_to_check = $ship_to_different_address && !empty($shipping_country) ?
-                $shipping_country : (isset($_POST['billing_country']) ? strtoupper(trim($_POST['billing_country'])) : '');
+        $ship_to_different_address = isset($_POST['ship_to_different_address']) && $_POST['ship_to_different_address'] === '1';
 
-            if (!empty($country_to_check) && $country_to_check !== $vat_country) {
-                $errors->add('vat_number_error', __('The shipping country must match the country of the VAT number.', 'vat-guard-woocommerce'));
-                $this->set_vat_exempt_status('');
-                return;
-            }
+        $shipping_country = $ship_to_different_address && isset($_POST['shipping_country']) ?
+            trim($_POST['shipping_country']) : '';
+        $billing_country = isset($_POST['billing_country']) ? trim($_POST['billing_country']) : '';
+
+        // Use the centralized validation function
+        $error_messages = [];
+        $this->validate_and_set_vat_exemption(
+            $vat,
+            $billing_country,
+            $shipping_country,
+            $error_messages
+        );
+
+        // Add any error messages to the WooCommerce errors object
+        foreach ($error_messages as $error_message) {
+            $errors->add('vat_number_error', $error_message);
         }
-        // Exemption
-        $this->set_vat_exempt_status($vat);
     }
+    /**
+     * Comprehensive VAT exemption validation and status setting
+     * This is the centralized function that handles all VAT validation and exemption logic
+     * 
+     * @param string $vat VAT number to validate
+     * @param string $billing_country Billing country code (2 letters)
+     * @param string $shipping_country Shipping country code (2 letters)
+     * @param array &$error_messages Array to collect error messages
+     * @return bool True if VAT exempt, false otherwise
+     */
+    public function validate_and_set_vat_exemption($vat, $billing_country = '', $shipping_country = '', &$error_messages = [])
+    {
+        $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
+
+        // Initialize error messages array if not provided
+        if (!is_array($error_messages)) {
+            $error_messages = [];
+        }
+
+        // Step 1: Check if VAT is required but empty
+        if ($require_vat && empty($vat)) {
+            $error_messages[] = __('Please enter your VAT number.', 'vat-guard-woocommerce');
+            $this->set_customer_vat_exempt_status(false);
+            return false;
+        }
+
+        // Step 2: If no VAT number provided (and not required), no exemption
+        if (empty($vat)) {
+            $this->set_customer_vat_exempt_status(false);
+            return false;
+        }
+
+        // Step 3: Validate VAT number format and VIES (if enabled)
+        $vat_error_message = '';
+        if (!$this->is_valid_eu_vat_number($vat, $vat_error_message)) {
+            $error_messages[] = $vat_error_message;
+            $this->set_customer_vat_exempt_status(false);
+            return false;
+        }
+
+        // Step 4: Extract VAT country and validate country matching
+        $vat_country = substr(strtoupper(str_replace([' ', '-', '.'], '', $vat)), 0, 2);
+
+        // Check billing country matches VAT country
+        if (!empty($billing_country) && strtoupper($billing_country) !== $vat_country) {
+            $error_messages[] = __('The billing country must match the country of the VAT number.', 'vat-guard-woocommerce');
+            $this->set_customer_vat_exempt_status(false);
+            return false;
+        }
+
+        // Check shipping country matches VAT country (use shipping if different from billing)
+        $country_to_check = !empty($shipping_country) ? strtoupper($shipping_country) : strtoupper($billing_country);
+        if (!empty($country_to_check) && $country_to_check !== $vat_country) {
+            $error_messages[] = __('The shipping country must match the country of the VAT number.', 'vat-guard-woocommerce');
+            $this->set_customer_vat_exempt_status(false);
+            return false;
+        }
+
+        // Step 5: Check shipping method - no exemption for local pickup
+        $chosen_methods = $this->get_current_shipping_methods();
+        $local_pickup_methods = apply_filters('woocommerce_local_pickup_methods', ['local_pickup']);
+
+        if (count(array_intersect($chosen_methods, $local_pickup_methods)) > 0) {
+            $this->set_customer_vat_exempt_status(false);
+            return false;
+        }
+
+        // Step 6: Check if this is a cross-border transaction (different from shop base country)
+        $shop_base_country = wc_get_base_location()['country'];
+        $is_cross_border = !empty($vat) && $vat_country && $vat_country !== $shop_base_country;
+
+        $this->set_customer_vat_exempt_status($is_cross_border);
+        return $is_cross_border;
+    }
+
+    /**
+     * Set VAT exempt status on the customer (simplified version)
+     * @param bool $is_exempt Whether customer should be VAT exempt
+     */
+    private function set_customer_vat_exempt_status($is_exempt)
+    {
+        if (WC()->customer) {
+            WC()->customer->set_is_vat_exempt($is_exempt);
+        }
+    }
+
     /**
      * Set VAT exempt status on the customer based on VAT number, shop base country and selected shipping method
      * This method does expect that basic checks on shipping/billing country have already been carried out
@@ -721,6 +800,7 @@ class VAT_Guard_WooCommerce
      *      - if local pickup is selected, no exemption will occur
      *      - if the VAT number provided is from a different country than the store, VAT exemption occurs
      * @param string $vat
+     * @deprecated Use validate_and_set_vat_exemption() instead
      */
     public function set_vat_exempt_status($vat)
     {
@@ -748,65 +828,39 @@ class VAT_Guard_WooCommerce
     }
 
     /* Validate VAT number and set VAT exemption after editing the field
-     * It checks the VAT number, validates it, and sets the exemption status.
+     * Uses the centralized validation function for consistency
      */
     public function ajax_validate_and_exempt_vat($post_data)
     {
         parse_str($post_data, $data);
 
-        // Store POST data temporarily for shipping method access
-        //$this->current_post_data = $data;
-        $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         $vat = isset($data['billing_eu_vat_number']) ? trim($data['billing_eu_vat_number']) : '';
         $ship_to_different_address = isset($data['ship_to_different_address']) && $data['ship_to_different_address'] === '1';
+
         // Get shipping country from the data
         // If shipping address is different, use that, otherwise use billing country
-        // This is needed for the classic checkout where shipping country is not always set
         $shipping_country = $ship_to_different_address && isset($data['shipping_country']) ?
-            strtoupper(trim($data['shipping_country'])) : (isset($data['billing_country']) ? strtoupper(trim($data['billing_country'])) : '');
+            trim($data['shipping_country']) : '';
+        $billing_country = isset($data['billing_country']) ? trim($data['billing_country']) : '';
 
-        // Validation
-        if ($require_vat && empty($vat)) {
-            wc_add_notice(__('Please enter your VAT number.', 'vat-guard-woocommerce'), 'error');
-            $this->set_vat_exempt_status('');
-            return;
-        } elseif (!empty($vat)) {
-            $error_message = '';
-            if (!$this->is_valid_eu_vat_number($vat, $error_message)) {
-                wc_add_notice($error_message, 'error');
-                $this->set_vat_exempt_status('');
-                return;
-            }
-            // Check shipping country matches VAT country
-            $vat_country = substr($vat, 0, 2);
-            if (!empty($shipping_country) && $shipping_country !== $vat_country) {
-                wc_add_notice(__('The shipping country must match the country of the VAT number.', 'vat-guard-woocommerce'), 'error');
-                $this->set_vat_exempt_status('');
-                return;
-            }
-            // Check billing country matches VAT country
-            if (isset($data['billing_country'])) {
-                $billing_country = strtoupper(trim($data['billing_country']));
-                if ($billing_country !== $vat_country) {
-                    wc_add_notice(__('The billing country must match the country of the VAT number.', 'vat-guard-woocommerce'), 'error');
-                    $this->set_vat_exempt_status('');
-                    return;
-                }
-            }
+        // Use the centralized validation function
+        $error_messages = [];
+        $this->validate_and_set_vat_exemption(
+            $vat,
+            $billing_country,
+            $shipping_country,
+            $error_messages
+        );
+
+        // Display any error messages
+        foreach ($error_messages as $error_message) {
+            wc_add_notice($error_message, 'error');
         }
-
-        // Exemption
-        $this->set_vat_exempt_status($vat);
 
         // Store VAT number in customer session for later retrieval
         if (!empty($vat) && WC()->customer) {
-            // Store in customer session using WC session
             WC()->session->set('billing_eu_vat_number', $vat);
-            error_log("VAT Guard: Stored VAT number '{$vat}' in customer session");
         }
-
-        // Clear stored POST data
-       // unset($this->current_post_data);
     }
 
 
@@ -884,16 +938,8 @@ class VAT_Guard_WooCommerce
     {
         $chosen_methods = array();
 
-        // First, try to get from stored POST data (during AJAX processing)
-        if (isset($this->current_post_data['shipping_method'])) {
-            if (is_array($this->current_post_data['shipping_method'])) {
-                $chosen_methods = array_map('sanitize_text_field', $this->current_post_data['shipping_method']);
-            } else {
-                $chosen_methods = array(sanitize_text_field($this->current_post_data['shipping_method']));
-            }
-        }
-        // Then try direct POST data (for other contexts)
-        elseif (isset($_POST['shipping_method']) && is_array($_POST['shipping_method'])) {
+        // Try direct POST data first (for AJAX contexts)
+        if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method'])) {
             $chosen_methods = array_map('sanitize_text_field', $_POST['shipping_method']);
         } elseif (isset($_POST['shipping_method'])) {
             $chosen_methods = array(sanitize_text_field($_POST['shipping_method']));
