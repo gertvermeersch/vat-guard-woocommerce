@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 // Load text domain for translations
 //Deprecated
 add_action('plugins_loaded', function() {
-    load_plugin_textdomain('eu-vat-guard', false, dirname(plugin_basename(__FILE__)) . '/languages/');
+    load_plugin_textdomain('eu-vat-guard-for-woocommerce', false, dirname(plugin_basename(__FILE__)) . '/languages/');
 });
 
 // Include main plugin class

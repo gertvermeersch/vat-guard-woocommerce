@@ -86,10 +86,10 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             'restUrl' => rest_url('vat-guard/v1/validate'),
             'nonce' => wp_create_nonce('wp_rest'),
             'messages' => [
-                'validating' => __('Validating VAT number...', 'eu-vat-guard'),
-                'valid' => __('VAT number is valid', 'eu-vat-guard'),
-                'exempt' => __('VAT exempt for this order', 'eu-vat-guard'),
-                'invalid' => __('Invalid VAT number', 'eu-vat-guard')
+                'validating' => __('Validating VAT number...', 'eu-vat-guard-for-woocommerce'),
+                'valid' => __('VAT number is valid', 'eu-vat-guard-for-woocommerce'),
+                'exempt' => __('VAT exempt for this order', 'eu-vat-guard-for-woocommerce'),
+                'invalid' => __('Invalid VAT number', 'eu-vat-guard-for-woocommerce')
             ]
         ];
     }
@@ -182,7 +182,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         return [
             'vat_exempt' => $is_exempt,
             'vat_number' => $this->get_customer_vat_number(),
-            'vat_exempt_message' => $is_exempt ? __('VAT exempt for this order', 'eu-vat-guard') : '',
+            'vat_exempt_message' => $is_exempt ? __('VAT exempt for this order', 'eu-vat-guard-for-woocommerce') : '',
         ];
     }
 
@@ -218,7 +218,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         return [
             'vat_exempt' => $is_exempt,
             'vat_number' => $vat,
-            'vat_exempt_message' => $is_exempt ? __('VAT exempt for this order', 'eu-vat-guard') : '',
+            'vat_exempt_message' => $is_exempt ? __('VAT exempt for this order', 'eu-vat-guard-for-woocommerce') : '',
         ];
     }
 
@@ -229,17 +229,17 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
     {
         return [
             'vat_exempt' => [
-                'description' => __('Whether the customer is VAT exempt', 'eu-vat-guard'),
+                'description' => __('Whether the customer is VAT exempt', 'eu-vat-guard-for-woocommerce'),
                 'type' => 'boolean',
                 'readonly' => true,
             ],
             'vat_number' => [
-                'description' => __('Customer VAT number', 'eu-vat-guard'),
+                'description' => __('Customer VAT number', 'eu-vat-guard-for-woocommerce'),
                 'type' => 'string',
                 'readonly' => true,
             ],
             'vat_exempt_message' => [
-                'description' => __('VAT exempt message to display', 'eu-vat-guard'),
+                'description' => __('VAT exempt message to display', 'eu-vat-guard-for-woocommerce'),
                 'type' => 'string',
                 'readonly' => true,
             ],
@@ -277,10 +277,10 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             woocommerce_register_additional_checkout_field(
                 array(
                     'id' => 'eu-vat-guard/vat_number',
-                    'label' => __('VAT Number', 'eu-vat-guard'),
+                    'label' => __('VAT Number', 'eu-vat-guard-for-woocommerce'),
                     'location' => 'contact',
                     'type' => 'text',
-                    'required' => (bool) get_option('vat_guard_woocommerce_require_vat', 1),
+                    'required' => (bool) get_option('eu_vat_guard_require_vat', 1),
                     'sanitize_callback' => array($this->main_class, 'sanitize_vat_field'),
                     'validate_callback' => array($this, 'validate_vat_field')
                 )
@@ -392,6 +392,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             $error_messages
         );
 
+        wc_clear_notices();
         // Display any error messages
         foreach ($error_messages as $error_message) {
             wc_add_notice($error_message, 'error');
@@ -439,6 +440,11 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             $error_messages
         );
 
+        wc_clear_notices();
+        foreach($error_messages as $error_message) {
+            wc_add_notice($error_message, 'error');
+        }
+
         // Trigger cart recalculation
         if (WC()->cart) {
             WC()->cart->calculate_totals();
@@ -478,6 +484,11 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             $error_messages
         );
 
+        wc_clear_notices();
+        foreach($error_messages as $error_message) {
+            wc_add_notice($error_message, 'error');
+        }
+
         // Trigger cart recalculation to reflect VAT changes
         if (WC()->cart) {
             WC()->cart->calculate_totals();
@@ -514,11 +525,11 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
      */
     public function validate_vat_field($value, $fields = null)
     {
-        $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
+        $require_vat = get_option('eu_vat_guard_require_vat', 1);
 
         if ($require_vat && empty($value)) {
             $this->main_class->clear_vat_exempt_status();
-            return new WP_Error('vat_number_error', __('Please enter your VAT number.', 'eu-vat-guard'));
+            return new WP_Error('vat_number_error', __('Please enter your VAT number.', 'eu-vat-guard-for-woocommerce'));
         }
 
         if (!empty($value)) {
@@ -558,10 +569,10 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             'restUrl' => rest_url('vat-guard/v1/validate'),
             'nonce' => wp_create_nonce('wp_rest'),
             'messages' => array(
-                'validating' => __('Validating VAT number...', 'eu-vat-guard'),
-                'valid' => __('VAT number is valid', 'eu-vat-guard'),
-                'exempt' => __('VAT exempt for this order', 'eu-vat-guard'),
-                'invalid' => __('Invalid VAT number', 'eu-vat-guard')
+                'validating' => __('Validating VAT number...', 'eu-vat-guard-for-woocommerce'),
+                'valid' => __('VAT number is valid', 'eu-vat-guard-for-woocommerce'),
+                'exempt' => __('VAT exempt for this order', 'eu-vat-guard-for-woocommerce'),
+                'invalid' => __('Invalid VAT number', 'eu-vat-guard-for-woocommerce')
             )
         ));
     }
@@ -623,7 +634,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             return new WP_REST_Response(array(
                 'valid' => false,
                 'exempt' => false,
-                'message' => __('The billing country must match the country of the VAT number.', 'eu-vat-guard')
+                'message' => __('The billing country must match the country of the VAT number.', 'eu-vat-guard-for-woocommerce')
             ), 200);
         }
 
@@ -634,7 +645,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         return new WP_REST_Response(array(
             'valid' => true,
             'exempt' => $is_exempt,
-            'message' => $is_exempt ? __('VAT exempt for this order', 'eu-vat-guard') : __('VAT number is valid', 'eu-vat-guard')
+            'message' => $is_exempt ? __('VAT exempt for this order', 'eu-vat-guard-for-woocommerce') : __('VAT number is valid', 'eu-vat-guard-for-woocommerce')
         ), 200);
     }
 
@@ -659,43 +670,43 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
      */
     private function trigger_frontend_refresh()
     {
-        // Method 1: Invalidate WooCommerce cart cache
-        if (function_exists('wc_clear_notices')) {
-            // Clear any existing notices to prevent duplicates
-            wc_clear_notices();
-        }
+        // // Method 1: Invalidate WooCommerce cart cache
+        // if (function_exists('wc_clear_notices')) {
+        //     // Clear any existing notices to prevent duplicates
+        //     wc_clear_notices();
+        // }
 
-        if (WC()->cart) {
-            WC()->cart->calculate_totals();
-        }
+        // if (WC()->cart) {
+        //     WC()->cart->calculate_totals();
+        // }
 
 
-        // Method 3: Set a flag that JavaScript can detect
-        if (WC()->session) {
-            WC()->session->set('vat_guard_status_changed', time());
-        }
+        // // Method 3: Set a flag that JavaScript can detect
+        // if (WC()->session) {
+        //     WC()->session->set('vat_guard_status_changed', time());
+        // }
 
-        // Method 4: Add a JavaScript snippet to force refresh (for block checkout)
-        add_action('wp_footer', function () {
-            if (is_checkout() || is_cart()) {
-                echo '<script>
-                    if (window.wp && window.wp.data && window.wp.data.dispatch) {
-                        // Force refresh of cart data
-                        setTimeout(function() {
-                            const cartStore = window.wp.data.dispatch("wc/store/cart");
-                            if (cartStore && cartStore.invalidateResolutionForStore) {
-                                cartStore.invalidateResolutionForStore();
-                            }
-                            // Also try to refresh checkout data
-                            const checkoutStore = window.wp.data.dispatch("wc/store/checkout");
-                            if (checkoutStore && checkoutStore.invalidateResolutionForStore) {
-                                checkoutStore.invalidateResolutionForStore();
-                            }
-                        }, 100);
-                    }
-                </script>';
-            }
-        });
+        // // Method 4: Add a JavaScript snippet to force refresh (for block checkout)
+        // add_action('wp_footer', function () {
+        //     if (is_checkout() || is_cart()) {
+        //         echo '<script>
+        //             if (window.wp && window.wp.data && window.wp.data.dispatch) {
+        //                 // Force refresh of cart data
+        //                 setTimeout(function() {
+        //                     const cartStore = window.wp.data.dispatch("wc/store/cart");
+        //                     if (cartStore && cartStore.invalidateResolutionForStore) {
+        //                         cartStore.invalidateResolutionForStore();
+        //                     }
+        //                     // Also try to refresh checkout data
+        //                     const checkoutStore = window.wp.data.dispatch("wc/store/checkout");
+        //                     if (checkoutStore && checkoutStore.invalidateResolutionForStore) {
+        //                         checkoutStore.invalidateResolutionForStore();
+        //                     }
+        //                 }, 100);
+        //             }
+        //         </script>';
+        //     }
+        // });
     }
 
     /**
