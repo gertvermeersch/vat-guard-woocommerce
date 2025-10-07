@@ -1,12 +1,12 @@
 <?php
 /*
-Plugin Name: VAT Guard for WooCommerce
-Description: Manage EU VAT numbers and company information for WooCommerce customers. Adds company and VAT fields to registration, account, and checkout, and provides admin tools for VAT management.
+Plugin Name: EU VAT Guard for WooCommerce
+Description: Manage EU VAT numbers and company information for WooCommerce customers and B2B. Adds company and VAT fields to registration, account, and checkout, exempts VAT (reverse charge) where applicable and provides admin tools for VAT management.
 Version: 1.0.0
-Author: Gert Vermeersch
+Author: Stormlabs
 Author URI: https://stormlabs.be/
 License: GPL2
-Text Domain: vat-guard-woocommerce
+Text Domain: eu-vat-guard
 Domain Path: /languages
 */
 
@@ -15,16 +15,17 @@ if (!defined('ABSPATH')) {
 }
 
 // Load text domain for translations
+//Deprecated
 add_action('plugins_loaded', function() {
-    load_plugin_textdomain('vat-guard-woocommerce', false, dirname(plugin_basename(__FILE__)) . '/languages/');
+    load_plugin_textdomain('eu-vat-guard', false, dirname(plugin_basename(__FILE__)) . '/languages/');
 });
 
 // Include main plugin class
-require_once plugin_dir_path(__FILE__) . 'includes/class-vat-guard-woocommerce.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-vat-guard.php';
 
 // Initialize the plugin
 add_action('plugins_loaded', function() {
-    if (class_exists('VAT_Guard_WooCommerce')) {
-        VAT_Guard_WooCommerce::instance();
+    if (class_exists('EU_VAT_Guard')) {
+        EU_VAT_Guard::instance();
     }
 }, 20); // Load after text domain

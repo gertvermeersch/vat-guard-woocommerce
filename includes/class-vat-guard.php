@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class VAT_Guard_WooCommerce
+class EU_VAT_Guard
 {
     /**
      * Show a VAT exempt notice in the order review totals if VAT is removed.
@@ -76,13 +76,13 @@ class VAT_Guard_WooCommerce
     private function load_dependencies()
     {
         // Always load VIES for validation (lightweight)
-        if (!class_exists('VAT_Guard_WooCommerce_VIES')) {
-            require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-vies.php';
+        if (!class_exists('EU_VAT_Guard_VIES')) {
+            require_once plugin_dir_path(__FILE__) . 'class-vat-guard-vies.php';
         }
 
         // Load admin functionality only in admin
         if (is_admin()) {
-            require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-admin.php';
+            require_once plugin_dir_path(__FILE__) . 'class-vat-guard-admin.php';
         }
 
         // Block integration is loaded earlier in maybe_init_block_support()
@@ -191,7 +191,7 @@ class VAT_Guard_WooCommerce
         // Admin logic moved to VAT_Guard_WooCommerce_Admin
         if (is_admin()) {
             //admin screen functions
-            require_once plugin_dir_path(__FILE__) . 'class-vat-guard-woocommerce-admin.php';
+            require_once plugin_dir_path(__FILE__) . 'class-vat-guard-admin.php';
 
             // Show VAT number in the WooCommerce admin order edit screen (billing section)
             add_action('woocommerce_admin_order_data_after_billing_address', array($this, 'show_vat_in_admin_order'));
@@ -222,7 +222,7 @@ class VAT_Guard_WooCommerce
     public function add_vat_number_replacement($replacements, $args)
     {
         $replacements['{vat_number}'] = !empty($args['vat_number']) ?
-            __('VAT Number:', 'vat-guard-woocommerce') . ' ' . $args['vat_number'] : '';
+            __('VAT Number:', 'eu-vat-guard') . ' ' . $args['vat_number'] : '';
         return $replacements;
     }
 
@@ -242,7 +242,7 @@ class VAT_Guard_WooCommerce
                 $is_exempt = get_post_meta($order->get_id(), 'billing_is_vat_exempt', true);
             }
             if ($is_exempt === 'yes') {
-                $address['vat_status'] = __('VAT exempt', 'vat-guard-woocommerce');
+                $address['vat_status'] = __('VAT exempt', 'eu-vat-guard');
             }
         }
         return $address;
@@ -288,7 +288,7 @@ class VAT_Guard_WooCommerce
         // Try to get VAT from block checkout additional fields first
         $vat = '';
         if (function_exists('woocommerce_get_order_additional_field_value')) {
-            $vat = woocommerce_get_order_additional_field_value($order, 'vat-guard-woocommerce/vat_number');
+            $vat = woocommerce_get_order_additional_field_value($order, 'eu-vat-guard/vat_number');
         }
 
         // Fallback to custom meta field (classic checkout or block fallback)
@@ -314,14 +314,14 @@ class VAT_Guard_WooCommerce
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="company_name"
                 id="company_name"
-                placeholder="<?php _e('Company Name', 'vat-guard-woocommerce'); ?><?php echo $require_company ? ' *' : ''; ?>"
+                placeholder="<?php _e('Company Name', 'eu-vat-guard'); ?><?php echo $require_company ? ' *' : ''; ?>"
                 <?php if ($require_company)
                     echo 'required'; ?> value="<?php if (!empty($_POST['company_name']))
                            esc_attr_e($_POST['company_name']); ?>" />
         </p>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number"
-                placeholder="<?php _e('VAT Number', 'vat-guard-woocommerce'); ?><?php echo $require_vat ? ' *' : ''; ?>" value="<?php if (!empty($_POST['vat_number']))
+                placeholder="<?php _e('VAT Number', 'eu-vat-guard'); ?><?php echo $require_vat ? ' *' : ''; ?>" value="<?php if (!empty($_POST['vat_number']))
                               esc_attr_e($_POST['vat_number']); ?>" <?php if ($require_vat) {
                                    echo 'required';
                                } ?> />
@@ -338,7 +338,7 @@ class VAT_Guard_WooCommerce
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         ?>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-            <label for="company_name"><?php _e('Company Name', 'vat-guard-woocommerce');
+            <label for="company_name"><?php _e('Company Name', 'eu-vat-guard');
             if ($require_company) { ?><span class="required">*</span> <?php } ?></label>
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="company_name"
                 id="company_name" value="<?php esc_attr_e($company_name); ?>" />
@@ -348,7 +348,7 @@ class VAT_Guard_WooCommerce
                 // ?>
 
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-            <label for="vat_number"><?php _e('VAT Number', 'vat-guard-woocommerce');
+            <label for="vat_number"><?php _e('VAT Number', 'eu-vat-guard');
             if ($require_vat) { ?><span class="required">*</span> <?php } ?></label>
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number"
                 value="<?php esc_attr_e($vat_number); ?>" />
@@ -399,7 +399,7 @@ class VAT_Guard_WooCommerce
         ];
         $country = substr($vat, 0, 2);
         if (!in_array($country, $eu_countries) || strlen($vat) < 8 || strlen($vat) > 14) {
-            $error_message = __('Please enter a valid EU VAT number.', 'vat-guard-woocommerce');
+            $error_message = __('Please enter a valid EU VAT number.', 'eu-vat-guard');
             return false;
         }
         // VAT number regex patterns for all EU countries
@@ -433,23 +433,23 @@ class VAT_Guard_WooCommerce
             'SK' => '/^SK\d{10}$/',                  // Slovakia
         ];
         if (isset($patterns[$country]) && preg_match($patterns[$country], $vat) !== 1) {
-            $error_message = __('Please enter a valid EU VAT number.', 'vat-guard-woocommerce');
+            $error_message = __('Please enter a valid EU VAT number.', 'eu-vat-guard');
             return false;
         }
         // VIES check if required
         if ($require_vies) {
             $ignore_vies_error = get_option('vat_guard_woocommerce_ignore_vies_error', 0);
             $number = substr($vat, 2);
-            $vies_result = VAT_Guard_WooCommerce_VIES::check_vat($country, $number);
+            $vies_result = EU_VAT_Guard_VIES::check_vat($country, $number);
             if ($vies_result === false) {
-                $error_message = __('This VAT number is not valid according to the VIES service.', 'vat-guard-woocommerce');
+                $error_message = __('This VAT number is not valid according to the VIES service.', 'eu-vat-guard');
                 return false;
             } elseif ($vies_result === null) {
                 if ($ignore_vies_error) {
                     // Allow checkout if VIES is unavailable and option is enabled
                     return true;
                 }
-                $error_message = __('VAT number validation is currently unavailable. Please try again later or contact the website owner.', 'vat-guard-woocommerce');
+                $error_message = __('VAT number validation is currently unavailable. Please try again later or contact the website owner.', 'eu-vat-guard');
                 return false;
             }
         }
@@ -468,10 +468,10 @@ class VAT_Guard_WooCommerce
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
 
         if ($require_company && empty($_POST['company_name'])) {
-            $errors->add('company_name_error', __('Please enter your company name.', 'vat-guard-woocommerce'));
+            $errors->add('company_name_error', __('Please enter your company name.', 'eu-vat-guard'));
         }
         if ($require_vat && empty($_POST['vat_number'])) {
-            $errors->add('vat_number_error', __('Please enter your VAT number.', 'vat-guard-woocommerce'));
+            $errors->add('vat_number_error', __('Please enter your VAT number.', 'eu-vat-guard'));
         } elseif (!empty($_POST['vat_number'])) {
             $error_message = '';
             if (!$this->is_valid_eu_vat_number($_POST['vat_number'], $error_message)) {
@@ -489,7 +489,7 @@ class VAT_Guard_WooCommerce
         $require_company = get_option('vat_guard_woocommerce_require_company', 1);
         $require_vat = get_option('vat_guard_woocommerce_require_vat', 1);
         if ($require_vat && isset($_POST['vat_number']) && empty($_POST['vat_number'])) {
-            wc_add_notice(__('Please enter your VAT number.', 'vat-guard-woocommerce'), 'error');
+            wc_add_notice(__('Please enter your VAT number.', 'eu-vat-guard'), 'error');
             return;
         }
         if (!empty($_POST['vat_number'])) {
@@ -500,7 +500,7 @@ class VAT_Guard_WooCommerce
             }
         }
         if ($require_company && isset($_POST['company_name']) && empty($_POST['company_name'])) {
-            wc_add_notice(__('Please enter your company name.', 'vat-guard-woocommerce'), 'error');
+            wc_add_notice(__('Please enter your company name.', 'eu-vat-guard'), 'error');
             return;
         }
         if (isset($_POST['company_name'])) {
@@ -594,8 +594,8 @@ class VAT_Guard_WooCommerce
 
         $fields['billing']['billing_eu_vat_number'] = array(
             'type' => 'text',
-            'label' => __('VAT Number', 'vat-guard-woocommerce'),
-            'placeholder' => __('VAT Number', 'vat-guard-woocommerce'),
+            'label' => __('VAT Number', 'eu-vat-guard'),
+            'placeholder' => __('VAT Number', 'eu-vat-guard'),
             'required' => (bool) $require_vat,
             'class' => array('form-row-wide', 'update_totals_on_change'),
             'priority' => 26,
@@ -728,7 +728,7 @@ class VAT_Guard_WooCommerce
 
         // Step 1: Check if VAT is required but empty
         if ($require_vat && empty($vat)) {
-            $error_messages[] = __('Please enter your VAT number.', 'vat-guard-woocommerce');
+            $error_messages[] = __('Please enter your VAT number.', 'eu-vat-guard');
             $this->set_customer_vat_exempt_status(false);
             return false;
         }
@@ -752,7 +752,7 @@ class VAT_Guard_WooCommerce
 
         // Check billing country matches VAT country
         if (!empty($billing_country) && strtoupper($billing_country) !== $vat_country) {
-            $error_messages[] = __('The billing country must match the country of the VAT number.', 'vat-guard-woocommerce');
+            $error_messages[] = __('The billing country must match the country of the VAT number.', 'eu-vat-guard');
             $this->set_customer_vat_exempt_status(false);
             return false;
         }
@@ -760,7 +760,7 @@ class VAT_Guard_WooCommerce
         // Check shipping country matches VAT country (use shipping if different from billing)
         $country_to_check = !empty($shipping_country) ? strtoupper($shipping_country) : strtoupper($billing_country);
         if (!empty($country_to_check) && $country_to_check !== $vat_country) {
-            $error_messages[] = __('The shipping country must match the country of the VAT number.', 'vat-guard-woocommerce');
+            $error_messages[] = __('The shipping country must match the country of the VAT number.', 'eu-vat-guard');
             $this->set_customer_vat_exempt_status(false);
             return false;
         }
@@ -881,7 +881,7 @@ class VAT_Guard_WooCommerce
         // Check if this order has VAT data from block checkout (additional fields)
         $block_vat = '';
         if (function_exists('woocommerce_get_order_additional_field_value')) {
-            $block_vat = woocommerce_get_order_additional_field_value($order, 'vat-guard-woocommerce/vat_number');
+            $block_vat = woocommerce_get_order_additional_field_value($order, 'eu-vat-guard/vat_number');
         }
 
         // Only show custom VAT display if WooCommerce hasn't already shown it via additional fields
@@ -894,7 +894,7 @@ class VAT_Guard_WooCommerce
             }
 
             if (!empty($custom_vat)) {
-                echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($custom_vat) . '</p>';
+                echo '<p><strong>' . esc_html__('VAT Number', 'eu-vat-guard') . ':</strong> ' . esc_html($custom_vat) . '</p>';
             }
         }
 
@@ -904,7 +904,7 @@ class VAT_Guard_WooCommerce
             $is_exempt = get_post_meta($order->get_id(), 'billing_is_vat_exempt', true);
         }
         if ($is_exempt === 'yes') {
-            echo '<p style="color: #008000;"><strong>' . esc_html__('VAT exempt for this order', 'vat-guard-woocommerce') . '</strong></p>';
+            echo '<p style="color: #008000;"><strong>' . esc_html__('VAT exempt for this order', 'eu-vat-guard') . '</strong></p>';
         }
     }
 
@@ -916,7 +916,7 @@ class VAT_Guard_WooCommerce
         $vat = $this->get_order_vat_number($order);
 
         if ($vat) {
-            echo '<p><strong>' . esc_html__('VAT Number', 'vat-guard-woocommerce') . ':</strong> ' . esc_html($vat) . '</p>';
+            echo '<p><strong>' . esc_html__('VAT Number', 'eu-vat-guard') . ':</strong> ' . esc_html($vat) . '</p>';
         }
     }
 
@@ -930,7 +930,7 @@ class VAT_Guard_WooCommerce
         if (WC()->customer && WC()->customer->get_is_vat_exempt()) {
             echo '<tr class="vat-exempt-notice">';
             echo '<th colspan="2" style="color: #00a32a; font-weight: bold; text-align: center; padding: 10px;">';
-            echo '✓ ' . esc_html__('VAT exempt for this order', 'vat-guard-woocommerce');
+            echo '✓ ' . esc_html__('VAT exempt for this order', 'eu-vat-guard');
             echo '</th>';
             echo '</tr>';
         }

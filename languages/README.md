@@ -1,6 +1,6 @@
 # VAT Guard for WooCommerce - Translations
 
-This directory contains translation files for VAT Guard for WooCommerce plugin.
+This directory contains translation files for EU VAT Guard for WooCommerce plugin.
 
 ## Available Languages
 
@@ -42,9 +42,9 @@ The plugin is fully translated into the following languages:
 
 ## File Structure
 
-- `vat-guard-woocommerce.pot` - Translation template file
-- `vat-guard-woocommerce-[locale].po` - Translation files for each language
-- `vat-guard-woocommerce-[locale].mo` - Compiled translation files (generated automatically)
+- `eu-vat-guard.pot` - Translation template file
+- `eu-vat-guard-[locale].po` - Translation files for each language
+- `eu-vat-guard-[locale].mo` - Compiled translation files (generated automatically)
 
 ## Translation Coverage
 
@@ -77,8 +77,8 @@ The translations use appropriate VAT terminology for each country:
 
 To contribute a new translation or improve an existing one:
 
-1. Copy the `vat-guard-woocommerce.pot` template file
-2. Rename it to `vat-guard-woocommerce-[locale].po`
+1. Copy the `eu-vat-guard.pot` template file
+2. Rename it to `eu-vat-guard-[locale].po`
 3. Translate all strings using a PO editor like Poedit
 4. Test the translation in your WordPress installation
 5. Submit a pull request or contact the plugin author
@@ -93,12 +93,12 @@ WordPress requires compiled `.mo` files for translations to work. These are auto
 
 ## Plugin Text Domain
 
-The plugin uses the text domain: `vat-guard-woocommerce`
+The plugin uses the text domain: `eu-vat-guard`
 
 ## WordPress Language Packs
 
 If your language is not available, you can also contribute translations through WordPress.org's translation system at:
-https://translate.wordpress.org/projects/wp-plugins/vat-guard-woocommerce/
+https://translate.wordpress.org/projects/wp-plugins/eu-vat-guard/
 
 ## Support
 

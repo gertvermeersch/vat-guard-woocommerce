@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class VAT_Guard_WooCommerce_VIES
+class EU_VAT_Guard_VIES
 {
     /**
      * Check VAT number validity using the VIES SOAP API

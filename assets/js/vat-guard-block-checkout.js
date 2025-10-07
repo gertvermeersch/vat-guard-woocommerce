@@ -77,7 +77,7 @@
         //             isValidating: false,
         //             isValid: false,
         //             isExempt: false,
-        //             message: __('VAT validation failed. Please try again.', 'vat-guard-woocommerce')
+        //             message: __('VAT validation failed. Please try again.', 'eu-vat-guard')
         //         });
         //     }
         // }, 1000);
@@ -144,16 +144,16 @@
         // };
 
         // Register checkout filters
-        // registerCheckoutFilters('vat-guard-woocommerce', {
+        // registerCheckoutFilters('eu-vat-guard', {
         //     // Add validation message after VAT field
         //     additionalFields: (additionalFields, extensions, args) => {
         //         return additionalFields.map(field => {
-        //             if (field.id === 'vat-guard-woocommerce/vat_number') {
+        //             if (field.id === 'eu-vat-guard/vat_number') {
         //                 const billingAddress = select('wc/store/cart')?.getBillingAddress?.() || {};
         //                 const checkoutData = select('wc/store/checkout')?.getCheckoutData?.() || {};
 
         //                 // Get VAT number from additional fields
-        //                 const vatNumber = checkoutData?.additional_fields?.['vat-guard-woocommerce/vat_number'] || '';
+        //                 const vatNumber = checkoutData?.additional_fields?.['eu-vat-guard/vat_number'] || '';
         //                 const billingCountry = billingAddress.country || '';
 
         //                 return {
@@ -174,7 +174,7 @@
         // Add VAT exempt notice to checkout summary
         const addVatExemptNotice = () => {
             const cartData = select('wc/store/cart')?.getCartData?.() || {};
-            const isVatExempt = cartData?.extensions?.['vat-guard-woocommerce']?.vat_exempt;
+            const isVatExempt = cartData?.extensions?.['eu-vat-guard']?.vat_exempt;
 
             // Remove existing notice
             const existingNotice = document.querySelector('.vat-guard-exempt-notice');
@@ -208,7 +208,7 @@
         let lastCartData = null;
         const monitorCartChanges = () => {
             const cartData = select('wc/store/cart')?.getCartData?.() || {};
-            const currentVatExempt = cartData?.extensions?.['vat-guard-woocommerce']?.vat_exempt;
+            const currentVatExempt = cartData?.extensions?.['eu-vat-guard']?.vat_exempt;
 
             // Debug: Log cart data
            //  console.log('VAT Guard: Cart data extensions:', cartData?.extensions);

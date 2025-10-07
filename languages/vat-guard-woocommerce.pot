@@ -15,13 +15,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Manual\n"
 
-#: includes/class-vat-guard-woocommerce.php:217
+#: includes/class-eu-vat-guard.php:217
 msgid "VAT Number:"
 msgstr ""
 
-#: includes/class-vat-guard-woocommerce.php:237
-#: includes/class-vat-guard-woocommerce.php:836
-#: includes/class-vat-guard-woocommerce.php:862
+#: includes/class-eu-vat-guard.php:237
+#: includes/class-eu-vat-guard.php:836
+#: includes/class-eu-vat-guard.php:862
 #: includes/class-vat-guard-block-integration.php:89
 #: includes/class-vat-guard-block-integration.php:172
 #: includes/class-vat-guard-block-integration.php:197
@@ -30,58 +30,58 @@ msgstr ""
 msgid "VAT exempt for this order"
 msgstr ""
 
-#: includes/class-vat-guard-woocommerce.php:394
-#: includes/class-vat-guard-woocommerce.php:428
+#: includes/class-eu-vat-guard.php:394
+#: includes/class-eu-vat-guard.php:428
 msgid "Please enter a valid EU VAT number."
 msgstr ""
 
-#: includes/class-vat-guard-woocommerce.php:437
+#: includes/class-eu-vat-guard.php:437
 msgid "This VAT number is not valid according to the VIES service."
 msgstr ""
 
-#: includes/class-vat-guard-woocommerce.php:444
+#: includes/class-eu-vat-guard.php:444
 msgid "VAT number validation is currently unavailable. Please try again later or contact the website owner."
 msgstr ""
 
-#: includes/class-vat-guard-woocommerce.php:463
-#: includes/class-vat-guard-woocommerce.php:495
+#: includes/class-eu-vat-guard.php:463
+#: includes/class-eu-vat-guard.php:495
 msgid "Please enter your company name."
 msgstr ""
 
-#: includes/class-vat-guard-woocommerce.php:466
-#: includes/class-vat-guard-woocommerce.php:484
-#: includes/class-vat-guard-woocommerce.php:686
-#: includes/class-vat-guard-woocommerce.php:762
+#: includes/class-eu-vat-guard.php:466
+#: includes/class-eu-vat-guard.php:484
+#: includes/class-eu-vat-guard.php:686
+#: includes/class-eu-vat-guard.php:762
 #: includes/class-vat-guard-block-integration.php:480
 msgid "Please enter your VAT number."
 msgstr ""
 
-#: includes/class-vat-guard-woocommerce.php:589
-#: includes/class-vat-guard-woocommerce.php:590
-#: includes/class-vat-guard-woocommerce.php:826
-#: includes/class-vat-guard-woocommerce.php:848
+#: includes/class-eu-vat-guard.php:589
+#: includes/class-eu-vat-guard.php:590
+#: includes/class-eu-vat-guard.php:826
+#: includes/class-eu-vat-guard.php:848
 #: includes/class-vat-guard-block-integration.php:256
 msgid "VAT Number"
 msgstr ""
 
-#: includes/class-vat-guard-woocommerce.php:701
-#: includes/class-vat-guard-woocommerce.php:775
-#: includes/class-vat-guard-woocommerce.php:783
+#: includes/class-eu-vat-guard.php:701
+#: includes/class-eu-vat-guard.php:775
+#: includes/class-eu-vat-guard.php:783
 #: includes/class-vat-guard-block-integration.php:390
 #: includes/class-vat-guard-block-integration.php:400
 #: includes/class-vat-guard-block-integration.php:585
 msgid "The shipping country must match the country of the VAT number."
 msgstr ""
 
-#: includes/class-vat-guard-woocommerce.php:783
+#: includes/class-eu-vat-guard.php:783
 msgid "The billing country must match the country of the VAT number."
 msgstr ""
 
-#: includes/class-vat-guard-woocommerce-admin.php:34
+#: includes/class-eu-vat-guard-admin.php:34
 msgid "VAT Guard for WooCommerce"
 msgstr ""
 
-#: includes/class-vat-guard-woocommerce-admin.php:35
+#: includes/class-eu-vat-guard-admin.php:35
 msgid "VAT Guard"
 msgstr ""
 
