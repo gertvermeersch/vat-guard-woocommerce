@@ -6,7 +6,7 @@ Version: 1.0.0
 Author: Stormlabs
 Author URI: https://stormlabs.be/
 License: GPL2
-Text Domain: eu-vat-guard
+Text Domain: eu-vat-guard-for-woocommerce
 Domain Path: /languages
 */
 

@@ -25,7 +25,7 @@ class EU_VAT_Guard_VIES
         } catch (Exception $e) {
             if (ini_get('display_errors')) {
                 // Show the actual error if display_errors is enabled
-                echo '<div style="color:red;font-size:small;">VIES error: ' . htmlspecialchars($e->getMessage()) . '</div>';
+                echo '<div style="color:red;font-size:small;">VIES error: ' . esc_html($e->getMessage()) . '</div>';
             }
             return null; // VIES unavailable or error
         }
