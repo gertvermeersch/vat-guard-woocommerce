@@ -40,7 +40,7 @@ class EU_VAT_Guard
 
         // Only proceed if WooCommerce is active
         if (!class_exists('WooCommerce')) {
-            error_log('VAT Guard: WooCommerce class not found, skipping block support init');
+            //error_log('VAT Guard: WooCommerce class not found, skipping block support init');
             return;
         }
         // Load block integration if enabled - needs to happen early
@@ -317,14 +317,17 @@ class EU_VAT_Guard
                 placeholder="<?php esc_attr_e('Company Name', 'eu-vat-guard-for-woocommerce'); ?><?php echo $require_company ? ' *' : ''; ?>"
                 <?php if ($require_company)
                     echo 'required'; ?> value="<?php if (!empty($_POST['company_name']))
+                           // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Just displaying previously submitted value
                            echo esc_attr(wp_unslash($_POST['company_name'])); ?>" />
         </p>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number"
-                placeholder="<?php esc_attr_e('VAT Number', 'eu-vat-guard-for-woocommerce'); ?><?php echo $require_vat ? ' *' : ''; ?>" value="<?php if (!empty($_POST['vat_number']))
-                              echo esc_attr(wp_unslash($_POST['vat_number'])); ?>" <?php if ($require_vat) {
-                                   echo 'required';
-                               } ?> />
+                placeholder="<?php esc_attr_e('VAT Number', 'eu-vat-guard-for-woocommerce'); ?><?php echo $require_vat ? ' *' : ''; ?>"
+                value="<?php if (!empty($_POST['vat_number']))
+                    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Just displaying previously submitted value
+                    echo esc_attr(wp_unslash($_POST['vat_number'])); ?>" <?php if ($require_vat) {
+                          echo 'required';
+                      } ?> />
         </p>
         <?php
     }
@@ -467,9 +470,11 @@ class EU_VAT_Guard
         $require_company = get_option('eu_vat_guard_require_company', 1);
         $require_vat = get_option('eu_vat_guard_require_vat', 1);
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WordPress handles nonce verification for registration forms
         $company_name = isset($_POST['company_name']) ? sanitize_text_field(wp_unslash($_POST['company_name'])) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WordPress handles nonce verification for registration forms
         $vat_number_raw = isset($_POST['vat_number']) ? sanitize_text_field(wp_unslash($_POST['vat_number'])) : '';
-        
+
         if ($require_company && empty($company_name)) {
             $errors->add('company_name_error', __('Please enter your company name.', 'eu-vat-guard-for-woocommerce'));
         }
@@ -491,9 +496,11 @@ class EU_VAT_Guard
     {
         $require_company = get_option('eu_vat_guard_require_company', 1);
         $require_vat = get_option('eu_vat_guard_require_vat', 1);
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WordPress handles nonce verification for registration forms
         $vat_number = isset($_POST['vat_number']) ? sanitize_text_field(wp_unslash($_POST['vat_number'])) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WordPress handles nonce verification for registration forms
         $company_name = isset($_POST['company_name']) ? sanitize_text_field(wp_unslash($_POST['company_name'])) : '';
-        
+
         if ($require_vat && empty($vat_number)) {
             wc_add_notice(__('Please enter your VAT number.', 'eu-vat-guard-for-woocommerce'), 'error');
             return;
@@ -620,6 +627,7 @@ class EU_VAT_Guard
     {
         // Try to get VAT number from POST data
         $vat_number = '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce handles nonce verification for checkout process
         if (isset($_POST['billing_eu_vat_number'])) {
             $vat_number = sanitize_text_field(wp_unslash($_POST['billing_eu_vat_number']));
         }
@@ -676,7 +684,7 @@ class EU_VAT_Guard
                     update_user_meta($user_id, 'vat_number', $vat_number);
                 }
             }
-        } 
+        }
     }
 
 
@@ -689,11 +697,15 @@ class EU_VAT_Guard
      */
     public function on_checkout_vat_field($data, $errors)
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce handles nonce verification for checkout process
         $vat = isset($_POST['billing_eu_vat_number']) ? sanitize_text_field(wp_unslash($_POST['billing_eu_vat_number'])) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce handles nonce verification for checkout process
         $ship_to_different_address = isset($_POST['ship_to_different_address']) && sanitize_text_field(wp_unslash($_POST['ship_to_different_address'])) === '1';
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce handles nonce verification for checkout process
         $shipping_country = $ship_to_different_address && isset($_POST['shipping_country']) ?
             sanitize_text_field(wp_unslash($_POST['shipping_country'])) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce handles nonce verification for checkout process
         $billing_country = isset($_POST['billing_country']) ? sanitize_text_field(wp_unslash($_POST['billing_country'])) : '';
 
         // Use the centralized validation function
@@ -951,8 +963,10 @@ class EU_VAT_Guard
         $chosen_methods = array();
 
         // Try direct POST data first (for AJAX contexts)
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce handles nonce verification for shipping method updates
         if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method'])) {
             $chosen_methods = array_map('sanitize_text_field', wp_unslash($_POST['shipping_method']));
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce handles nonce verification for shipping method updates
         } elseif (isset($_POST['shipping_method'])) {
             $chosen_methods = array(sanitize_text_field(wp_unslash($_POST['shipping_method'])));
         }

@@ -7,6 +7,11 @@
  * WordPress needs for displaying translations.
  * 
  * Usage: php compile-translations.php
+ * 
+ * Note: This is a CLI-only script. Output escaping is not required since
+ * it cannot be executed in a web context where XSS attacks are possible.
+ * 
+ * phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
  */
 
 if (php_sapi_name() !== 'cli') {

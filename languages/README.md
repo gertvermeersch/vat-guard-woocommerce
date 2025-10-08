@@ -1,4 +1,4 @@
-# VAT Guard for WooCommerce - Translations
+# EU VAT Guard for WooCommerce - Translations
 
 This directory contains translation files for EU VAT Guard for WooCommerce plugin.
 

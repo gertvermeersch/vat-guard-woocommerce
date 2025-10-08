@@ -5,7 +5,8 @@ Description: Manage EU VAT numbers and company information for WooCommerce custo
 Version: 1.0.0
 Author: Stormlabs
 Author URI: https://stormlabs.be/
-License: GPL2
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: eu-vat-guard-for-woocommerce
 Domain Path: /languages
 */
@@ -13,12 +14,6 @@ Domain Path: /languages
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
-
-// Load text domain for translations
-//Deprecated
-add_action('plugins_loaded', function() {
-    load_plugin_textdomain('eu-vat-guard-for-woocommerce', false, dirname(plugin_basename(__FILE__)) . '/languages/');
-});
 
 // Include main plugin class
 require_once plugin_dir_path(__FILE__) . 'includes/class-vat-guard.php';

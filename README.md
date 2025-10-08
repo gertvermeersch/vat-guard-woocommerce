@@ -1,6 +1,11 @@
-# VAT Guard for WooCommerce
+# EU VAT Guard for WooCommerce
 
-**VAT Guard for WooCommerce** is a powerful plugin that adds advanced EU VAT number management and validation to your WooCommerce store. It helps you collect, validate, and manage company VAT numbers for your B2B customers, ensuring compliance and a smooth checkout experience.
+[![WordPress Plugin Version](https://img.shields.io/badge/WordPress-5.0%2B-blue.svg)](https://wordpress.org/)
+[![WooCommerce Version](https://img.shields.io/badge/WooCommerce-4.0%2B-purple.svg)](https://woocommerce.com/)
+[![PHP Version](https://img.shields.io/badge/PHP-7.2%2B-green.svg)](https://php.net/)
+[![License](https://img.shields.io/badge/License-GPLv2%2B-red.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
+
+**EU VAT Guard for WooCommerce** is a powerful plugin that adds advanced EU VAT number management and validation to your WooCommerce store. It helps you collect, validate, and manage company VAT numbers for your B2B customers, ensuring compliance and a smooth checkout experience.
 
 ## Features
 
@@ -40,14 +45,58 @@
    - VAT numbers are validated according to your settings.
    - VAT numbers are shown in the order admin and in order emails.
 
-## Requirements
+## Development
+
+### Requirements
 - WordPress 5.0+
 - WooCommerce 4.0+
 - PHP 7.2+
-- SOAP enabled (for VIES validation)
+- SOAP extension (for VIES validation)
+
+### File Structure
+```
+eu-vat-guard-for-woocommerce/
+├── includes/
+│   ├── class-vat-guard.php              # Main plugin class
+│   ├── class-vat-guard-admin.php        # Admin interface
+│   ├── class-vat-guard-vies.php         # VIES validation
+│   └── class-vat-guard-block-integration.php # Block checkout support
+├── assets/
+│   └── js/
+│       └── vat-guard-block-checkout.js  # Block checkout JavaScript
+├── languages/
+│   ├── compile-translations.php         # Translation compiler
+│   └── *.po, *.mo                      # Translation files
+├── readme.txt                          # WordPress.org readme
+├── README.md                           # This file
+└── vat-guard-woocommerce.php           # Main plugin file
+```
+
+### Translation
+
+The plugin supports all 27 EU languages. To compile translations:
+
+```bash
+cd languages/
+php compile-translations.php
+```
+
+### WordPress.org Submission
+
+This plugin uses:
+- **Text Domain**: `eu-vat-guard-for-woocommerce`
+- **Plugin Slug**: `eu-vat-guard-for-woocommerce`
+- **Stable Tag**: `1.0.0`
 
 ## Support
-For questions, suggestions, or issues, please open an issue on the GitHub repository or contact the plugin author.
+
+- **WordPress.org**: [Plugin Support Forum](https://wordpress.org/support/plugin/eu-vat-guard-for-woocommerce/)
+- **Email**: gert@stormlabs.be
+- **Website**: [https://stormlabs.be/](https://stormlabs.be/)
+
+## License
+
+This plugin is licensed under the GPLv2 or later.
 
 ---
-**Thank you for using VAT Guard for WooCommerce!**
+**Thank you for using EU VAT Guard for WooCommerce!**

@@ -44,7 +44,8 @@ class EU_VAT_Guard_Admin
 
     public static function admin_page()
     {
-        $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'settings';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Simple tab navigation, no data modification
+        $active_tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'settings';
         ?>
         <div class="wrap">
             <h1 style="display:flex;align-items:center;gap:12px;">
