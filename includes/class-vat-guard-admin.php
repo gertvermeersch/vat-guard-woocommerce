@@ -8,41 +8,42 @@ class EU_VAT_Guard_Admin
 {
     public static function register_settings()
     {
-        register_setting('eu_vat_guard_options', 'eu_vat_guard_require_company', [
+        // Basic settings group
+        register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_require_company', [
             'type' => 'boolean',
             'default' => true
         ]);
-        register_setting('eu_vat_guard_options', 'eu_vat_guard_require_vat', [
+        register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_require_vat', [
             'type' => 'boolean',
             'default' => true
         ]);
-        register_setting('eu_vat_guard_options', 'eu_vat_guard_require_vies', [
+        register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_require_vies', [
             'type' => 'boolean',
             'default' => false
         ]);
-        register_setting('eu_vat_guard_options', 'eu_vat_guard_ignore_vies_error', [
+        register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_ignore_vies_error', [
             'type' => 'boolean',
             'default' => false
         ]);
-        register_setting('eu_vat_guard_options', 'eu_vat_guard_enable_block_checkout', [
+        register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_enable_block_checkout', [
             'type' => 'boolean',
             'default' => true
         ]);
         
-        // Advanced settings
-        register_setting('eu_vat_guard_options', 'eu_vat_guard_disable_exemption', [
+        // Advanced settings group
+        register_setting('eu_vat_guard_advanced_options', 'eu_vat_guard_disable_exemption', [
             'type' => 'boolean',
             'default' => false
         ]);
-        register_setting('eu_vat_guard_options', 'eu_vat_guard_company_label', [
+        register_setting('eu_vat_guard_advanced_options', 'eu_vat_guard_company_label', [
             'type' => 'string',
             'default' => ''
         ]);
-        register_setting('eu_vat_guard_options', 'eu_vat_guard_vat_label', [
+        register_setting('eu_vat_guard_advanced_options', 'eu_vat_guard_vat_label', [
             'type' => 'string',
             'default' => ''
         ]);
-        register_setting('eu_vat_guard_options', 'eu_vat_guard_exemption_message', [
+        register_setting('eu_vat_guard_advanced_options', 'eu_vat_guard_exemption_message', [
             'type' => 'string',
             'default' => ''
         ]);
@@ -80,7 +81,7 @@ class EU_VAT_Guard_Admin
         add_submenu_page(
             'woocommerce',
             __('VAT Guard for WooCommerce', 'eu-vat-guard-for-woocommerce'),
-            __('VAT Guard', 'eu-vat-guard-for-woocommerce'),
+            __('EU VAT Guard', 'eu-vat-guard-for-woocommerce'),
             'manage_woocommerce',
             'eu-vat-guard',
             array(__CLASS__, 'admin_page')
@@ -133,7 +134,7 @@ class EU_VAT_Guard_Admin
     {
         ?>
         <form method="post" action="options.php">
-            <?php settings_fields('eu_vat_guard_options'); ?>
+            <?php settings_fields('eu_vat_guard_basic_options'); ?>
             <table class="form-table" role="presentation">
                 <tr>
                     <th scope="row"><?php esc_html_e('Enable Block-based Checkout Support', 'eu-vat-guard-for-woocommerce'); ?></th>
@@ -185,7 +186,7 @@ class EU_VAT_Guard_Admin
     {
         ?>
         <form method="post" action="options.php">
-            <?php settings_fields('eu_vat_guard_options'); ?>
+            <?php settings_fields('eu_vat_guard_advanced_options'); ?>
             
             <h2><?php esc_html_e('Exemption Rules', 'eu-vat-guard-for-woocommerce'); ?></h2>
             <table class="form-table" role="presentation">
@@ -200,6 +201,7 @@ class EU_VAT_Guard_Admin
             </table>
 
             <h2><?php esc_html_e('Custom Labels & Messages', 'eu-vat-guard-for-woocommerce'); ?></h2>
+            <p><?php esc_html_e('These labels and messages will be displayed on the checkout page. Can be translated (e.g. WPML String Translations)', 'eu-vat-guard-for-woocommerce');?></p>
             <table class="form-table" role="presentation">
                 <tr>
                     <th scope="row">
