@@ -103,7 +103,7 @@ https://translate.wordpress.org/projects/wp-plugins/eu-vat-guard/
 ## Support
 
 For translation-related issues or questions, please contact:
-- Email: gert@stormlabs.be
+- Email: dev@stormlabs.be
 - Website: https://stormlabs.be/
 
 ---

@@ -88,7 +88,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             'messages' => [
                 'validating' => __('Validating VAT number...', 'eu-vat-guard-for-woocommerce'),
                 'valid' => __('VAT number is valid', 'eu-vat-guard-for-woocommerce'),
-                'exempt' => __('VAT exempt for this order', 'eu-vat-guard-for-woocommerce'),
+                'exempt' => $this->main_class->get_exemption_message(),
                 'invalid' => __('Invalid VAT number', 'eu-vat-guard-for-woocommerce')
             ]
         ];
@@ -182,7 +182,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         return [
             'vat_exempt' => $is_exempt,
             'vat_number' => $this->get_customer_vat_number(),
-            'vat_exempt_message' => $is_exempt ? __('VAT exempt for this order', 'eu-vat-guard-for-woocommerce') : '',
+            'vat_exempt_message' => $is_exempt ? $this->main_class->get_exemption_message() : '',
         ];
     }
 
@@ -218,7 +218,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         return [
             'vat_exempt' => $is_exempt,
             'vat_number' => $vat,
-            'vat_exempt_message' => $is_exempt ? __('VAT exempt for this order', 'eu-vat-guard-for-woocommerce') : '',
+            'vat_exempt_message' => $is_exempt ? $this->main_class->get_exemption_message() : '',
         ];
     }
 
@@ -277,7 +277,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             woocommerce_register_additional_checkout_field(
                 array(
                     'id' => 'eu-vat-guard/vat_number',
-                    'label' => __('VAT Number', 'eu-vat-guard-for-woocommerce'),
+                    'label' => $this->main_class->get_vat_label(),
                     'location' => 'contact',
                     'type' => 'text',
                     'required' => (bool) get_option('eu_vat_guard_require_vat', 1),
@@ -571,7 +571,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             'messages' => array(
                 'validating' => __('Validating VAT number...', 'eu-vat-guard-for-woocommerce'),
                 'valid' => __('VAT number is valid', 'eu-vat-guard-for-woocommerce'),
-                'exempt' => __('VAT exempt for this order', 'eu-vat-guard-for-woocommerce'),
+                'exempt' => $this->main_class->get_exemption_message(),
                 'invalid' => __('Invalid VAT number', 'eu-vat-guard-for-woocommerce')
             )
         ));
@@ -645,7 +645,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         return new WP_REST_Response(array(
             'valid' => true,
             'exempt' => $is_exempt,
-            'message' => $is_exempt ? __('VAT exempt for this order', 'eu-vat-guard-for-woocommerce') : __('VAT number is valid', 'eu-vat-guard-for-woocommerce')
+            'message' => $is_exempt ? $this->main_class->get_exemption_message() : __('VAT number is valid', 'eu-vat-guard-for-woocommerce')
         ), 200);
     }
 

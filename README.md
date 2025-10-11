@@ -91,7 +91,7 @@ This plugin uses:
 ## Support
 
 - **WordPress.org**: [Plugin Support Forum](https://wordpress.org/support/plugin/eu-vat-guard-for-woocommerce/)
-- **Email**: gert@stormlabs.be
+- **Email**: dev@stormlabs.be
 - **Website**: [https://stormlabs.be/](https://stormlabs.be/)
 
 ## License

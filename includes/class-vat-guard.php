@@ -203,6 +203,72 @@ class EU_VAT_Guard
     }
 
     /**
+     * Check if VAT exemption is disabled
+     */
+    public function is_exemption_disabled()
+    {
+        return (bool) get_option('eu_vat_guard_disable_exemption', false);
+    }
+
+    /**
+     * Get custom company label or default (WPML compatible)
+     */
+    public function get_company_label()
+    {
+        $custom_label = get_option('eu_vat_guard_company_label', '');
+        if (!empty($custom_label)) {
+            // Make custom string translatable with WPML
+            return $this->translate_custom_string($custom_label, 'Company Label');
+        }
+        return __('Company Name', 'eu-vat-guard-for-woocommerce');
+    }
+
+    /**
+     * Get custom VAT label or default (WPML compatible)
+     */
+    public function get_vat_label()
+    {
+        $custom_label = get_option('eu_vat_guard_vat_label', '');
+        if (!empty($custom_label)) {
+            // Make custom string translatable with WPML
+            return $this->translate_custom_string($custom_label, 'VAT Label');
+        }
+        return __('VAT Number', 'eu-vat-guard-for-woocommerce');
+    }
+
+    /**
+     * Get custom exemption message or default (WPML compatible)
+     */
+    public function get_exemption_message()
+    {
+        $custom_message = get_option('eu_vat_guard_exemption_message', '');
+        if (!empty($custom_message)) {
+            // Make custom string translatable with WPML
+            return $this->translate_custom_string($custom_message, 'Exemption Message');
+        }
+        return __('VAT exempt for this order', 'eu-vat-guard-for-woocommerce');
+    }
+
+    /**
+     * Translate custom string with WPML if available
+     */
+    private function translate_custom_string($string, $name)
+    {
+        // Check if WPML is active and has string translation
+        if (function_exists('icl_t')) {
+            // Register string for translation if not already registered
+            if (function_exists('icl_register_string')) {
+                icl_register_string('EU VAT Guard', $name, $string);
+            }
+            // Return translated string
+            return icl_t('EU VAT Guard', $name, $string);
+        }
+        
+        // Fallback: return original string if WPML not available
+        return $string;
+    }
+
+    /**
      * Add VAT number to address formats
      */
     public function add_vat_to_address_format($formats)
@@ -314,7 +380,7 @@ class EU_VAT_Guard
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="company_name"
                 id="company_name"
-                placeholder="<?php esc_attr_e('Company Name', 'eu-vat-guard-for-woocommerce'); ?><?php echo $require_company ? ' *' : ''; ?>"
+                placeholder="<?php echo esc_attr($this->get_company_label()); ?><?php echo $require_company ? ' *' : ''; ?>"
                 <?php if ($require_company)
                     echo 'required'; ?> value="<?php if (!empty($_POST['company_name']))
                            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Just displaying previously submitted value
@@ -322,7 +388,7 @@ class EU_VAT_Guard
         </p>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number"
-                placeholder="<?php esc_attr_e('VAT Number', 'eu-vat-guard-for-woocommerce'); ?><?php echo $require_vat ? ' *' : ''; ?>"
+                placeholder="<?php echo esc_attr($this->get_vat_label()); ?><?php echo $require_vat ? ' *' : ''; ?>"
                 value="<?php if (!empty($_POST['vat_number']))
                     // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Just displaying previously submitted value
                     echo esc_attr(wp_unslash($_POST['vat_number'])); ?>" <?php if ($require_vat) {
@@ -341,7 +407,7 @@ class EU_VAT_Guard
         $require_vat = get_option('eu_vat_guard_require_vat', 1);
         ?>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-            <label for="company_name"><?php esc_html_e('Company Name', 'eu-vat-guard-for-woocommerce');
+            <label for="company_name"><?php echo esc_html($this->get_company_label());
             if ($require_company) { ?><span class="required">*</span> <?php } ?></label>
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="company_name"
                 id="company_name" value="<?php echo esc_attr($company_name); ?>" />
@@ -351,7 +417,7 @@ class EU_VAT_Guard
                 // ?>
 
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-            <label for="vat_number"><?php esc_html_e('VAT Number', 'eu-vat-guard-for-woocommerce');
+            <label for="vat_number"><?php echo esc_html($this->get_vat_label());
             if ($require_vat) { ?><span class="required">*</span> <?php } ?></label>
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number"
                 value="<?php echo esc_attr($vat_number); ?>" />
@@ -607,8 +673,8 @@ class EU_VAT_Guard
 
         $fields['billing']['billing_eu_vat_number'] = array(
             'type' => 'text',
-            'label' => __('VAT Number', 'eu-vat-guard-for-woocommerce'),
-            'placeholder' => __('VAT Number', 'eu-vat-guard-for-woocommerce'),
+            'label' => $this->get_vat_label(),
+            'placeholder' => $this->get_vat_label(),
             'required' => (bool) $require_vat,
             'class' => array('form-row-wide', 'update_totals_on_change'),
             'priority' => 26,
@@ -739,6 +805,20 @@ class EU_VAT_Guard
         // Initialize error messages array if not provided
         if (!is_array($error_messages)) {
             $error_messages = [];
+        }
+
+        // Check if VAT exemption is disabled
+        if ($this->is_exemption_disabled()) {
+            $this->set_customer_vat_exempt_status(false);
+            // Still validate VAT number if provided, but don't apply exemption
+            if (!empty($vat)) {
+                $vat_error_message = '';
+                if (!$this->is_valid_eu_vat_number($vat, $vat_error_message)) {
+                    $error_messages[] = $vat_error_message;
+                    return false;
+                }
+            }
+            return false; // No exemption applied
         }
 
         // Step 1: Check if VAT is required but empty
@@ -919,7 +999,7 @@ class EU_VAT_Guard
             $is_exempt = get_post_meta($order->get_id(), 'billing_is_vat_exempt', true);
         }
         if ($is_exempt === 'yes') {
-            echo '<p style="color: #008000;"><strong>' . esc_html__('VAT exempt for this order', 'eu-vat-guard-for-woocommerce') . '</strong></p>';
+            echo '<p style="color: #008000;"><strong>' . esc_html($this->get_exemption_message()) . '</strong></p>';
         }
     }
 
@@ -945,7 +1025,7 @@ class EU_VAT_Guard
         if (WC()->customer && WC()->customer->get_is_vat_exempt()) {
             echo '<tr class="vat-exempt-notice">';
             echo '<th colspan="2" style="color: #00a32a; font-weight: bold; text-align: center; padding: 10px;">';
-            echo '✓ ' . esc_html__('VAT exempt for this order', 'eu-vat-guard-for-woocommerce');
+            echo '✓ ' . esc_html($this->get_exemption_message());
             echo '</th>';
             echo '</tr>';
         }
