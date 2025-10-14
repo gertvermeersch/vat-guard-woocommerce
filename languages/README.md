@@ -93,7 +93,7 @@ WordPress requires compiled `.mo` files for translations to work. These are auto
 
 ## Plugin Text Domain
 
-The plugin uses the text domain: `eu-vat-guard`
+The plugin uses the text domain: `eu-vat-guard-for-woocommerce`
 
 ## WordPress Language Packs
 
@@ -108,4 +108,4 @@ For translation-related issues or questions, please contact:
 
 ---
 
-*Last updated: January 29, 2025*
+*Last updated: January 14, 2025 - Version 1.1.0*

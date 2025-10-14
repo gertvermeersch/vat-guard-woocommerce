@@ -18,6 +18,17 @@
   - Optional real-time validation with the official [VIES](https://ec.europa.eu/taxation_customs/vies/) webservice.
   - Option to allow checkout if VIES is unavailable (configurable in settings).
 
+- **Advanced Customization** *(New in v1.1.0)*
+  - Custom field labels and exemption messages
+  - Option to disable VAT exemption while keeping validation
+  - WPML compatibility for multilingual stores
+  - Advanced settings tab for fine-tuning
+
+- **PDF Invoice Integration** *(New in v1.1.0)*
+  - Full compatibility with WooCommerce PDF Invoices & Packing Slips
+  - VAT numbers and exemption status on PDF invoices
+  - Template helper functions for custom implementations
+
 - **WooCommerce Integration**
   - VAT number is pre-filled for logged-in users at checkout.
   - VAT number is saved to the order and displayed in the WooCommerce admin order screen and order emails.
@@ -86,7 +97,29 @@ php compile-translations.php
 This plugin uses:
 - **Text Domain**: `eu-vat-guard-for-woocommerce`
 - **Plugin Slug**: `eu-vat-guard-for-woocommerce`
-- **Stable Tag**: `1.0.0`
+- **Stable Tag**: `1.1.0`
+
+## Changelog
+
+### Version 1.1.0 *(Latest)*
+- ✨ **New**: Advanced settings tab with exemption rules customization
+- ✨ **New**: Custom field labels and exemption messages
+- ✨ **New**: WPML compatibility for custom strings
+- ✨ **New**: PDF invoice integration for WooCommerce PDF Invoices & Packing Slips
+- ✨ **New**: PDF template helper functions
+- 🔧 **Improved**: Admin interface with separate option groups
+- 🐛 **Fixed**: Admin options not saving correctly between tabs
+- 🔒 **Enhanced**: Security with proper nonce verification suppression
+- 📝 **Updated**: Text domain for better WordPress.org compatibility
+
+### Version 1.0.0
+- 🎉 Initial release
+- Company name and VAT number fields
+- EU VAT number format validation
+- Optional VIES real-time validation
+- Automatic VAT exemption for B2B transactions
+- WooCommerce block checkout support
+- Admin settings interface
 
 ## Support
 

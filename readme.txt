@@ -40,6 +40,10 @@ VAT exemption is automatically applied when ALL conditions are met:
 * Email notifications
 * All 27 EU member states VAT formats
 * VIES real-time validation (optional)
+* PDF invoice integration (WooCommerce PDF Invoices & Packing Slips)
+* Advanced customization options
+* WPML multilingual support
+* Custom field labels and messages
 
 == Installation ==
 
@@ -75,6 +79,17 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 
 == Changelog ==
 
+= 1.1.0 =
+* Added Advanced settings tab with exemption rules customization
+* Added custom field labels and exemption messages
+* Added WPML compatibility for custom strings
+* Added PDF invoice integration for WooCommerce PDF Invoices & Packing Slips
+* Added PDF template helper functions
+* Improved admin interface with separate option groups
+* Fixed admin options not saving correctly between tabs
+* Enhanced security with proper nonce verification suppression
+* Updated text domain for better WordPress.org compatibility
+
 = 1.0.0 =
 * Initial release
 * Company name and VAT number fields
@@ -85,6 +100,9 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 * Admin settings interface
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Major update with advanced customization options, PDF invoice integration, and WPML support. Recommended for all users.
 
 = 1.0.0 =
 Initial release of EU VAT Guard for WooCommerce.
