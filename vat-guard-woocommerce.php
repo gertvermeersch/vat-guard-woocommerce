@@ -2,7 +2,7 @@
 /*
 Plugin Name: EU VAT Guard for WooCommerce
 Description: Manage EU VAT numbers and company information for WooCommerce customers and B2B. Adds company and VAT fields to registration, account, and checkout, exempts VAT (reverse charge) where applicable and provides admin tools for VAT management.
-Version: 1.1.0
+Version: 1.2.0
 Author: Stormlabs
 Author URI: https://stormlabs.be/
 License: GPLv2 or later
@@ -18,8 +18,13 @@ if (!defined('ABSPATH')) {
 // Include main plugin class
 require_once plugin_dir_path(__FILE__) . 'includes/class-vat-guard.php';
 
+// Include VAT rate importer (admin only)
+if (is_admin()) {
+    require_once plugin_dir_path(__FILE__) . 'includes/class-vat-guard-rate-importer.php';
+}
+
 // Initialize the plugin
-add_action('plugins_loaded', function() {
+add_action('plugins_loaded', function () {
     if (class_exists('EU_VAT_Guard')) {
         EU_VAT_Guard::instance();
     }

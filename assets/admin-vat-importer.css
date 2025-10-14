@@ -1,0 +1,87 @@
+/* VAT Rate Importer Styles */
+.vat-importer-countries {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 15px;
+    background: #fafafa;
+    border-radius: 4px;
+}
+
+.vat-importer-countries p {
+    margin: 8px 0;
+    padding: 5px 0;
+}
+
+.vat-importer-countries hr {
+    margin: 10px 0;
+    border: none;
+    border-top: 1px solid #ddd;
+}
+
+.vat-importer-countries .description {
+    color: #666;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.vat-rates-overview {
+    margin-top: 30px;
+}
+
+.vat-rates-overview .inside {
+    padding: 0;
+}
+
+.vat-rates-overview table {
+    margin: 0;
+}
+
+.vat-rates-overview th {
+    background: #f9f9f9;
+    font-weight: 600;
+}
+
+.vat-rates-overview td {
+    vertical-align: top;
+    padding: 12px;
+}
+
+.vat-rates-overview .description {
+    display: inline-block;
+    margin: 2px 0;
+    color: #666;
+    font-size: 12px;
+}
+
+.vat-importer-notice {
+    background: #e7f3ff;
+    border-left: 4px solid #0073aa;
+    padding: 12px;
+    margin: 20px 0;
+}
+
+.vat-importer-notice p {
+    margin: 0;
+    color: #0073aa;
+}
+
+.country-checkbox:checked + span {
+    font-weight: 500;
+}
+
+#select-all-countries:checked + strong {
+    color: #0073aa;
+}
+
+.vat-importer-submit {
+    background: linear-gradient(135deg, #0073aa 0%, #005a87 100%);
+    border-color: #005a87;
+    text-shadow: 0 -1px 1px #005a87;
+    box-shadow: 0 1px 0 #005a87;
+}
+
+.vat-importer-submit:hover {
+    background: linear-gradient(135deg, #005a87 0%, #004a73 100%);
+    border-color: #004a73;
+}

@@ -5,6 +5,35 @@ All notable changes to EU VAT Guard for WooCommerce will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-01-14
+
+### Added
+- **VAT Rate Importer**: New dedicated admin tool for importing current EU VAT rates
+- **Comprehensive VAT Database**: Complete database of all 27 EU member states' VAT rates
+- **Country Selection Interface**: WooCommerce-style country selection with "Select All" option
+- **Special VAT Categories**: Support for reduced rates (food, books, pharmaceuticals, hotels)
+- **Smart Rate Management**: Automatic creation and updating of WooCommerce tax rates
+- **Rate Overview Table**: Complete overview of all EU VAT rates with categories
+- **WooCommerce Integration**: Only shows countries enabled in WooCommerce selling locations
+
+### Changed
+- **Admin Menu Structure**: Moved to dedicated main menu with submenu items
+- **Menu Icon**: Added shield icon for better visual identification
+- **Version**: Updated to 1.2.0
+
+### Features
+- **27 EU Countries**: Austria, Belgium, Bulgaria, Croatia, Cyprus, Czech Republic, Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Ireland, Italy, Latvia, Lithuania, Luxembourg, Malta, Netherlands, Poland, Portugal, Romania, Slovakia, Slovenia, Spain, Sweden
+- **Multiple Rate Types**: Standard rates, reduced rates, and special category rates
+- **Tax Class Creation**: Automatic creation of appropriate WooCommerce tax classes
+- **Rate Updates**: Smart updating of existing rates without duplication
+- **Cache Management**: Automatic clearing of WooCommerce tax cache after import
+
+### Technical
+- **Database Integration**: Direct integration with WooCommerce tax rate tables
+- **Performance Optimized**: Efficient batch processing of tax rate imports
+- **Error Handling**: Comprehensive validation and error reporting
+- **Security**: Full nonce verification and capability checks
+
 ## [1.1.0] - 2025-01-14
 
 ### Added

@@ -78,10 +78,22 @@ class EU_VAT_Guard_Admin
 
     public static function add_admin_menu()
     {
-        add_submenu_page(
-            'woocommerce',
-            __('VAT Guard for WooCommerce', 'eu-vat-guard-for-woocommerce'),
+        // Add main menu page
+        add_menu_page(
             __('EU VAT Guard', 'eu-vat-guard-for-woocommerce'),
+            __('EU VAT Guard', 'eu-vat-guard-for-woocommerce'),
+            'manage_woocommerce',
+            'eu-vat-guard',
+            array(__CLASS__, 'admin_page'),
+            'dashicons-shield-alt',
+            56
+        );
+        
+        // Add settings submenu (duplicate main menu item)
+        add_submenu_page(
+            'eu-vat-guard',
+            __('VAT Guard Settings', 'eu-vat-guard-for-woocommerce'),
+            __('Settings', 'eu-vat-guard-for-woocommerce'),
             'manage_woocommerce',
             'eu-vat-guard',
             array(__CLASS__, 'admin_page')

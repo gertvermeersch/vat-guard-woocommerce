@@ -4,7 +4,7 @@ Tags: woocommerce, vat, eu, tax, b2b, vies, validation, company
 Requires at least: 5.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,9 +19,12 @@ Manage EU VAT numbers and company information for WooCommerce customers and B2B 
 * **Company Name & VAT Number Fields** - Adds company name and VAT number fields to registration, account, and checkout forms
 * **EU VAT Number Validation** - Offline format validation for all EU VAT numbers with optional real-time VIES validation
 * **Automatic VAT Exemption** - Applies reverse charge VAT exemption for valid B2B transactions between EU member states
+* **VAT Rate Importer** - Import current EU VAT rates for all 27 member states with special categories support
 * **WooCommerce Integration** - VAT numbers are saved to orders and displayed in admin and emails
 * **Block Checkout Support** - Full compatibility with WooCommerce's new block-based checkout
-* **Admin Settings** - Easy configuration under WooCommerce > VAT Guard
+* **Advanced Customization** - Custom labels, messages, and exemption rules
+* **WPML Compatible** - Full multilingual support for international stores
+* **PDF Integration** - Compatible with WooCommerce PDF Invoices & Packing Slips
 
 = VAT Exemption Rules =
 
@@ -78,6 +81,16 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 4. VAT information displayed in order admin
 
 == Changelog ==
+
+= 1.2.0 =
+* Added VAT Rate Importer tool for importing current EU VAT rates
+* Added comprehensive database of all 27 EU member states' VAT rates
+* Added support for special VAT categories (food, books, pharmaceuticals, hotels)
+* Added country selection interface with "Select All" functionality
+* Added automatic WooCommerce tax rate creation and updating
+* Added complete VAT rates overview table
+* Changed admin menu structure to dedicated main menu
+* Enhanced WooCommerce integration with smart country filtering
 
 = 1.1.0 =
 * Added Advanced settings tab with exemption rules customization

@@ -29,6 +29,12 @@
   - VAT numbers and exemption status on PDF invoices
   - Template helper functions for custom implementations
 
+- **VAT Rate Importer** *(New in v1.2.0)*
+  - Import current EU VAT rates for all 27 member states
+  - Support for standard, reduced, and special category rates
+  - WooCommerce-style country selection interface
+  - Automatic tax class creation and rate management
+
 - **WooCommerce Integration**
   - VAT number is pre-filled for logged-in users at checkout.
   - VAT number is saved to the order and displayed in the WooCommerce admin order screen and order emails.
