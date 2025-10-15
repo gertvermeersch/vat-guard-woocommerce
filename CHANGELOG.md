@@ -11,9 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **VAT Rate Importer**: New dedicated admin tool for importing current EU VAT rates
 - **Comprehensive VAT Database**: Complete database of all 27 EU member states' VAT rates
 - **Country Selection Interface**: WooCommerce-style country selection with "Select All" option
-- **Special VAT Categories**: Support for reduced rates (food, books, pharmaceuticals, hotels)
+- **Reduced Rate Support**: Optional import of reduced VAT rates for specific goods
 - **Smart Rate Management**: Automatic creation and updating of WooCommerce tax rates
-- **Rate Overview Table**: Complete overview of all EU VAT rates with categories
+- **Clean Rate Display**: Tax rates display as clean percentages (e.g., "21%") on checkout
+- **Rate Overview Table**: Complete overview of all EU VAT rates
 - **WooCommerce Integration**: Only shows countries enabled in WooCommerce selling locations
 
 ### Changed
@@ -23,8 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features
 - **27 EU Countries**: Austria, Belgium, Bulgaria, Croatia, Cyprus, Czech Republic, Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Ireland, Italy, Latvia, Lithuania, Luxembourg, Malta, Netherlands, Poland, Portugal, Romania, Slovakia, Slovenia, Spain, Sweden
-- **Multiple Rate Types**: Standard rates, reduced rates, and special category rates
+- **Multiple Rate Types**: Standard rates and optional reduced rates
 - **Tax Class Creation**: Automatic creation of appropriate WooCommerce tax classes
+- **Clean Display**: Tax rates show as simple percentages on checkout (e.g., "21%" instead of "Belgium Standard (21%)")
 - **Rate Updates**: Smart updating of existing rates without duplication
 - **Cache Management**: Automatic clearing of WooCommerce tax cache after import
 

@@ -18,47 +18,45 @@ The VAT Rate Importer allows you to easily import current EU VAT rates for all 2
 #### Standard Rates
 - The main VAT rate applied to most goods and services
 - Automatically imported for all selected countries
+- Displayed as clean percentage (e.g., "21%") on checkout
 
 #### Reduced Rates
 - Lower VAT rates for specific categories of goods
 - Common for essential items like food, books, and pharmaceuticals
-
-#### Special Rates
-- Category-specific rates (food, books, pharmaceuticals, hotels)
 - Optional import - can be enabled/disabled
 - Creates separate WooCommerce tax classes for easy product assignment
 
 ## Current EU VAT Rates (2024)
 
-| Country | Standard | Reduced | Special Categories |
-|---------|----------|---------|-------------------|
-| Austria | 20% | 10%, 13% | Food: 10%, Books: 10%, Hotels: 13% |
-| Belgium | 21% | 6%, 12% | Food: 6%, Books: 6%, Hotels: 12% |
-| Bulgaria | 20% | 9% | Food: 9%, Books: 9% |
-| Croatia | 25% | 5%, 13% | Food: 5%, Books: 5%, Hotels: 13% |
-| Cyprus | 19% | 5%, 9% | Food: 5%, Books: 5%, Hotels: 9% |
-| Czech Republic | 21% | 10%, 15% | Food: 15%, Books: 10% |
-| Denmark | 25% | - | No reduced rates |
-| Estonia | 20% | 9% | Food: 9%, Books: 9% |
-| Finland | 24% | 10%, 14% | Food: 14%, Books: 10% |
-| France | 20% | 5.5%, 10% | Food: 5.5%, Books: 5.5%, Pharma: 2.1%, Hotels: 10% |
-| Germany | 19% | 7% | Food: 7%, Books: 7% |
-| Greece | 24% | 6%, 13% | Food: 13%, Books: 6% |
-| Hungary | 27% | 5%, 18% | Food: 5%, Books: 5%, Hotels: 18% |
-| Ireland | 23% | 9%, 13.5% | Food: 0%, Books: 0%, Hotels: 13.5% |
-| Italy | 22% | 4%, 5%, 10% | Food: 4%, Books: 4%, Pharma: 10% |
-| Latvia | 21% | 5%, 12% | Food: 12%, Books: 5% |
-| Lithuania | 21% | 5%, 9% | Food: 9%, Books: 9% |
-| Luxembourg | 17% | 3%, 8%, 14% | Food: 3%, Books: 3%, Hotels: 14% |
-| Malta | 18% | 5%, 7% | Food: 5%, Books: 5%, Hotels: 7% |
-| Netherlands | 21% | 9% | Food: 9%, Books: 9% |
-| Poland | 23% | 5%, 8% | Food: 5%, Books: 5%, Pharma: 8% |
-| Portugal | 23% | 6%, 13% | Food: 6%, Books: 6%, Hotels: 13% |
-| Romania | 19% | 5%, 9% | Food: 9%, Books: 5% |
-| Slovakia | 20% | 10% | Food: 10%, Books: 10% |
-| Slovenia | 22% | 5%, 9.5% | Food: 9.5%, Books: 9.5% |
-| Spain | 21% | 4%, 10% | Food: 4%, Books: 4%, Hotels: 10% |
-| Sweden | 25% | 6%, 12% | Food: 12%, Books: 6% |
+| Country | Standard | Reduced |
+|---------|----------|---------|
+| Austria | 20% | 10%, 13% |
+| Belgium | 21% | 6%, 12% |
+| Bulgaria | 20% | 9% |
+| Croatia | 25% | 5%, 13% |
+| Cyprus | 19% | 5%, 9% |
+| Czech Republic | 21% | 10%, 15% |
+| Denmark | 25% | - |
+| Estonia | 20% | 9% |
+| Finland | 24% | 10%, 14% |
+| France | 20% | 5.5%, 10% |
+| Germany | 19% | 7% |
+| Greece | 24% | 6%, 13% |
+| Hungary | 27% | 5%, 18% |
+| Ireland | 23% | 9%, 13.5% |
+| Italy | 22% | 4%, 5%, 10% |
+| Latvia | 21% | 5%, 12% |
+| Lithuania | 21% | 5%, 9% |
+| Luxembourg | 17% | 3%, 8%, 14% |
+| Malta | 18% | 5%, 7% |
+| Netherlands | 21% | 9% |
+| Poland | 23% | 5%, 8% |
+| Portugal | 23% | 6%, 13% |
+| Romania | 19% | 5%, 9% |
+| Slovakia | 20% | 10% |
+| Slovenia | 22% | 5%, 9.5% |
+| Spain | 21% | 4%, 10% |
+| Sweden | 25% | 6%, 12% |
 
 ## How It Works
 
