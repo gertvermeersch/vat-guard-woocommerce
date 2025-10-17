@@ -653,7 +653,11 @@ class EU_VAT_Guard
                 return false;
             }
         }
-        return true;
+        
+        // Allow Pro plugin to enhance VAT validation
+        $enhanced_result = apply_filters('eu_vat_guard_validate_vat_number', true, $vat, $country);
+        
+        return $enhanced_result;
     }
 
     /* Validate registration fields for company name and VAT number
@@ -798,9 +802,15 @@ class EU_VAT_Guard
         $require_vat = get_option('eu_vat_guard_require_vat', 1);
         $require_company = get_option('eu_vat_guard_require_company', 1);
 
-        // Ensure company field is present and required/optional
-        $fields['billing']['billing_company']['required'] = (bool) $require_company;
-        $fields['billing']['billing_company']['priority'] = 25; // After name fields
+        $fields['billing']['billing_company'] = array(
+            'type' => 'text',
+            'label' => $this->get_company_label(),
+            'placeholder' => $this->get_company_label(),
+            'required' => (bool) $require_company,
+            'class' => array('form-row-wide'),
+            'priority' => 25,
+            'default' => '',
+        );
 
         $fields['billing']['billing_eu_vat_number'] = array(
             'type' => 'text',
@@ -870,6 +880,24 @@ class EU_VAT_Guard
 
             if ($order) {
                 $order->update_meta_data('billing_is_vat_exempt', $is_exempt ? 'yes' : 'no');
+                
+                // Allow Pro plugin to add additional order data
+                $order_data = array(
+                    'vat_number' => $vat_number,
+                    'is_vat_exempt' => $is_exempt,
+                    'vat_country' => substr($vat_number, 0, 2)
+                );
+                $enhanced_order_data = apply_filters('eu_vat_guard_order_data', $order_data, $order);
+                
+                // Save any additional data from Pro plugin
+                if (is_array($enhanced_order_data) && $enhanced_order_data !== $order_data) {
+                    foreach ($enhanced_order_data as $key => $value) {
+                        if (!in_array($key, array('vat_number', 'is_vat_exempt', 'vat_country'))) {
+                            $order->update_meta_data('_vat_guard_' . $key, $value);
+                        }
+                    }
+                }
+                
                 $order->save_meta_data();
             }
 
@@ -879,6 +907,13 @@ class EU_VAT_Guard
                 $current_vat = get_user_meta($user_id, 'vat_number', true);
                 if ($vat_number !== $current_vat) {
                     update_user_meta($user_id, 'vat_number', $vat_number);
+                    
+                    // Notify Pro plugin when customer VAT is updated
+                    do_action('eu_vat_guard_customer_vat_updated', $user_id, array(
+                        'vat_number' => $vat_number,
+                        'previous_vat' => $current_vat,
+                        'order_id' => $order_id
+                    ));
                 }
             }
         }
@@ -1005,6 +1040,18 @@ class EU_VAT_Guard
         $is_cross_border = !empty($vat) && $vat_country && $vat_country !== $shop_base_country;
 
         $this->set_customer_vat_exempt_status($is_cross_border);
+        
+        // Notify Pro plugin when VAT exemption is applied
+        if ($is_cross_border) {
+            do_action('eu_vat_guard_vat_exemption_applied', WC()->session ? WC()->session->get('order_awaiting_payment') : null, array(
+                'vat_number' => $vat,
+                'vat_country' => $vat_country,
+                'billing_country' => $billing_country,
+                'shipping_country' => $shipping_country,
+                'shop_base_country' => $shop_base_country
+            ));
+        }
+        
         return $is_cross_border;
     }
 

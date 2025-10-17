@@ -98,6 +98,8 @@ class EU_VAT_Guard_Admin
             'eu-vat-guard',
             array(__CLASS__, 'admin_page')
         );
+        //load menu items from the pro plugin
+        do_action('eu_vat_guard_admin_page_content');
     }
 
     public static function admin_page()
@@ -154,7 +156,9 @@ class EU_VAT_Guard_Admin
                         <input type="checkbox" name="eu_vat_guard_enable_block_checkout" value="1" <?php checked(1, get_option('eu_vat_guard_enable_block_checkout', 0)); ?> />
                         <label
                             for="eu_vat_guard_enable_block_checkout"><?php esc_html_e('Enable support for WooCommerce Block-based Checkout (Cart & Checkout Blocks)', 'eu-vat-guard-for-woocommerce'); ?></label>
-                    </td>
+                        <p class="description"><?php esc_html_e('Disable when using classic checkout or Cartflows', 'eu-vat-guard-for-woocommerce');?>
+                        </p>
+                        </td>
                 </tr>
                 <tr>
                     <th scope="row"><?php esc_html_e('Require Company Name', 'eu-vat-guard-for-woocommerce'); ?></th>
@@ -178,6 +182,7 @@ class EU_VAT_Guard_Admin
                         <input type="checkbox" name="eu_vat_guard_require_vies" value="1" <?php checked(1, get_option('eu_vat_guard_require_vies', 0)); ?> />
                         <label
                             for="eu_vat_guard_require_vies"><?php esc_html_e('Check VAT number validity with the official VIES service', 'eu-vat-guard-for-woocommerce'); ?></label>
+                            <p class="description"><?php esc_html_e('VIES (VAT Information Exchange System) is a search engine (not a database) owned by the European Commission', 'eu-vat-guard-for-woocommerce');?></p>
                     </td>
                 </tr>
                 <tr>
@@ -370,6 +375,7 @@ class EU_VAT_Guard_Admin
                 <p><strong><?php esc_html_e('Website:', 'eu-vat-guard-for-woocommerce'); ?></strong> 
                 <a href="https://stormlabs.be/" target="_blank" style="color: #2271b1;">stormlabs.be</a></p>
             </div>
+
         </div>
         <?php
     }
