@@ -166,6 +166,7 @@ class EU_VAT_Guard_Admin
                         <input type="checkbox" name="eu_vat_guard_require_company" value="1" <?php checked(1, get_option('eu_vat_guard_require_company', 1)); ?> />
                         <label
                             for="eu_vat_guard_require_company"><?php esc_html_e('Make company name a required field', 'eu-vat-guard-for-woocommerce'); ?></label>
+                            <p class="description"><?php esc_html_e('Warning: This does not have effect on the block based checkout. You need to manually enable the Company name field in the block editor.','eu-vat-guard-for-woocommerce');?></p>
                     </td>
                 </tr>
                 <tr>

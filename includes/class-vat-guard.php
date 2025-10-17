@@ -201,7 +201,7 @@ class EU_VAT_Guard
 
         // PDF Invoice integration
         $this->setup_pdf_invoice_integration();
-        
+
         // Load PDF template helper functions
         require_once plugin_dir_path(__FILE__) . 'pdf-template-helpers.php';
 
@@ -268,7 +268,7 @@ class EU_VAT_Guard
             // Return translated string
             return icl_t('EU VAT Guard', $name, $string);
         }
-        
+
         // Fallback: return original string if WPML not available
         return $string;
     }
@@ -337,7 +337,7 @@ class EU_VAT_Guard
         $instance = self::instance();
         $vat_number = $instance->get_order_vat_number($order);
         $is_exempt = $order->get_meta('billing_is_vat_exempt');
-        
+
         if (empty($is_exempt)) {
             $is_exempt = get_post_meta($order->get_id(), 'billing_is_vat_exempt', true);
         }
@@ -356,45 +356,45 @@ class EU_VAT_Guard
     public static function display_pdf_vat_block($order, $style = 'table')
     {
         $vat_info = self::get_pdf_vat_info($order);
-        
+
         if (empty($vat_info['vat_number']) && !$vat_info['is_exempt']) {
             return; // Nothing to display
         }
 
         if ($style === 'table') {
             echo '<table class="vat-info" style="margin: 10px 0; width: 100%;">';
-            
+
             if (!empty($vat_info['vat_number'])) {
                 echo '<tr>';
                 echo '<th style="text-align: left; padding: 5px 10px 5px 0;">' . esc_html($vat_info['vat_label']) . ':</th>';
                 echo '<td style="padding: 5px 0;">' . esc_html($vat_info['vat_number']) . '</td>';
                 echo '</tr>';
             }
-            
+
             if ($vat_info['is_exempt']) {
                 echo '<tr>';
                 echo '<th style="text-align: left; padding: 5px 10px 5px 0;">' . esc_html__('VAT Status', 'eu-vat-guard-for-woocommerce') . ':</th>';
                 echo '<td style="padding: 5px 0; color: #46b450; font-weight: bold;">' . esc_html($vat_info['exemption_message']) . '</td>';
                 echo '</tr>';
             }
-            
+
             echo '</table>';
         } else {
             // Simple div style
             echo '<div class="vat-info" style="margin: 10px 0;">';
-            
+
             if (!empty($vat_info['vat_number'])) {
                 echo '<div style="margin-bottom: 5px;">';
                 echo '<strong>' . esc_html($vat_info['vat_label']) . ':</strong> ' . esc_html($vat_info['vat_number']);
                 echo '</div>';
             }
-            
+
             if ($vat_info['is_exempt']) {
                 echo '<div style="color: #46b450; font-weight: bold;">';
                 echo esc_html($vat_info['exemption_message']);
                 echo '</div>';
             }
-            
+
             echo '</div>';
         }
     }
@@ -519,12 +519,11 @@ class EU_VAT_Guard
         </p>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number"
-                placeholder="<?php echo esc_attr($this->get_vat_label()); ?><?php echo $require_vat ? ' *' : ''; ?>"
-                value="<?php if (!empty($_POST['vat_number']))
-                    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Just displaying previously submitted value
-                    echo esc_attr(wp_unslash($_POST['vat_number'])); ?>" <?php if ($require_vat) {
-                          echo 'required';
-                      } ?> />
+                placeholder="<?php echo esc_attr($this->get_vat_label()); ?><?php echo $require_vat ? ' *' : ''; ?>" value="<?php if (!empty($_POST['vat_number']))
+                              // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Just displaying previously submitted value
+                              echo esc_attr(wp_unslash($_POST['vat_number'])); ?>" <?php if ($require_vat) {
+                                    echo 'required';
+                                } ?> />
         </p>
         <?php
     }
@@ -653,10 +652,10 @@ class EU_VAT_Guard
                 return false;
             }
         }
-        
+
         // Allow Pro plugin to enhance VAT validation
         $enhanced_result = apply_filters('eu_vat_guard_validate_vat_number', true, $vat, $country);
-        
+
         return $enhanced_result;
     }
 
@@ -839,27 +838,6 @@ class EU_VAT_Guard
             $vat_number = sanitize_text_field(wp_unslash($_POST['billing_eu_vat_number']));
         }
 
-        // If no VAT number in POST, try to get from customer session/data - We shouldn't do this as 
-        // the user is required to enter it in the billing section ALWAYS
-        /*
-        if (empty($vat_number) && WC()->customer) {
-            // Check if there's a VAT number in the customer's billing data
-            $billing_data = WC()->customer->get_billing();
-            if (isset($billing_data['eu_vat_number'])) {
-                $vat_number = sanitize_text_field($billing_data['eu_vat_number']);
-            }
-        }
-
-        // If no VAT number in customer billing data, try session
-        if (empty($vat_number) && WC()->session) {
-            $vat_number = WC()->session->get('billing_eu_vat_number');
-        }
-
-        // If still no VAT number, try user meta for logged in users
-        if (empty($vat_number) && is_user_logged_in()) {
-            $vat_number = get_user_meta(get_current_user_id(), 'vat_number', true);
-        }*/
-
         if (!empty($vat_number)) {
             // Log for debugging
             //error_log("VAT Guard: Saving VAT number '{$vat_number}' for order {$order_id} via save_checkout_vat_field");
@@ -880,7 +858,23 @@ class EU_VAT_Guard
 
             if ($order) {
                 $order->update_meta_data('billing_is_vat_exempt', $is_exempt ? 'yes' : 'no');
-                
+
+                // Notify Pro plugin when VAT exemption is applied to an actual order
+                if ($is_exempt) {
+                    $vat_country = substr(strtoupper(str_replace([' ', '-', '.'], '', $vat_number)), 0, 2);
+                    $shop_base_country = wc_get_base_location()['country'];
+                    $billing_country = $order->get_billing_country();
+                    $shipping_country = $order->get_shipping_country();
+
+                    do_action('eu_vat_guard_vat_exemption_applied', $order_id, array(
+                        'vat_number' => $vat_number,
+                        'vat_country' => $vat_country,
+                        'billing_country' => $billing_country,
+                        'shipping_country' => $shipping_country,
+                        'shop_base_country' => $shop_base_country
+                    ));
+                }
+
                 // Allow Pro plugin to add additional order data
                 $order_data = array(
                     'vat_number' => $vat_number,
@@ -888,7 +882,7 @@ class EU_VAT_Guard
                     'vat_country' => substr($vat_number, 0, 2)
                 );
                 $enhanced_order_data = apply_filters('eu_vat_guard_order_data', $order_data, $order);
-                
+
                 // Save any additional data from Pro plugin
                 if (is_array($enhanced_order_data) && $enhanced_order_data !== $order_data) {
                     foreach ($enhanced_order_data as $key => $value) {
@@ -897,7 +891,7 @@ class EU_VAT_Guard
                         }
                     }
                 }
-                
+
                 $order->save_meta_data();
             }
 
@@ -907,7 +901,7 @@ class EU_VAT_Guard
                 $current_vat = get_user_meta($user_id, 'vat_number', true);
                 if ($vat_number !== $current_vat) {
                     update_user_meta($user_id, 'vat_number', $vat_number);
-                    
+
                     // Notify Pro plugin when customer VAT is updated
                     do_action('eu_vat_guard_customer_vat_updated', $user_id, array(
                         'vat_number' => $vat_number,
@@ -1040,18 +1034,7 @@ class EU_VAT_Guard
         $is_cross_border = !empty($vat) && $vat_country && $vat_country !== $shop_base_country;
 
         $this->set_customer_vat_exempt_status($is_cross_border);
-        
-        // Notify Pro plugin when VAT exemption is applied
-        if ($is_cross_border) {
-            do_action('eu_vat_guard_vat_exemption_applied', WC()->session ? WC()->session->get('order_awaiting_payment') : null, array(
-                'vat_number' => $vat,
-                'vat_country' => $vat_country,
-                'billing_country' => $billing_country,
-                'shipping_country' => $shipping_country,
-                'shop_base_country' => $shop_base_country
-            ));
-        }
-        
+
         return $is_cross_border;
     }
 
@@ -1152,10 +1135,7 @@ class EU_VAT_Guard
     public function show_vat_in_admin_order($order)
     {
         // Check if this order has VAT data from block checkout (additional fields)
-        $block_vat = '';
-        if (function_exists('woocommerce_get_order_additional_field_value')) {
-            $block_vat = woocommerce_get_order_additional_field_value($order, 'eu-vat-guard/vat_number');
-        }
+        $block_vat = $order->get_meta('_wc_other/eu-vat-guard/vat_number');
 
         // Only show custom VAT display if WooCommerce hasn't already shown it via additional fields
         // We check if block VAT exists - if it does, WooCommerce will handle the display automatically
