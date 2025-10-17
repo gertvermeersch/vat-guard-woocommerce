@@ -275,10 +275,27 @@ class VAT_Guard_Rate_Importer
         // Create clean tax rate name - just the percentage
         $tax_rate_name = $rate . '%';
 
-        // Create tax class name for reduced rates
+        // Use WooCommerce's standard tax class system
         $tax_class = '';
         if ($type !== 'standard') {
-            $tax_class = $country_code . '-' . str_replace('-', '', $type);
+            $tax_class = $wpdb->get_row($wpdb->prepare(
+                "SELECT slug FROM {$wpdb->prefix}wc_tax_rate_classes
+                 WHERE tax_rate_class_id = 1"
+            ));
+            if(empty($tax_class->slug)) {
+                //create reduced class (shouldn't happen as tax rate class exists by default)
+                add_action('admin_notices', function () {
+                    echo '<div class="notice notice-error"><p>' . esc_html__('Reduced tax class not found. make sure this class exists in Woocommerce', 'eu-vat-guard-for-woocommerce') . '</p></div>';
+                });
+                // $wpdb->insert(
+                //     $wpdb->prefix . 'wc_tax_rate_classes',
+                //     array(
+                //         'name' => 'Reduced Rate',
+                //         'slug' => 'reduced-rate'
+                //     ),
+                //     array('%s', '%s')
+                // );
+            }
         }
 
         // Check if rate already exists for this country and class
@@ -319,14 +336,14 @@ class VAT_Guard_Rate_Importer
                     'tax_rate_compound' => 0,
                     'tax_rate_shipping' => $type === 'standard' ? 1 : 0,
                     'tax_rate_order' => 0,
-                    'tax_rate_class' => $tax_class
+                    'tax_rate_class' => $tax_class->slug
                 ),
                 array('%s', '%s', '%f', '%s', '%d', '%d', '%d', '%d', '%s')
             );
 
-            // If this is a reduced rate, we need to create the tax class in WooCommerce
+            // Ensure the reduced-rate tax class exists in WooCommerce
             if ($type !== 'standard') {
-                $this->create_tax_class($tax_class, $country_name, $type, $rate);
+                $this->ensure_reduced_rate_tax_class();
             }
         }
 
@@ -335,22 +352,21 @@ class VAT_Guard_Rate_Importer
     }
 
     /**
-     * Create tax class in WooCommerce
+     * Ensure the reduced-rate tax class exists in WooCommerce
      */
-    private function create_tax_class($tax_class, $country_name, $type, $rate)
+    private function ensure_reduced_rate_tax_class()
     {
         $tax_classes = WC_Tax::get_tax_classes();
-        $class_name = sprintf('%s %s (%s%%)', $country_name, ucfirst(str_replace('-', ' ', $type)), $rate);
 
-        // Check if class already exists
+        // Check if 'Reduced rate' class already exists
         foreach ($tax_classes as $existing_class) {
-            if (sanitize_title($existing_class) === $tax_class) {
+            if (sanitize_title($existing_class) === 'reduced-rate') {
                 return; // Class already exists
             }
         }
 
-        // Add new tax class
-        $tax_classes[] = $class_name;
+        // Add the reduced rate tax class if it doesn't exist
+        $tax_classes[] = 'Reduced rate';
         update_option('woocommerce_tax_classes', implode("\n", $tax_classes));
     }
 
