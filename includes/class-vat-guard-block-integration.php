@@ -163,12 +163,13 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         ]);
 
         // Also register for batch endpoint to ensure data is available everywhere
-        woocommerce_store_api_register_endpoint_data([
-            'endpoint' => \Automattic\WooCommerce\StoreApi\Schemas\V1\BatchSchema::IDENTIFIER,
-            'namespace' => $this->get_name(),
-            'data_callback' => [$this, 'extend_cart_data'],
-            'schema_callback' => [$this, 'extend_cart_schema'],
-        ]);
+        //TODO: This stopped working, need to investigate but batch request keep having EU VAT data
+        // woocommerce_store_api_register_endpoint_data([
+        //     'endpoint' => \Automattic\WooCommerce\StoreApi\Schemas\V1\BatchSchema::IDENTIFIER,
+        //     'namespace' => $this->get_name(),
+        //     'data_callback' => [$this, 'extend_cart_data'],
+        //     'schema_callback' => [$this, 'extend_cart_schema'],
+        // ]);
     }
 
     /**
@@ -583,7 +584,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
      */
     public function register_vat_validation_endpoint()
     {
-        //TODO is this even used?
+        //TODO not yet used - could be useful in block validation logic later
         register_rest_route('vat-guard/v1', '/validate', array(
             'methods' => 'POST',
             'callback' => array($this, 'rest_validate_vat'),
@@ -605,7 +606,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
      */
     public function rest_validate_vat($request)
     {
-        //TODO: is this even used?
+        //TODO: not yet used - could be useful in block validation logic later
         $vat = $request->get_param('vat_number');
         $billing_country = $request->get_param('billing_country');
 
