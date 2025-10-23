@@ -11,41 +11,50 @@ class EU_VAT_Guard_Admin
         // Basic settings group
         register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_require_company', [
             'type' => 'boolean',
-            'default' => true
+            'default' => true,
+            'sanitize_callback' => 'rest_sanitize_boolean'
         ]);
         register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_require_vat', [
             'type' => 'boolean',
-            'default' => true
+            'default' => true,
+            'sanitize_callback' => 'rest_sanitize_boolean'
         ]);
         register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_require_vies', [
             'type' => 'boolean',
-            'default' => false
+            'default' => false,
+            'sanitize_callback' => 'rest_sanitize_boolean'
         ]);
         register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_ignore_vies_error', [
             'type' => 'boolean',
-            'default' => false
+            'default' => false,
+            'sanitize_callback' => 'rest_sanitize_boolean'
         ]);
         register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_enable_block_checkout', [
             'type' => 'boolean',
-            'default' => true
+            'default' => true,
+            'sanitize_callback' => 'rest_sanitize_boolean'
         ]);
         
         // Advanced settings group
         register_setting('eu_vat_guard_advanced_options', 'eu_vat_guard_disable_exemption', [
             'type' => 'boolean',
-            'default' => false
+            'default' => false,
+            'sanitize_callback' => 'rest_sanitize_boolean'
         ]);
         register_setting('eu_vat_guard_advanced_options', 'eu_vat_guard_company_label', [
             'type' => 'string',
-            'default' => ''
+            'default' => '',
+            'sanitize_callback' => 'sanitize_text_field'
         ]);
         register_setting('eu_vat_guard_advanced_options', 'eu_vat_guard_vat_label', [
             'type' => 'string',
-            'default' => ''
+            'default' => '',
+            'sanitize_callback' => 'sanitize_text_field'
         ]);
         register_setting('eu_vat_guard_advanced_options', 'eu_vat_guard_exemption_message', [
             'type' => 'string',
-            'default' => ''
+            'default' => '',
+            'sanitize_callback' => 'sanitize_text_field'
         ]);
         
         // Hook to register WPML strings when settings are saved
@@ -105,7 +114,7 @@ class EU_VAT_Guard_Admin
     public static function admin_page()
     {
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Simple tab navigation, no data modification
-        $active_tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'settings';
+        $active_tab = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'settings';
         ?>
         <div class="wrap">
             <h1 style="display:flex;align-items:center;gap:12px;">

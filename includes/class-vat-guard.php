@@ -23,7 +23,11 @@ class EU_VAT_Guard
     private function __construct()
     {
         // Load block integration early if enabled (needs to be before woocommerce_init)
-        add_action('plugins_loaded', array($this, 'maybe_init_block_support'), 50);
+        if (!is_admin() || wp_doing_ajax()) {
+            add_action('plugins_loaded', array($this, 'maybe_init_block_support'), 50);
+        }
+
+
 
         // Fallback: also try on woocommerce_loaded if plugins_loaded doesn't work
         //add_action('woocommerce_loaded', array($this, 'maybe_init_block_support_fallback'));
@@ -100,6 +104,7 @@ class EU_VAT_Guard
         // Frontend-specific hooks
         if (!is_admin() || wp_doing_ajax()) {
             $this->setup_frontend_hooks();
+
         }
 
         // Admin-specific hooks
@@ -194,7 +199,8 @@ class EU_VAT_Guard
             require_once plugin_dir_path(__FILE__) . 'class-vat-guard-admin.php';
 
             // Show VAT number in the WooCommerce admin order edit screen (billing section)
-            add_action('woocommerce_admin_order_data_after_billing_address', array($this, 'show_vat_in_admin_order'));
+            // replaced by function below
+            //add_action('woocommerce_admin_order_data_after_billing_address', array($this, 'show_vat_in_admin_order'));
 
             // Add VAT field to admin order billing address editing
             add_action('woocommerce_admin_order_data_after_billing_address', array($this, 'add_vat_field_to_admin_order'));
@@ -488,13 +494,6 @@ class EU_VAT_Guard
      */
     public function get_order_vat_number($order)
     {
-        // Try to get VAT from block checkout additional fields first
-        $vat = '';
-        if (function_exists('woocommerce_get_order_additional_field_value')) {
-            $vat = woocommerce_get_order_additional_field_value($order, 'eu-vat-guard/vat_number');
-        }
-
-        // Fallback to custom meta field (classic checkout or block fallback)
         if (empty($vat)) {
             $vat = $order->get_meta('billing_eu_vat_number');
             if (empty($vat)) {
@@ -521,13 +520,13 @@ class EU_VAT_Guard
                 <?php if ($require_company)
                     echo 'required'; ?> value="<?php if (!empty($_POST['company_name']))
                            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Just displaying previously submitted value
-                           echo esc_attr(wp_unslash($_POST['company_name'])); ?>" />
+                           echo esc_attr(sanitize_text_field(wp_unslash($_POST['company_name']))); ?>" />
         </p>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number"
                 placeholder="<?php echo esc_attr($this->get_vat_label()); ?><?php echo $require_vat ? ' *' : ''; ?>" value="<?php if (!empty($_POST['vat_number']))
                               // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Just displaying previously submitted value
-                              echo esc_attr(wp_unslash($_POST['vat_number'])); ?>" <?php if ($require_vat) {
+                              echo esc_attr(sanitize_text_field(wp_unslash($_POST['vat_number']))); ?>" <?php if ($require_vat) {
                                     echo 'required';
                                 } ?> />
         </p>
@@ -845,8 +844,7 @@ class EU_VAT_Guard
         }
 
         if (!empty($vat_number)) {
-            // Log for debugging
-            //error_log("VAT Guard: Saving VAT number '{$vat_number}' for order {$order_id} via save_checkout_vat_field");
+            
 
             // Use both post meta and order meta for compatibility
             update_post_meta($order_id, 'billing_eu_vat_number', $vat_number);
@@ -1136,6 +1134,18 @@ class EU_VAT_Guard
 
 
     /**
+     * Show VAT number in order emails
+     */
+    public function show_vat_in_emails($order, $sent_to_admin, $plain_text, $email)
+    {
+        $vat = $this->get_order_vat_number($order);
+
+        if ($vat) {
+            echo '<p><strong>' . esc_html__('VAT Number', 'eu-vat-guard-for-woocommerce') . ':</strong> ' . esc_html($vat) . '</p>';
+        }
+    }
+
+    /**
      * Show VAT number in admin order screen
      */
     public function show_vat_in_admin_order($order)
@@ -1167,17 +1177,6 @@ class EU_VAT_Guard
         }
     }
 
-    /**
-     * Show VAT number in order emails
-     */
-    public function show_vat_in_emails($order, $sent_to_admin, $plain_text, $email)
-    {
-        $vat = $this->get_order_vat_number($order);
-
-        if ($vat) {
-            echo '<p><strong>' . esc_html__('VAT Number', 'eu-vat-guard-for-woocommerce') . ':</strong> ' . esc_html($vat) . '</p>';
-        }
-    }
 
     /**
      * Add VAT field to admin order billing address section
@@ -1190,15 +1189,25 @@ class EU_VAT_Guard
             $vat_number = $this->get_order_vat_number($order);
         }
 
-        // Add the VAT field using WooCommerce's woocommerce_wp_text_input function
-        woocommerce_wp_text_input(array(
-            'id' => '_billing_eu_vat_number',
-            'label' => $this->get_vat_label(),
-            'placeholder' => __('Enter VAT number', 'eu-vat-guard-for-woocommerce'),
-            'description' => __('Enter a valid EU VAT number to apply VAT exemption.', 'eu-vat-guard-for-woocommerce'),
-            'value' => $vat_number,
-            'wrapper_class' => 'form-field-wide'
-        ));
+        // Check if we're in edit mode by looking for the edit action in the request
+        $is_edit_mode = isset($_GET['action']) && $_GET['action'] === 'edit';
+
+        // If not in edit mode and VAT number exists, show it as read-only text
+        if (!$is_edit_mode && !empty($vat_number)) {
+            echo '<p class="form-field form-field-wide">';
+            echo '<strong>' . esc_html($this->get_vat_label()) . ':</strong> ';
+            echo '<span>' . esc_html($vat_number) . '</span>';
+            echo '</p>';
+        } else {
+            // Add the VAT field using WooCommerce's woocommerce_wp_text_input function
+            woocommerce_wp_text_input(array(
+                'id' => '_billing_eu_vat_number',
+                'label' => $this->get_vat_label(),
+                'placeholder' => __('Enter VAT number', 'eu-vat-guard-for-woocommerce'),
+                'value' => $vat_number,
+                'wrapper_class' => 'form-field-wide'
+            ));
+        }
 
         // Show current exemption status if applicable
         $is_exempt = $order && $order->get_id() ? $order->get_meta('billing_is_vat_exempt') : '';
@@ -1213,7 +1222,7 @@ class EU_VAT_Guard
     public function save_admin_order_vat_field($post_id)
     {
         if (isset($_POST['_billing_eu_vat_number'])) {
-            $vat_number = sanitize_text_field($_POST['_billing_eu_vat_number']);
+            $vat_number = sanitize_text_field(wp_unslash($_POST['_billing_eu_vat_number']));
 
             // Get the order object
             $order = wc_get_order($post_id);
@@ -1223,9 +1232,10 @@ class EU_VAT_Guard
 
             // Validate VAT number if provided
             if (!empty($vat_number)) {
-                $validation_result = $this->validate_vat_number($vat_number, $order->get_billing_country());
+                $error = '';
+                $validation_result = $this->is_valid_eu_vat_number($vat_number, $error);
 
-                if ($validation_result['valid']) {
+                if ($validation_result) {
                     // Save VAT number
                     $order->update_meta_data('billing_eu_vat_number', $vat_number);
 
@@ -1241,8 +1251,8 @@ class EU_VAT_Guard
                     );
                 } else {
                     // Add admin notice for invalid VAT
-                    add_action('admin_notices', function () use ($validation_result) {
-                        echo '<div class="notice notice-error"><p>' . esc_html($validation_result['message']) . '</p></div>';
+                    add_action('admin_notices', function () use ($error) {
+                        echo '<div class="notice notice-error"><p>' . esc_html($error) . '</p></div>';
                     });
                 }
             } else {

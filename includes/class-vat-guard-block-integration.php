@@ -393,7 +393,9 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             $error_messages
         );
 
-        wc_clear_notices();
+        if(function_exists('wc_clear_notices')) {
+             wc_clear_notices(); 
+        }
         // Display any error messages
         foreach ($error_messages as $error_message) {
             wc_add_notice($error_message, 'error');

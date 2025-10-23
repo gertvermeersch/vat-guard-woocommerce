@@ -190,6 +190,16 @@ class VAT_Guard_Rate_Importer
         }
 
         wp_enqueue_script('jquery');
+
+        // Enqueue the admin JavaScript file
+        wp_enqueue_script(
+            'vat-importer-admin-js',
+            plugin_dir_url(dirname(__FILE__)) . 'assets/js/admin-rate-importer.js',
+            array('jquery'),
+            '1.2.0',
+            true
+        );
+
         wp_enqueue_style(
             'vat-importer-admin',
             plugin_dir_url(dirname(__FILE__)) . 'assets/admin-vat-importer.css',
@@ -203,7 +213,7 @@ class VAT_Guard_Rate_Importer
      */
     public function handle_import_request()
     {
-        if (!isset($_POST['eu_vat_guard_import_rates']) || !wp_verify_nonce(wp_unslash($_POST['eu_vat_guard_import_nonce']), 'eu_vat_guard_import_rates')) {
+        if (!isset($_POST['eu_vat_guard_import_rates']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['eu_vat_guard_import_nonce'])), 'eu_vat_guard_import_rates')) {
             return;
         }
 
@@ -223,11 +233,12 @@ class VAT_Guard_Rate_Importer
 
         $imported_count = $this->import_vat_rates($selected_countries, $include_reduced === 'yes');
 
+        //note for reviewer: $imported_count is escaped within sprintf
         add_action('admin_notices', function () use ($imported_count) {
             echo '<div class="notice notice-success"><p>' .
                 sprintf(
                     esc_html__('Successfully imported %d VAT rates.', 'eu-vat-guard-for-woocommerce'),
-                    $imported_count
+                     $imported_count
                 ) .
                 '</p></div>';
         });
@@ -282,7 +293,7 @@ class VAT_Guard_Rate_Importer
                 "SELECT slug FROM {$wpdb->prefix}wc_tax_rate_classes
                  WHERE tax_rate_class_id = 1"
             ));
-            if(empty($tax_class->slug)) {
+            if (empty($tax_class->slug)) {
                 //create reduced class (shouldn't happen as tax rate class exists by default)
                 add_action('admin_notices', function () {
                     echo '<div class="notice notice-error"><p>' . esc_html__('Reduced tax class not found. make sure this class exists in Woocommerce', 'eu-vat-guard-for-woocommerce') . '</p></div>';
@@ -497,22 +508,6 @@ class VAT_Guard_Rate_Importer
                 </div>
             </div>
         </div>
-
-        <script type="text/javascript">
-            jQuery(document).ready(function ($) {
-                $('#select-all-countries').change(function () {
-                    $('.country-checkbox').prop('checked', this.checked);
-                });
-
-                $('.country-checkbox').change(function () {
-                    if (!this.checked) {
-                        $('#select-all-countries').prop('checked', false);
-                    } else if ($('.country-checkbox:checked').length === $('.country-checkbox').length) {
-                        $('#select-all-countries').prop('checked', true);
-                    }
-                });
-            });
-        </script>
         <?php
     }
 }

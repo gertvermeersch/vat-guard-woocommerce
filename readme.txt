@@ -18,7 +18,7 @@ Manage EU VAT numbers and company information for WooCommerce customers and B2B 
 = Key Features =
 
 * **Company Name & VAT Number Fields** - Adds company name and VAT number fields to registration, account, and checkout forms
-* **EU VAT Number Validation** - Offline format validation for all EU VAT numbers with optional real-time VIES validation
+* **EU VAT Number Validation** - Offline format validation for all EU VAT numbers with optional real-time VIES validation (uses European Commission's VIES service)
 * **Automatic VAT Exemption** - Applies reverse charge VAT exemption for valid B2B transactions between EU member states
 * **VAT Rate Importer** - Import current EU VAT rates for all 27 member states with special categories support
 * **WooCommerce Integration** - VAT numbers are saved to orders and displayed in admin and emails
@@ -120,6 +120,26 @@ Major update with advanced customization options, PDF invoice integration, and W
 
 = 1.0.0 =
 Initial release of EU VAT Guard for WooCommerce.
+
+== Third Party Services ==
+
+This plugin optionally uses the European Commission's VIES (VAT Information Exchange System) service for real-time VAT number validation.
+
+**VIES Service Details:**
+* **Service:** European Commission VIES VAT validation service
+* **Purpose:** Real-time validation of EU VAT numbers to verify their authenticity
+* **Data Sent:** Only the VAT number (country code and number) that customers enter during checkout, registration, or account updates
+* **When Data is Sent:** Only when VIES validation is enabled in plugin settings AND a customer enters a VAT number
+* **Service URL:** https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl
+* **Privacy Policy:** https://ec.europa.eu/info/privacy-policy_en
+* **Terms of Service:** https://ec.europa.eu/taxation_customs/vies/faq.html
+
+**Important Notes:**
+* VIES validation is completely optional and disabled by default
+* No personal data (names, addresses, emails) is ever sent to VIES
+* Only the VAT number itself is transmitted for validation
+* The plugin works fully without VIES validation using offline format checking
+* You can disable VIES validation at any time in the plugin settings
 
 == Requirements ==
 
