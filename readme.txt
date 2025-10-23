@@ -121,7 +121,7 @@ Major update with advanced customization options, PDF invoice integration, and W
 = 1.0.0 =
 Initial release of EU VAT Guard for WooCommerce.
 
-== Third Party Services ==
+== External Services ==
 
 This plugin optionally uses the European Commission's VIES (VAT Information Exchange System) service for real-time VAT number validation.
 
