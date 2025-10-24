@@ -5,7 +5,7 @@ Requires: woocommerce
 Requires at least: 5.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.2.1
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,22 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 
 == Changelog ==
 
+= 1.3.0 =
+* **Major Code Refactoring** - Implemented proper PHP namespacing for all classes
+* Added namespace `Stormlabs\EUVATGuard` to prevent conflicts with other plugins
+* Added comprehensive plugin constants for better code organization
+* Added option name constants for all WordPress options
+* Added meta key constants for consistent data handling
+* Improved code structure following WordPress best practices
+* Enhanced backward compatibility with class aliases
+* Added proper use statements for WordPress and WooCommerce classes
+* Fixed admin order edit mode detection for VAT field display
+* Improved VAT field display - now shows read-only when not in edit mode
+* Updated all translation files (Dutch, French, German) with missing strings
+* Added complete documentation for namespace changes and naming conventions
+* Enhanced security and maintainability of codebase
+* No breaking changes - fully backward compatible with existing installations
+
 = 1.2.0 =
 * Added VAT Rate Importer tool for importing current EU VAT rates
 * Added comprehensive database of all 27 EU member states' VAT rates
@@ -114,6 +130,9 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 * Admin settings interface
 
 == Upgrade Notice ==
+
+= 1.3.0 =
+Major code refactoring with proper namespacing and improved code structure. Fully backward compatible. Includes translation updates and enhanced admin interface. Recommended for all users.
 
 = 1.1.0 =
 Major update with advanced customization options, PDF invoice integration, and WPML support. Recommended for all users.

@@ -1,10 +1,17 @@
 <?php
-// VAT Guard for WooCommerce Main Class
+/**
+ * VAT Guard for WooCommerce Main Class
+ *
+ * @package Stormlabs\EUVATGuard
+ */
+
+namespace Stormlabs\EUVATGuard;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class EU_VAT_Guard
+class VAT_Guard
 {
     /**
      * Show a VAT exempt notice in the order review totals if VAT is removed.
@@ -80,7 +87,7 @@ class EU_VAT_Guard
     private function load_dependencies()
     {
         // Always load VIES for validation (lightweight)
-        if (!class_exists('EU_VAT_Guard_VIES')) {
+        if (!class_exists(__NAMESPACE__ . '\VAT_Guard_VIES')) {
             require_once plugin_dir_path(__FILE__) . 'class-vat-guard-vies.php';
         }
 
@@ -644,7 +651,7 @@ class EU_VAT_Guard
         if ($require_vies) {
             $ignore_vies_error = get_option('eu_vat_guard_ignore_vies_error', 0);
             $number = substr($vat, 2);
-            $vies_result = EU_VAT_Guard_VIES::check_vat($country, $number);
+            $vies_result = VAT_Guard_VIES::check_vat($country, $number);
             if ($vies_result === false) {
                 $error_message = __('This VAT number is not valid according to the VIES service.', 'eu-vat-guard-for-woocommerce');
                 return false;

@@ -1,10 +1,20 @@
 <?php
-// VAT Guard for WooCommerce VIES validation helper
+/**
+ * VAT Guard for WooCommerce VIES validation helper
+ *
+ * @package Stormlabs\EUVATGuard
+ */
+
+namespace Stormlabs\EUVATGuard;
+
+use SoapClient;
+use Exception;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class EU_VAT_Guard_VIES
+class VAT_Guard_VIES
 {
     /**
      * Check VAT number validity using the VIES SOAP API

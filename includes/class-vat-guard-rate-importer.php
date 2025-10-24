@@ -2,9 +2,14 @@
 /**
  * VAT Rate Importer Class
  *
- * @package EU_VAT_Guard_For_WooCommerce
+ * @package Stormlabs\EUVATGuard
  * @since 1.2.0
  */
+
+namespace Stormlabs\EUVATGuard;
+
+use WC_Cache_Helper;
+use WC_Tax;
 
 if (!defined('ABSPATH')) {
     exit;

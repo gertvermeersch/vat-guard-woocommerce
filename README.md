@@ -103,11 +103,27 @@ php compile-translations.php
 This plugin uses:
 - **Text Domain**: `eu-vat-guard-for-woocommerce`
 - **Plugin Slug**: `eu-vat-guard-for-woocommerce`
-- **Stable Tag**: `1.1.0`
+- **Stable Tag**: `1.3.0`
 
 ## Changelog
 
-### Version 1.1.0 *(Latest)*
+### Version 1.3.0 *(Latest)*
+- 🏗️ **Major**: Implemented proper PHP namespacing (`Stormlabs\EUVATGuard`)
+- 📦 **New**: Added comprehensive plugin constants for better code organization
+- 🔧 **Improved**: Enhanced code structure following WordPress best practices
+- 🌍 **Updated**: Completed translations for Dutch, French, and German
+- 🎨 **Enhanced**: Admin order edit VAT field now shows read-only when not editing
+- 📚 **Added**: Comprehensive documentation (NAMESPACE-CHANGES.md, NAMING-CONVENTIONS.md)
+- ✅ **Maintained**: 100% backward compatibility with existing installations
+- 🔒 **Security**: Enhanced code security through proper namespacing
+
+### Version 1.2.0
+- ✨ **New**: VAT Rate Importer tool for all 27 EU member states
+- ✨ **New**: Support for special VAT categories (food, books, pharmaceuticals, hotels)
+- 🔧 **Improved**: Enhanced WooCommerce integration with smart country filtering
+- 📊 **Added**: Complete VAT rates overview table
+
+### Version 1.1.0
 - ✨ **New**: Advanced settings tab with exemption rules customization
 - ✨ **New**: Custom field labels and exemption messages
 - ✨ **New**: WPML compatibility for custom strings

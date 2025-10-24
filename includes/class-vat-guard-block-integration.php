@@ -1,10 +1,15 @@
 <?php
-
 /**
  * VAT Guard Block Integration for WooCommerce Store API
+ *
+ * @package Stormlabs\EUVATGuard
  */
 
+namespace Stormlabs\EUVATGuard;
+
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationInterface;
+use WP_Error;
+use WP_REST_Response;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -14,17 +19,17 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
 {
     /**
      * Reference to the main VAT Guard class
-     * @var EU_VAT_Guard
+     * @var VAT_Guard
      */
     private $main_class;
 
     /**
      * Constructor
-     * @param EU_VAT_Guard $main_class
+     * @param VAT_Guard $main_class
      */
     public function __construct($main_class = null)
     {
-        $this->main_class = $main_class ?: EU_VAT_Guard::instance();
+        $this->main_class = $main_class ?: VAT_Guard::instance();
     }
 
     /**
@@ -393,8 +398,8 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             $error_messages
         );
 
-        if(function_exists('wc_clear_notices')) {
-             wc_clear_notices(); 
+        if (function_exists('wc_clear_notices')) {
+            wc_clear_notices();
         }
         // Display any error messages
         foreach ($error_messages as $error_message) {
@@ -444,7 +449,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         );
 
         wc_clear_notices();
-        foreach($error_messages as $error_message) {
+        foreach ($error_messages as $error_message) {
             wc_add_notice($error_message, 'error');
         }
 
@@ -488,7 +493,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         );
 
         wc_clear_notices();
-        foreach($error_messages as $error_message) {
+        foreach ($error_messages as $error_message) {
             wc_add_notice($error_message, 'error');
         }
 
@@ -669,7 +674,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
 
     /**
      * Trigger frontend refresh to update VAT exempt status display
-     * TODO: is this necessary? doesn't it just work by calculating totals?
+     * TODO: is this necessary? doesn't it just work by calculating totals? - 24/10 to be removed in future versions
      */
     private function trigger_frontend_refresh()
     {

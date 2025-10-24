@@ -22,7 +22,7 @@ msgstr ""
 #: vat-guard-woocommerce.php includes/class-vat-guard-admin.php:121
 #, fuzzy
 msgid "EU VAT Guard for WooCommerce"
-msgstr "VAT Guard voor WooCommerce"
+msgstr "EU VAT Guard voor WooCommerce"
 
 #. Description of the plugin
 #: vat-guard-woocommerce.php
@@ -50,7 +50,7 @@ msgstr "https://stormlabs.be/"
 #: includes/class-vat-guard-admin.php:92 includes/class-vat-guard-admin.php:93
 #, fuzzy
 msgid "EU VAT Guard"
-msgstr "VAT Guard"
+msgstr "EU VAT Guard"
 
 #: includes/class-vat-guard-admin.php:104
 #, fuzzy
@@ -125,7 +125,7 @@ msgstr "BTW-nummer valideren..."
 #: includes/class-vat-guard-admin.php:194
 #, fuzzy
 msgid "Check VAT number validity with the official VIES service"
-msgstr "Dit BTW-nummer is niet geldig volgens de VIES-service."
+msgstr "Geldigheid van BTW-nummer controleren met de officiële VIES service"
 
 #: includes/class-vat-guard-admin.php:195
 msgid ""
