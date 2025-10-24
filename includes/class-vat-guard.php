@@ -1254,6 +1254,7 @@ class VAT_Guard
 
                     // Add order note
                     $order->add_order_note(
+                        /* translators: %s: VAT number */
                         sprintf(__('VAT number %s added and validated via admin.', 'eu-vat-guard-for-woocommerce'), $vat_number)
                     );
                 } else {

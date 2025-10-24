@@ -238,14 +238,13 @@ class VAT_Guard_Rate_Importer
 
         $imported_count = $this->import_vat_rates($selected_countries, $include_reduced === 'yes');
 
-        //note for reviewer: $imported_count is escaped within sprintf
         add_action('admin_notices', function () use ($imported_count) {
-            echo '<div class="notice notice-success"><p>' .
-                sprintf(
-                    esc_html__('Successfully imported %d VAT rates.', 'eu-vat-guard-for-woocommerce'),
-                     $imported_count
-                ) .
-                '</p></div>';
+            $message = sprintf(
+                /* translators: %d: number of VAT rates imported */
+                esc_html__('Successfully imported %d VAT rates.', 'eu-vat-guard-for-woocommerce'),
+                $imported_count
+            );
+            echo wp_kses_post('<div class="notice notice-success"><p>' . $message . '</p></div>');
         });
     }
 
