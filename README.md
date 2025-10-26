@@ -5,6 +5,8 @@
 [![PHP Version](https://img.shields.io/badge/PHP-7.2%2B-green.svg)](https://php.net/)
 [![License](https://img.shields.io/badge/License-GPLv2%2B-red.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
 
+[Official Plugin Download](https://wordpress.org/plugins/eu-vat-guard-for-woocommerce/)
+
 **EU VAT Guard for WooCommerce** is a powerful plugin that adds advanced EU VAT number management and validation to your WooCommerce store. It helps you collect, validate, and manage company VAT numbers for your B2B customers, ensuring compliance and a smooth checkout experience.
 
 ## Features
