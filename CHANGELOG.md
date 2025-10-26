@@ -4,15 +4,16 @@ All notable changes to EU VAT Guard for WooCommerce will be documented in this f
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.3.2] - 2025-10-26
 
-## [1.3.1] - 2025-01-29
+## [1.3.1] - 2025-10-24
 
 ### Fixed
 
 - Plugin checker flagged unsafe output (false positive)
 - Notes for translators added
 
-## [1.3.0] - 2025-01-29
+## [1.3.0] - 2025-10-23
 
 ### Added
 - **Namespacing**: Implemented proper PHP namespace `Stormlabs\EUVATGuard` for all classes
@@ -47,12 +48,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced code security with proper namespacing
 - Improved code maintainability and reduced conflict potential
 
-## [1.2.1] - 2025-01-XX
+## [1.2.1] - 2025-10-22
 
 ### Fixed
 - Minor bug fixes and improvements
 
-## [1.2.0] - 2025-01-XX
+## [1.2.0] - 2025-10-21
 
 ### Added
 - VAT Rate Importer tool for importing current EU VAT rates
@@ -66,7 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Admin menu structure to dedicated main menu
 - Enhanced WooCommerce integration with smart country filtering
 
-## [1.1.0] - 2024-XX-XX
+## [1.1.0] - 2025-10-19
 
 ### Added
 - Advanced settings tab with exemption rules customization
@@ -85,7 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Updated
 - Text domain for better WordPress.org compatibility
 
-## [1.0.0] - 2024-XX-XX
+## [1.0.0] - 2025-10-16
 
 ### Added
 - Initial release
