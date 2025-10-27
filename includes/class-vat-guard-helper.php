@@ -193,7 +193,7 @@ class VAT_Guard_Helper
     public static function is_admin_dashboard_ajax()
     {
         if (!wp_doing_ajax()) {
-            return false;
+            return false; //no ajax call
         }
 
         // Check for checkout-related AJAX actions that should be allowed
@@ -213,11 +213,11 @@ class VAT_Guard_Helper
 
         // If it's a checkout-related AJAX action, it's not an admin dashboard call
         if (in_array($action, $checkout_ajax_actions, true)) {
-            return false;
+            return false; //customer facing ajax call
         }
 
         // Check if we're in admin context with non-checkout AJAX
         // This catches admin dashboard AJAX calls that we want to exclude
-        return is_admin() && !in_array($action, $checkout_ajax_actions, true);
+        return is_admin() && !in_array($action, $checkout_ajax_actions, true); //different call on admin section
     }
 }

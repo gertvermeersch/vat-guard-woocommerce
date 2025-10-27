@@ -28,16 +28,19 @@ class VAT_Guard_Admin
         if (is_admin() && !wp_doing_ajax()) {
             add_action('admin_menu', [$this, 'add_admin_menu']);
             add_action('admin_init', [$this, 'register_settings']);
-             // Add VAT field to admin order billing address editing
+            // Add VAT field to admin order billing address editing
             add_action('woocommerce_admin_order_data_after_billing_address', array($this, 'add_vat_field_to_admin_order'));
 
             // Save VAT field when order is updated in admin
             add_action('woocommerce_process_shop_order_meta', array($this, 'save_admin_order_vat_field'));
+
+            // Display admin notices for VAT validation errors
+            add_action('admin_notices', array($this, 'display_vat_validation_notices'));
         }
         require_once('class-vat-guard-helper.php');
     }
 
-      /**
+    /**
      * Add VAT field to admin order billing address section
      */
     public function add_vat_field_to_admin_order($order)
@@ -111,10 +114,8 @@ class VAT_Guard_Admin
                         sprintf(__('VAT number %s added and validated via admin.', 'eu-vat-guard-for-woocommerce'), $vat_number)
                     );
                 } else {
-                    // Add admin notice for invalid VAT
-                    add_action('admin_notices', function () use ($error) {
-                        echo '<div class="notice notice-error"><p>' . esc_html($error) . '</p></div>';
-                    });
+                    // Store error message in transient for display on next page load
+                    set_transient('eu_vat_guard_admin_error_' . get_current_user_id(), $error, 30);
                 }
             } else {
                 // Remove VAT number and exempt status if field is empty
@@ -127,7 +128,17 @@ class VAT_Guard_Admin
         }
     }
 
-
+    /**
+     * Display VAT validation error notices stored in transients
+     */
+    public function display_vat_validation_notices()
+    {
+        $error_message = get_transient('eu_vat_guard_admin_error_' . get_current_user_id());
+        if ($error_message) {
+            echo '<div class="notice notice-error is-dismissible"><p>' . esc_html($error_message) . '</p></div>';
+            delete_transient('eu_vat_guard_admin_error_' . get_current_user_id());
+        }
+    }
 
     public function register_settings()
     {
