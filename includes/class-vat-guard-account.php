@@ -66,8 +66,8 @@ class VAT_Guard_Account
 
     public function add_account_fields()
     {
-        $company_name = get_user_meta(get_current_user_id(), 'company_name', true);
-        $vat_number = get_user_meta(get_current_user_id(), 'vat_number', true);
+        $company_name = get_user_meta(get_current_user_id(), EU_VAT_GUARD_META_COMPANY_NAME, true);
+        $vat_number = get_user_meta(get_current_user_id(), EU_VAT_GUARD_META_VAT_NUMBER, true);
 
         $require_company = get_option('eu_vat_guard_require_company', 1);
         $require_vat = get_option('eu_vat_guard_require_vat', 1);
@@ -150,10 +150,10 @@ class VAT_Guard_Account
             return;
         }
         if (!empty($company_name)) {
-            update_user_meta($customer_id, 'company_name', $company_name);
+            update_user_meta($customer_id, EU_VAT_GUARD_META_COMPANY_NAME, $company_name);
         }
         if (!empty($vat_number)) {
-            update_user_meta($customer_id, 'vat_number', $vat_number);
+            update_user_meta($customer_id, EU_VAT_GUARD_META_VAT_NUMBER, $vat_number);
         }
     }
 

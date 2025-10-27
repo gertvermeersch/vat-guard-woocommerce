@@ -36,11 +36,11 @@ define('EU_VAT_GUARD_OPTION_COMPANY_LABEL', 'eu_vat_guard_company_label');
 define('EU_VAT_GUARD_OPTION_VAT_LABEL', 'eu_vat_guard_vat_label');
 define('EU_VAT_GUARD_OPTION_EXEMPTION_MESSAGE', 'eu_vat_guard_exemption_message');
 
-// Define meta key constants (keeping existing keys for backward compatibility)
-define('EU_VAT_GUARD_META_VAT_NUMBER', 'vat_number'); // User meta
-define('EU_VAT_GUARD_META_COMPANY_NAME', 'company_name'); // User meta
-define('EU_VAT_GUARD_META_ORDER_VAT', 'billing_eu_vat_number'); // Order meta
-define('EU_VAT_GUARD_META_ORDER_EXEMPT', 'billing_is_vat_exempt'); // Order meta
+// Define meta key constants with plugin prefix
+define('EU_VAT_GUARD_META_VAT_NUMBER', '_eu_vat_guard_vat_number'); // User meta
+define('EU_VAT_GUARD_META_COMPANY_NAME', '_eu_vat_guard_company_name'); // User meta
+define('EU_VAT_GUARD_META_ORDER_VAT', '_eu_vat_guard_order_vat_number'); // Order meta
+define('EU_VAT_GUARD_META_ORDER_EXEMPT', '_eu_vat_guard_order_vat_exempt'); // Order meta
 define('EU_VAT_GUARD_META_BLOCK_VAT', '_wc_other/eu-vat-guard/vat_number'); // Block checkout meta
 
 // Include main plugin class

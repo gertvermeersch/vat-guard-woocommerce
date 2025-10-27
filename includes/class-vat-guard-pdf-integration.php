@@ -134,9 +134,9 @@ class VAT_Guard_PDF_Integration
             return;
         }
 
-        $is_exempt = $order->get_meta('billing_is_vat_exempt');
+        $is_exempt = $order->get_meta(EU_VAT_GUARD_META_ORDER_EXEMPT);
         if (empty($is_exempt)) {
-            $is_exempt = get_post_meta($order->get_id(), 'billing_is_vat_exempt', true);
+            $is_exempt = get_post_meta($order->get_id(), EU_VAT_GUARD_META_ORDER_EXEMPT, true);
         }
 
         if ($is_exempt === 'yes') {
@@ -157,10 +157,10 @@ class VAT_Guard_PDF_Integration
     {
         $vat_guard = VAT_Guard::instance();
         $vat_number = VAT_Guard_Helper::get_order_vat_number($order);
-        $is_exempt = $order->get_meta('billing_is_vat_exempt');
+        $is_exempt = $order->get_meta(EU_VAT_GUARD_META_ORDER_EXEMPT);
 
         if (empty($is_exempt)) {
-            $is_exempt = get_post_meta($order->get_id(), 'billing_is_vat_exempt', true);
+            $is_exempt = get_post_meta($order->get_id(), EU_VAT_GUARD_META_ORDER_EXEMPT, true);
         }
 
         return [
@@ -269,9 +269,9 @@ class VAT_Guard_PDF_Integration
             $address['vat_number'] = $vat;
 
             // Add VAT exempt status if applicable
-            $is_exempt = $order->get_meta('billing_is_vat_exempt');
+            $is_exempt = $order->get_meta(EU_VAT_GUARD_META_ORDER_EXEMPT);
             if (empty($is_exempt)) {
-                $is_exempt = get_post_meta($order->get_id(), 'billing_is_vat_exempt', true);
+                $is_exempt = get_post_meta($order->get_id(), EU_VAT_GUARD_META_ORDER_EXEMPT, true);
             }
             if ($is_exempt === 'yes') {
                 $address['vat_status'] = __('VAT exempt', 'eu-vat-guard-for-woocommerce');
@@ -291,7 +291,7 @@ class VAT_Guard_PDF_Integration
     public function add_vat_to_my_account_address($address, $customer_id, $address_type)
     {
         if ($address_type === 'billing') {
-            $vat = get_user_meta($customer_id, 'vat_number', true);
+            $vat = get_user_meta($customer_id, EU_VAT_GUARD_META_VAT_NUMBER, true);
             if (!empty($vat)) {
                 $address['vat_number'] = $vat;
             }

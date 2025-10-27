@@ -10,7 +10,7 @@ namespace Stormlabs\EUVATGuard;
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationInterface;
 use WP_Error;
 use WP_REST_Response;
-use Stormlabs\EUVATGuard\VAT_Guard_Helper;
+
 
 if (!defined('ABSPATH')) {
     exit;
@@ -33,7 +33,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
     public function __construct($main_class = null)
     {
         // Load the helper class
-    require_once plugin_dir_path(__FILE__) . 'class-vat-guard-helper.php';
+        require_once plugin_dir_path(__FILE__) . 'class-vat-guard-helper.php';
         $this->main_class = $main_class ?: VAT_Guard::instance();
     }
 
@@ -271,7 +271,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
     private function get_customer_vat_number()
     {
         if (is_user_logged_in()) {
-            return get_user_meta(get_current_user_id(), 'vat_number', true);
+            return get_user_meta(get_current_user_id(), EU_VAT_GUARD_META_VAT_NUMBER, true);
         }
         return '';
     }
@@ -292,7 +292,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
                     'location' => 'contact',
                     'type' => 'text',
                     'required' => (bool) get_option('eu_vat_guard_require_vat', 1),
-                    'sanitize_callback' => array($this->main_class, 'sanitize_vat_field'),
+                    'sanitize_callback' => array('Stormlabs\EUVATGuard\VAT_Guard_Helper', 'sanitize_vat_field'),
                     'validate_callback' => array($this, 'validate_vat_field')
                 )
             );
@@ -378,10 +378,10 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         if ('eu-vat-guard/vat_number' === $key) {
             // Clean and validate VAT number
             $vat = strtoupper(str_replace([' ', '-', '.'], '', $value));
-            $wc_object->update_meta_data('billing_eu_vat_number', $vat, true);
+            $wc_object->update_meta_data(EU_VAT_GUARD_META_ORDER_VAT, $vat, true);
             //also save in the session
             if (WC()->session) {
-                WC()->session->set('billing_eu_vat_number', $vat);
+                WC()->session->set(EU_VAT_GUARD_META_ORDER_VAT, $vat);
             }
         }
 
@@ -413,7 +413,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
 
         // Update meta data
         if ($wc_object) {
-            $wc_object->update_meta_data('billing_is_vat_exempt', $is_exempt ? 'yes' : 'no');
+            $wc_object->update_meta_data(EU_VAT_GUARD_META_ORDER_EXEMPT, $is_exempt ? 'yes' : 'no');
         }
 
         // Trigger frontend refresh
@@ -519,7 +519,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
     public function preload_vat_field($value, $group, $wc_object)
     {
         if (is_user_logged_in()) {
-            $vat = get_user_meta(get_current_user_id(), 'vat_number', true);
+            $vat = get_user_meta(get_current_user_id(), EU_VAT_GUARD_META_VAT_NUMBER, true);
             if (!empty($vat)) {
                 return $vat;
             }
@@ -555,7 +555,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
 
         // Store the VAT in session to handle old values being passed in handle_vat_field_update
         if (WC()->session) {
-            WC()->session->set('billing_eu_vat_number', $value);
+            WC()->session->set(EU_VAT_GUARD_META_ORDER_VAT, $value);
         }
         return true; // No errors - exemption status will be determined later with complete address info
     }
@@ -730,7 +730,7 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         $vat = '';
 
         if (empty($vat) && WC()->session) {
-            $vat = WC()->session->get('billing_eu_vat_number');
+            $vat = WC()->session->get(EU_VAT_GUARD_META_ORDER_VAT);
         }
         return $vat;
     }

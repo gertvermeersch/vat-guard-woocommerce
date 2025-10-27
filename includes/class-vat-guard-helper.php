@@ -118,9 +118,9 @@ class VAT_Guard_Helper
      */
     public static function get_order_vat_number($order)
     {
-        $vat = $order->get_meta('billing_eu_vat_number');
+        $vat = $order->get_meta(EU_VAT_GUARD_META_ORDER_VAT);
         if (empty($vat)) {
-            $vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
+            $vat = get_post_meta($order->get_id(), EU_VAT_GUARD_META_ORDER_VAT, true);
         }
 
         return $vat;
@@ -219,5 +219,27 @@ class VAT_Guard_Helper
         // Check if we're in admin context with non-checkout AJAX
         // This catches admin dashboard AJAX calls that we want to exclude
         return is_admin() && !in_array($action, $checkout_ajax_actions, true); //different call on admin section
+    }
+
+
+        /**
+     * Sanitize VAT field input
+     * Removes dots, spaces, and other non-alphanumeric characters
+     * Converts to uppercase
+     * @param string $value The VAT number to sanitize
+     * @return string The sanitized VAT number
+     */
+    public static function sanitize_vat_field($value)
+    {
+        if (empty($value)) {
+            return '';
+        }
+
+        // Remove dots, spaces, dashes, and other non-alphanumeric characters
+        // Keep only letters and numbers
+        $sanitized = preg_replace('/[^A-Za-z0-9]/', '', $value);
+
+        // Convert to uppercase
+        return strtoupper($sanitized);
     }
 }
