@@ -13,7 +13,25 @@ if (!defined('ABSPATH')) {
 
 class VAT_Guard_Admin
 {
-    public static function register_settings()
+
+    private static $instance;
+
+    public static function instance()
+    {
+        if (!self::$instance) {
+            self::$instance = new VAT_Guard_Admin();
+        }
+        return self::$instance;
+    }
+    public function __construct()
+    {
+        if (is_admin() && !wp_doing_ajax()) {
+            add_action('admin_menu', [$this, 'add_admin_menu']);
+            add_action('admin_init', [$this, 'register_settings']);
+        }
+    }
+
+    public function register_settings()
     {
         // Basic settings group
         register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_require_company', [
@@ -65,15 +83,15 @@ class VAT_Guard_Admin
         ]);
 
         // Hook to register WPML strings when settings are saved
-        add_action('update_option_eu_vat_guard_company_label', [__CLASS__, 'register_wpml_string'], 10, 3);
-        add_action('update_option_eu_vat_guard_vat_label', [__CLASS__, 'register_wpml_string'], 10, 3);
-        add_action('update_option_eu_vat_guard_exemption_message', [__CLASS__, 'register_wpml_string'], 10, 3);
+        add_action('update_option_eu_vat_guard_company_label', [$this, 'register_wpml_string'], 10, 3);
+        add_action('update_option_eu_vat_guard_vat_label', [$this, 'register_wpml_string'], 10, 3);
+        add_action('update_option_eu_vat_guard_exemption_message', [$this, 'register_wpml_string'], 10, 3);
     }
 
     /**
      * Register custom strings with WPML when they're saved
      */
-    public static function register_wpml_string($old_value, $new_value, $option_name)
+    public function register_wpml_string($old_value, $new_value, $option_name)
     {
         // Only register if WPML is active and string is not empty
         if (!function_exists('icl_register_string') || empty($new_value)) {
@@ -92,7 +110,7 @@ class VAT_Guard_Admin
         }
     }
 
-    public static function add_admin_menu()
+    public function add_admin_menu()
     {
         // Add main menu page
         add_menu_page(
@@ -100,7 +118,7 @@ class VAT_Guard_Admin
             __('EU VAT Guard', 'eu-vat-guard-for-woocommerce'),
             'manage_woocommerce',
             'eu-vat-guard',
-            array(__CLASS__, 'admin_page'),
+            array($this, 'admin_page'),
             'dashicons-shield-alt',
             56
         );
@@ -112,13 +130,13 @@ class VAT_Guard_Admin
             __('Settings', 'eu-vat-guard-for-woocommerce'),
             'manage_woocommerce',
             'eu-vat-guard',
-            array(__CLASS__, 'admin_page')
+            array($this, 'admin_page')
         );
         //load menu items from the pro plugin
         do_action('eu_vat_guard_admin_page_content');
     }
 
-    public static function admin_page()
+    public function admin_page()
     {
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Simple tab navigation, no data modification
         $active_tab = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'settings';
@@ -151,17 +169,17 @@ class VAT_Guard_Admin
             </h2>
 
             <?php if ($active_tab == 'settings'): ?>
-                <?php self::render_settings_tab(); ?>
+                <?php $this->render_settings_tab(); ?>
             <?php elseif ($active_tab == 'advanced'): ?>
-                <?php self::render_advanced_tab(); ?>
+                <?php $this->render_advanced_tab(); ?>
             <?php elseif ($active_tab == 'documentation'): ?>
-                <?php self::render_documentation_tab(); ?>
+                <?php $this->render_documentation_tab(); ?>
             <?php endif; ?>
         </div>
         <?php
     }
 
-    private static function render_settings_tab()
+    private function render_settings_tab()
     {
         ?>
         <form method="post" action="options.php">
@@ -224,7 +242,7 @@ class VAT_Guard_Admin
         <?php
     }
 
-    private static function render_advanced_tab()
+    private function render_advanced_tab()
     {
         ?>
         <form method="post" action="options.php">
@@ -335,7 +353,7 @@ class VAT_Guard_Admin
     <?php
     }
 
-    private static function render_documentation_tab()
+    private function render_documentation_tab()
     {
         ?>
         <div style="max-width: 800px;">
@@ -435,9 +453,4 @@ class VAT_Guard_Admin
         </div>
         <?php
     }
-}
-
-if (is_admin() && !wp_doing_ajax()) {
-    add_action('admin_menu', array('Stormlabs\EUVATGuard\VAT_Guard_Admin', 'add_admin_menu'));
-    add_action('admin_init', array('Stormlabs\EUVATGuard\VAT_Guard_Admin', 'register_settings'));
 }
