@@ -5,6 +5,8 @@
  * These functions can be used in PDF invoice templates to display VAT information
  */
 
+use Stormlabs\EUVATGuard\VAT_Guard_PDF_Integration;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -17,11 +19,11 @@ if (!defined('ABSPATH')) {
  */
 function eu_vat_guard_pdf_vat_number($order, $label = null)
 {
-    if (!class_exists('EU_VAT_Guard')) {
+    if (!class_exists('Stormlabs\EUVATGuard\VAT_Guard_PDF_Integration')) {
         return;
     }
 
-    $vat_info = EU_VAT_Guard::get_pdf_vat_info($order);
+    $vat_info = VAT_Guard_PDF_Integration::get_pdf_vat_info($order);
     if (!empty($vat_info['vat_number'])) {
         $display_label = $label ?: $vat_info['vat_label'];
         echo '<div class="pdf-vat-number">';
@@ -38,11 +40,11 @@ function eu_vat_guard_pdf_vat_number($order, $label = null)
  */
 function eu_vat_guard_pdf_exemption_status($order, $style = 'text')
 {
-    if (!class_exists('EU_VAT_Guard')) {
+    if (!class_exists('Stormlabs\EUVATGuard\VAT_Guard_PDF_Integration')) {
         return;
     }
 
-    $vat_info = EU_VAT_Guard::get_pdf_vat_info($order);
+    $vat_info = VAT_Guard_PDF_Integration::get_pdf_vat_info($order);
     if (!$vat_info['is_exempt']) {
         return;
     }
@@ -70,6 +72,21 @@ function eu_vat_guard_pdf_exemption_status($order, $style = 'text')
 }
 
 /**
+ * Display complete VAT information block
+ * 
+ * @param WC_Order $order The WooCommerce order object
+ * @param string $style Display style: 'table' or 'div'
+ */
+function eu_vat_guard_pdf_vat_block($order, $style = 'table')
+{
+    if (!class_exists('Stormlabs\EUVATGuard\VAT_Guard_PDF_Integration')) {
+        return;
+    }
+
+    VAT_Guard_PDF_Integration::display_pdf_vat_block($order, $style);
+}
+
+/**
  * Get VAT information array for custom implementations
  * 
  * @param WC_Order $order The WooCommerce order object
@@ -77,11 +94,11 @@ function eu_vat_guard_pdf_exemption_status($order, $style = 'text')
  */
 function eu_vat_guard_get_pdf_info($order)
 {
-    if (!class_exists('EU_VAT_Guard')) {
+    if (!class_exists('Stormlabs\EUVATGuard\VAT_Guard_PDF_Integration')) {
         return [];
     }
 
-    return EU_VAT_Guard::get_pdf_vat_info($order);
+    return VAT_Guard_PDF_Integration::get_pdf_vat_info($order);
 }
 
 /**
@@ -92,11 +109,11 @@ function eu_vat_guard_get_pdf_info($order)
  */
 function eu_vat_guard_is_exempt($order)
 {
-    if (!class_exists('EU_VAT_Guard')) {
+    if (!class_exists('Stormlabs\EUVATGuard\VAT_Guard_PDF_Integration')) {
         return false;
     }
 
-    $vat_info = EU_VAT_Guard::get_pdf_vat_info($order);
+    $vat_info = VAT_Guard_PDF_Integration::get_pdf_vat_info($order);
     return $vat_info['is_exempt'];
 }
 
@@ -108,10 +125,10 @@ function eu_vat_guard_is_exempt($order)
  */
 function eu_vat_guard_get_vat_number($order)
 {
-    if (!class_exists('EU_VAT_Guard')) {
+    if (!class_exists('Stormlabs\EUVATGuard\VAT_Guard_PDF_Integration')) {
         return '';
     }
 
-    $vat_info = EU_VAT_Guard::get_pdf_vat_info($order);
+    $vat_info = VAT_Guard_PDF_Integration::get_pdf_vat_info($order);
     return $vat_info['vat_number'];
 }

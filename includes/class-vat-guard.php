@@ -91,7 +91,7 @@ class VAT_Guard
             require_once plugin_dir_path(__FILE__) . 'class-vat-guard-vies.php';
         }
 
-        if (!class_exists(__NAMESPACE__ . '\VAT_Guard_Account')) { 
+        if (!class_exists(__NAMESPACE__ . '\VAT_Guard_Account')) {
             require_once plugin_dir_path(__FILE__) . 'class-vat-guard-account.php';
             VAT_Guard_Account::instance();
         }
@@ -110,10 +110,6 @@ class VAT_Guard
      */
     private function setup_hooks()
     {
-        // Always needed hooks (lightweight)
-        //add_filter('woocommerce_order_formatted_billing_address', array($this, 'add_vat_to_formatted_address'), 10, 2);
-        //add_filter('woocommerce_my_account_my_address_formatted_address', array($this, 'add_vat_to_my_account_address'), 10, 3);
-
         // Frontend-specific hooks
         if (!is_admin() || wp_doing_ajax()) {
             $this->setup_frontend_hooks();
@@ -219,11 +215,8 @@ class VAT_Guard
         // Show VAT number in WooCommerce order emails (customer & admin)
         add_action('woocommerce_email_customer_details', array($this, 'woocommerce_email_customer_details'));
 
-        // PDF Invoice integration
-        $this->setup_pdf_invoice_integration();
-
-        // Load PDF template helper functions
-        require_once plugin_dir_path(__FILE__) . 'pdf-template-helpers.php';
+        // Initialize PDF integration
+        $this->init_pdf_integration();
 
     }
 
@@ -294,189 +287,17 @@ class VAT_Guard
     }
 
     /**
-     * Setup PDF Invoice integration for WooCommerce PDF Invoices & Packing Slips
+     * Initialize PDF integration
      */
-    private function setup_pdf_invoice_integration()
+    private function init_pdf_integration()
     {
-        // Check if WooCommerce PDF Invoices & Packing Slips is active
-        if (!class_exists('WPO_WCPDF')) {
-            return;
+        // Load PDF integration class
+        if (!class_exists(__NAMESPACE__ . '\VAT_Guard_PDF_Integration')) {
+            require_once plugin_dir_path(__FILE__) . 'class-vat-guard-pdf-integration.php';
         }
 
-        // Add VAT number and exemption status to PDF invoices
-        add_action('wpo_wcpdf_after_billing_address', array($this, 'add_vat_to_pdf_invoice'), 10, 2);
-        add_action('wpo_wcpdf_after_order_data', array($this, 'add_vat_exemption_to_pdf_invoice'), 10, 2);
-    }
-
-    /**
-     * Add VAT number to PDF invoice billing address section
-     */
-    public function add_vat_to_pdf_invoice($document_type, $order)
-    {
-        // Only show on invoices
-        if ($document_type !== 'invoice') {
-            return;
-        }
-
-        $vat_number = $this->get_order_vat_number($order);
-        if (!empty($vat_number)) {
-            echo '<div class="vat-number" style="margin-top: 10px;">';
-            echo '<strong>' . esc_html($this->get_vat_label()) . ':</strong> ' . esc_html($vat_number);
-            echo '</div>';
-        }
-    }
-
-    /**
-     * Add VAT exemption status to PDF invoice order data section
-     */
-    public function add_vat_exemption_to_pdf_invoice($document_type, $order)
-    {
-        // Only show on invoices
-        if ($document_type !== 'invoice') {
-            return;
-        }
-
-        $is_exempt = $order->get_meta('billing_is_vat_exempt');
-        if (empty($is_exempt)) {
-            $is_exempt = get_post_meta($order->get_id(), 'billing_is_vat_exempt', true);
-        }
-
-        if ($is_exempt === 'yes') {
-            echo '<tr class="vat-exempt-status">';
-            echo '<th>' . esc_html__('VAT Status', 'eu-vat-guard-for-woocommerce') . '</th>';
-            echo '<td><strong style="color: #46b450;">' . esc_html($this->get_exemption_message()) . '</strong></td>';
-            echo '</tr>';
-        }
-    }
-
-    /**
-     * Get VAT information for PDF templates (can be called directly from templates)
-     */
-    public static function get_pdf_vat_info($order)
-    {
-        $instance = self::instance();
-        $vat_number = $instance->get_order_vat_number($order);
-        $is_exempt = $order->get_meta('billing_is_vat_exempt');
-
-        if (empty($is_exempt)) {
-            $is_exempt = get_post_meta($order->get_id(), 'billing_is_vat_exempt', true);
-        }
-
-        return [
-            'vat_number' => $vat_number,
-            'is_exempt' => $is_exempt === 'yes',
-            'vat_label' => $instance->get_vat_label(),
-            'exemption_message' => $instance->get_exemption_message()
-        ];
-    }
-
-    /**
-     * Display VAT information block for PDF templates
-     */
-    public static function display_pdf_vat_block($order, $style = 'table')
-    {
-        $vat_info = self::get_pdf_vat_info($order);
-
-        if (empty($vat_info['vat_number']) && !$vat_info['is_exempt']) {
-            return; // Nothing to display
-        }
-
-        if ($style === 'table') {
-            echo '<table class="vat-info" style="margin: 10px 0; width: 100%;">';
-
-            if (!empty($vat_info['vat_number'])) {
-                echo '<tr>';
-                echo '<th style="text-align: left; padding: 5px 10px 5px 0;">' . esc_html($vat_info['vat_label']) . ':</th>';
-                echo '<td style="padding: 5px 0;">' . esc_html($vat_info['vat_number']) . '</td>';
-                echo '</tr>';
-            }
-
-            if ($vat_info['is_exempt']) {
-                echo '<tr>';
-                echo '<th style="text-align: left; padding: 5px 10px 5px 0;">' . esc_html__('VAT Status', 'eu-vat-guard-for-woocommerce') . ':</th>';
-                echo '<td style="padding: 5px 0; color: #46b450; font-weight: bold;">' . esc_html($vat_info['exemption_message']) . '</td>';
-                echo '</tr>';
-            }
-
-            echo '</table>';
-        } else {
-            // Simple div style
-            echo '<div class="vat-info" style="margin: 10px 0;">';
-
-            if (!empty($vat_info['vat_number'])) {
-                echo '<div style="margin-bottom: 5px;">';
-                echo '<strong>' . esc_html($vat_info['vat_label']) . ':</strong> ' . esc_html($vat_info['vat_number']);
-                echo '</div>';
-            }
-
-            if ($vat_info['is_exempt']) {
-                echo '<div style="color: #46b450; font-weight: bold;">';
-                echo esc_html($vat_info['exemption_message']);
-                echo '</div>';
-            }
-
-            echo '</div>';
-        }
-    }
-
-    /**
-     * Add VAT number to address formats
-     */
-    public function add_vat_to_address_format($formats)
-    {
-        foreach ($formats as $country => &$format) {
-            if (strpos($format, '{vat_number}') === false) {
-                // Add VAT number after company if exists
-                $format = str_replace('{company}', "{company}\n{vat_number}", $format);
-            }
-        }
-        return $formats;
-    }
-
-    /**
-     * Add VAT number replacement
-     */
-    public function add_vat_number_replacement($replacements, $args)
-    {
-        $replacements['{vat_number}'] = !empty($args['vat_number']) ?
-            __('VAT Number:', 'eu-vat-guard-for-woocommerce') . ' ' . $args['vat_number'] : '';
-        return $replacements;
-    }
-
-    /**
-     * Add VAT number to order's formatted address
-     */
-    public function add_vat_to_formatted_address($address, $order)
-    {
-        $vat = $this->get_order_vat_number($order);
-
-        if (!empty($vat)) {
-            $address['vat_number'] = $vat;
-
-            // Add VAT exempt status if applicable
-            $is_exempt = $order->get_meta('billing_is_vat_exempt');
-            if (empty($is_exempt)) {
-                $is_exempt = get_post_meta($order->get_id(), 'billing_is_vat_exempt', true);
-            }
-            if ($is_exempt === 'yes') {
-                $address['vat_status'] = __('VAT exempt', 'eu-vat-guard-for-woocommerce');
-            }
-        }
-        return $address;
-    }
-
-    /**
-     * Add VAT number to My Account formatted address
-     */
-    public function add_vat_to_my_account_address($address, $customer_id, $address_type)
-    {
-        if ($address_type === 'billing') {
-            $vat = get_user_meta($customer_id, 'vat_number', true);
-            if (!empty($vat)) {
-                $address['vat_number'] = $vat;
-            }
-        }
-        return $address;
+        // Initialize PDF integration
+        VAT_Guard_PDF_Integration::instance();
     }
 
     /**
@@ -497,23 +318,21 @@ class VAT_Guard
 
     /**
      * Get VAT number from existing order, checking both block and classic checkout sources
-     * @param WC_Order $order
+     * @param \WC_Order $order
      * @return string VAT number or empty string
      */
     public function get_order_vat_number($order)
     {
+        $vat = $order->get_meta('billing_eu_vat_number');
         if (empty($vat)) {
-            $vat = $order->get_meta('billing_eu_vat_number');
-            if (empty($vat)) {
-                $vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
-            }
+            $vat = get_post_meta($order->get_id(), 'billing_eu_vat_number', true);
         }
 
         return $vat;
     }
 
 
-   
+
 
     /**
      * Validate EU VAT number structure and optionally VIES check
@@ -618,7 +437,7 @@ class VAT_Guard
         return $enhanced_result;
     }
 
-   
+
     /**
      * Sanitize VAT field input
      * Removes dots, spaces, and other non-alphanumeric characters
@@ -734,7 +553,7 @@ class VAT_Guard
         }
 
         if (!empty($vat_number)) {
-            
+
 
             // Use both post meta and order meta for compatibility
             update_post_meta($order_id, 'billing_eu_vat_number', $vat_number);
@@ -1037,6 +856,7 @@ class VAT_Guard
 
     /**
      * Show VAT number in admin order screen
+     * @deprecated use add_vat_field_to_admin_order instead
      */
     public function show_vat_in_admin_order($order)
     {
