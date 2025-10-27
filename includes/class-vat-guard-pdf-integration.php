@@ -113,10 +113,10 @@ class VAT_Guard_PDF_Integration
             return;
         }
 
-        $vat_number = $this->vat_guard->get_order_vat_number($order);
+        $vat_number = VAT_Guard_Helper::get_order_vat_number($order);
         if (!empty($vat_number)) {
             echo '<div class="vat-number" style="margin-top: 10px;">';
-            echo '<strong>' . esc_html($this->vat_guard->get_vat_label()) . ':</strong> ' . esc_html($vat_number);
+            echo '<strong>' . esc_html(VAT_Guard_Helper::get_vat_label()) . ':</strong> ' . esc_html($vat_number);
             echo '</div>';
         }
     }
@@ -142,7 +142,7 @@ class VAT_Guard_PDF_Integration
         if ($is_exempt === 'yes') {
             echo '<tr class="vat-exempt-status">';
             echo '<th>' . esc_html__('VAT Status', 'eu-vat-guard-for-woocommerce') . '</th>';
-            echo '<td><strong style="color: #46b450;">' . esc_html($this->vat_guard->get_exemption_message()) . '</strong></td>';
+            echo '<td><strong style="color: #46b450;">' . esc_html(VAT_Guard_Helper::get_exemption_message()) . '</strong></td>';
             echo '</tr>';
         }
     }
@@ -156,7 +156,7 @@ class VAT_Guard_PDF_Integration
     public static function get_pdf_vat_info($order)
     {
         $vat_guard = VAT_Guard::instance();
-        $vat_number = $vat_guard->get_order_vat_number($order);
+        $vat_number = VAT_Guard_Helper::get_order_vat_number($order);
         $is_exempt = $order->get_meta('billing_is_vat_exempt');
 
         if (empty($is_exempt)) {
@@ -166,8 +166,8 @@ class VAT_Guard_PDF_Integration
         return [
             'vat_number' => $vat_number,
             'is_exempt' => $is_exempt === 'yes',
-            'vat_label' => $vat_guard->get_vat_label(),
-            'exemption_message' => $vat_guard->get_exemption_message()
+            'vat_label' => VAT_Guard_Helper::get_vat_label(),
+            'exemption_message' => VAT_Guard_Helper::get_exemption_message()
         ];
     }
 
@@ -263,7 +263,7 @@ class VAT_Guard_PDF_Integration
      */
     public function add_vat_to_formatted_address($address, $order)
     {
-        $vat = $this->vat_guard->get_order_vat_number($order);
+        $vat = VAT_Guard_Helper::get_order_vat_number($order);
 
         if (!empty($vat)) {
             $address['vat_number'] = $vat;

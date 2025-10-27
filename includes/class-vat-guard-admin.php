@@ -28,8 +28,106 @@ class VAT_Guard_Admin
         if (is_admin() && !wp_doing_ajax()) {
             add_action('admin_menu', [$this, 'add_admin_menu']);
             add_action('admin_init', [$this, 'register_settings']);
+             // Add VAT field to admin order billing address editing
+            add_action('woocommerce_admin_order_data_after_billing_address', array($this, 'add_vat_field_to_admin_order'));
+
+            // Save VAT field when order is updated in admin
+            add_action('woocommerce_process_shop_order_meta', array($this, 'save_admin_order_vat_field'));
+        }
+        require_once('class-vat-guard-helper.php');
+    }
+
+      /**
+     * Add VAT field to admin order billing address section
+     */
+    public function add_vat_field_to_admin_order($order)
+    {
+        // Get current VAT number
+        $vat_number = '';
+        if ($order && $order->get_id()) {
+            $vat_number = VAT_Guard_Helper::get_order_vat_number($order);
+        }
+
+        // Check if we're in edit mode by looking for the edit action in the request
+        $is_edit_mode = isset($_GET['action']) && $_GET['action'] === 'edit';
+
+        // If not in edit mode and VAT number exists, show it as read-only text
+        if (!$is_edit_mode && !empty($vat_number)) {
+            echo '<p class="form-field form-field-wide">';
+            echo '<strong>' . esc_html(VAT_Guard_Helper::get_vat_label()) . ':</strong> ';
+            echo '<span>' . esc_html($vat_number) . '</span>';
+            echo '</p>';
+        } else {
+            // Add the VAT field using WooCommerce's woocommerce_wp_text_input function
+            woocommerce_wp_text_input(array(
+                'id' => '_billing_eu_vat_number',
+                'label' => VAT_Guard_Helper::get_vat_label(),
+                'placeholder' => __('Enter VAT number', 'eu-vat-guard-for-woocommerce'),
+                'value' => $vat_number,
+                'wrapper_class' => 'form-field-wide'
+            ));
+        }
+
+        // Show current exemption status if applicable
+        $is_exempt = $order && $order->get_id() ? $order->get_meta('billing_is_vat_exempt') : '';
+        if ($is_exempt === 'yes') {
+            echo '<p style="color: #00a32a; font-weight: bold; margin: 5px 0;">✓ ' . esc_html(VAT_Guard_Helper::get_exemption_message()) . '</p>';
         }
     }
+
+
+    /**
+     * Save VAT field when order is updated in admin
+     */
+    public function save_admin_order_vat_field($post_id)
+    {
+        if (isset($_POST['_billing_eu_vat_number'])) {
+            $vat_number = sanitize_text_field(wp_unslash($_POST['_billing_eu_vat_number']));
+
+            // Get the order object
+            $order = wc_get_order($post_id);
+            if (!$order) {
+                return;
+            }
+
+            // Validate VAT number if provided
+            if (!empty($vat_number)) {
+                $error = '';
+                $validation_result = VAT_Guard_Helper::is_valid_eu_vat_number($vat_number, $error);
+
+                if ($validation_result) {
+                    // Save VAT number
+                    $order->update_meta_data('billing_eu_vat_number', $vat_number);
+
+                    // Set VAT exempt status if validation passed
+                    $order->update_meta_data('billing_is_vat_exempt', 'yes');
+
+                    // Save the order
+                    $order->save();
+
+                    // Add order note
+                    $order->add_order_note(
+                        /* translators: %s: VAT number */
+                        sprintf(__('VAT number %s added and validated via admin.', 'eu-vat-guard-for-woocommerce'), $vat_number)
+                    );
+                } else {
+                    // Add admin notice for invalid VAT
+                    add_action('admin_notices', function () use ($error) {
+                        echo '<div class="notice notice-error"><p>' . esc_html($error) . '</p></div>';
+                    });
+                }
+            } else {
+                // Remove VAT number and exempt status if field is empty
+                $order->delete_meta_data('billing_eu_vat_number');
+                $order->delete_meta_data('billing_is_vat_exempt');
+                $order->save();
+
+                $order->add_order_note(__('VAT number removed via admin.', 'eu-vat-guard-for-woocommerce'));
+            }
+        }
+    }
+
+
 
     public function register_settings()
     {
@@ -135,6 +233,8 @@ class VAT_Guard_Admin
         //load menu items from the pro plugin
         do_action('eu_vat_guard_admin_page_content');
     }
+
+
 
     public function admin_page()
     {

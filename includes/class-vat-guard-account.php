@@ -22,7 +22,7 @@ class VAT_Guard_Account
 
     private function __construct(VAT_Guard $main_class) { 
         $this->main_class = $main_class::instance();
-       
+       require_once('class-vat-guard-helper.php');
 
     }
 
@@ -47,7 +47,7 @@ class VAT_Guard_Account
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="company_name"
                 id="company_name"
-                placeholder="<?php echo esc_attr($this->main_class->get_company_label()); ?><?php echo $require_company ? ' *' : ''; ?>"
+                placeholder="<?php echo esc_attr(VAT_Guard_Helper::get_company_label()); ?><?php echo $require_company ? ' *' : ''; ?>"
                 <?php if ($require_company)
                     echo 'required'; ?> value="<?php if (!empty($_POST['company_name']))
                            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Just displaying previously submitted value
@@ -55,7 +55,7 @@ class VAT_Guard_Account
         </p>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number"
-                placeholder="<?php echo esc_attr($this->main_class->get_vat_label()); ?><?php echo $require_vat ? ' *' : ''; ?>" value="<?php if (!empty($_POST['vat_number']))
+                placeholder="<?php echo esc_attr(VAT_Guard_Helper::get_vat_label()); ?><?php echo $require_vat ? ' *' : ''; ?>" value="<?php if (!empty($_POST['vat_number']))
                               // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Just displaying previously submitted value
                               echo esc_attr(sanitize_text_field(wp_unslash($_POST['vat_number']))); ?>" <?php if ($require_vat) {
                                     echo 'required';
@@ -73,7 +73,7 @@ class VAT_Guard_Account
         $require_vat = get_option('eu_vat_guard_require_vat', 1);
         ?>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-            <label for="company_name"><?php echo esc_html($this->main_class->get_company_label());
+            <label for="company_name"><?php echo esc_html(VAT_Guard_Helper::get_company_label());
             if ($require_company) { ?><span class="required">*</span> <?php } ?></label>
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="company_name"
                 id="company_name" value="<?php echo esc_attr($company_name); ?>" />
@@ -83,7 +83,7 @@ class VAT_Guard_Account
                 // ?>
 
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-            <label for="vat_number"><?php echo esc_html($this->main_class->get_vat_label());
+            <label for="vat_number"><?php echo esc_html(VAT_Guard_Helper::get_vat_label());
             if ($require_vat) { ?><span class="required">*</span> <?php } ?></label>
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="vat_number" id="vat_number"
                 value="<?php echo esc_attr($vat_number); ?>" />
@@ -115,7 +115,7 @@ class VAT_Guard_Account
             $errors->add('vat_number_error', __('Please enter your VAT number.', 'eu-vat-guard-for-woocommerce'));
         } elseif (!empty($vat_number_raw)) {
             $error_message = '';
-            if (!$this->is_valid_eu_vat_number($vat_number_raw, $error_message)) {
+            if (!VAT_Guard_Helper::is_valid_eu_vat_number($vat_number_raw, $error_message)) {
                 $errors->add('vat_number_error', $error_message);
             }
         }
@@ -130,7 +130,7 @@ class VAT_Guard_Account
         $require_company = get_option('eu_vat_guard_require_company', 1);
         $require_vat = get_option('eu_vat_guard_require_vat', 1);
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WordPress handles nonce verification for registration forms
-        $vat_number = isset($_POST['vat_number']) ? $this->main_class->sanitize_vat_field(wp_unslash($_POST['vat_number'])) : '';
+        $vat_number = isset($_POST['vat_number']) ? VAT_Guard_Helper::sanitize_vat_field(wp_unslash($_POST['vat_number'])) : '';
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WordPress handles nonce verification for registration forms
         $company_name = isset($_POST['company_name']) ? sanitize_text_field(wp_unslash($_POST['company_name'])) : '';
 
@@ -140,7 +140,7 @@ class VAT_Guard_Account
         }
         if (!empty($vat_number)) {
             $error_message = '';
-            if (!$this->main_class->is_valid_eu_vat_number($vat_number, $error_message)) {
+            if (!VAT_Guard_Helper::is_valid_eu_vat_number($vat_number, $error_message)) {
                 wc_add_notice($error_message, 'error');
                 return;
             }
