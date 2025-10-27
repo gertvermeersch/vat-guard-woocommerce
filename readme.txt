@@ -5,7 +5,7 @@ Requires: woocommerce
 Requires at least: 5.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,17 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 4. VAT information displayed in order admin
 
 == Changelog ==
+
+= 1.3.3 =
+* **Added** - VAT information now displays on order confirmation pages and My Account order views
+* **Added** - Smart display logic: when block checkout is enabled, only shows VAT exemption status
+* **Changed** - All meta keys now use `_eu_vat_guard_` prefix for better organization
+* **Changed** - User meta keys: `vat_number` → `_eu_vat_guard_vat_number`, `company_name` → `_eu_vat_guard_company_name`
+* **Changed** - Order meta keys: `billing_eu_vat_number` → `_eu_vat_guard_order_vat_number`, `billing_is_vat_exempt` → `_eu_vat_guard_order_vat_exempt`
+* **Fixed** - Admin error notices now properly display when VAT validation fails in order editing
+* **Fixed** - Undefined constant error in block checkout sanitize callback
+* **Fixed** - VAT information now displays regardless of block support setting
+* **Fixed** - VAT Rate Import database error
 
 = 1.3.0 =
 * **Major Code Refactoring** - Implemented proper PHP namespacing for all classes

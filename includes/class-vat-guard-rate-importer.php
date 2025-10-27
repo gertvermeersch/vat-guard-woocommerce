@@ -351,7 +351,7 @@ class VAT_Guard_Rate_Importer
                     'tax_rate_compound' => 0,
                     'tax_rate_shipping' => $type === 'standard' ? 1 : 0,
                     'tax_rate_order' => 0,
-                    'tax_rate_class' => $tax_class->slug
+                    'tax_rate_class' => $tax_class->slug ? $tax_class->slug : ''
                 ),
                 array('%s', '%s', '%f', '%s', '%d', '%d', '%d', '%d', '%s')
             );

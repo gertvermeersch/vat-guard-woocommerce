@@ -4,6 +4,32 @@ All notable changes to EU VAT Guard for WooCommerce will be documented in this f
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.3.3] - 2025-10-27
+
+### Added
+- **Order Display**: VAT information now displays on order confirmation pages and My Account order views
+- **Smart Display Logic**: When block checkout is enabled, only shows VAT exemption status (VAT number shown by WooCommerce)
+- **Classic Checkout Display**: When block checkout is disabled, shows complete VAT information section
+
+### Changed
+- **Meta Key Prefixes**: All meta keys now use `_eu_vat_guard_` prefix for better organization and conflict prevention
+  - User meta: `vat_number` → `_eu_vat_guard_vat_number`
+  - User meta: `company_name` → `_eu_vat_guard_company_name`
+  - Order meta: `billing_eu_vat_number` → `_eu_vat_guard_order_vat_number`
+  - Order meta: `billing_is_vat_exempt` → `_eu_vat_guard_order_vat_exempt`
+- **Constants Usage**: All code now uses defined constants instead of hardcoded meta key strings
+
+### Fixed
+- **Admin Notices**: Fixed admin error notices not displaying when VAT validation fails in order editing
+- **Block Integration**: Fixed undefined constant error in block checkout sanitize callback
+- **Order Confirmation**: VAT information now properly displays regardless of block support setting
+- **VAT Rate Importer**: Fixed VAT rate database issue
+
+### Technical
+- Improved code maintainability with consistent meta key usage
+- Enhanced error handling for admin VAT validation
+- Better separation of concerns between classic and block checkout displays
+
 ## [1.3.2] - 2025-10-26
 
 ## [1.3.1] - 2025-10-24
