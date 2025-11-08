@@ -108,6 +108,11 @@ class VAT_Guard
         //register hooks for account and registration forms
         VAT_Guard_Account::instance()->setup_hooks();
 
+        // Apply fixed pricing option if enabled
+        if (get_option('eu_vat_guard_fixed_prices', false)) {
+            add_filter('woocommerce_adjust_non_base_location_prices', '__return_false');
+        }
+
         // Order display hooks - always active regardless of block support setting
         add_action('woocommerce_order_details_after_customer_details', array($this, 'show_vat_in_order_details'), 10, 1);
         //add_action('woocommerce_thankyou', array($this, 'show_vat_on_thankyou_page'), 10, 1);

@@ -175,6 +175,11 @@ class VAT_Guard_Admin
             'default' => false,
             'sanitize_callback' => 'rest_sanitize_boolean'
         ]);
+        register_setting('eu_vat_guard_advanced_options', 'eu_vat_guard_fixed_prices', [
+            'type' => 'boolean',
+            'default' => false,
+            'sanitize_callback' => 'rest_sanitize_boolean'
+        ]);
         register_setting('eu_vat_guard_advanced_options', 'eu_vat_guard_company_label', [
             'type' => 'string',
             'default' => '',
@@ -374,6 +379,21 @@ class VAT_Guard_Admin
                 </tr>
             </table>
 
+            <h2><?php esc_html_e('Pricing Options', 'eu-vat-guard-for-woocommerce'); ?></h2>
+            <table class="form-table" role="presentation">
+                <tr>
+                    <th scope="row"><?php esc_html_e('Fixed Prices Including VAT', 'eu-vat-guard-for-woocommerce'); ?></th>
+                    <td>
+                        <input type="checkbox" name="eu_vat_guard_fixed_prices" value="1" <?php checked(1, get_option('eu_vat_guard_fixed_prices', 0)); ?> />
+                        <label
+                            for="eu_vat_guard_fixed_prices"><?php esc_html_e('Show the same prices including VAT regardless of customer location', 'eu-vat-guard-for-woocommerce'); ?></label>
+                        <p class="description">
+                            <?php esc_html_e('When enabled, all customers will see the same prices including VAT, regardless of their country. This prevents WooCommerce from adjusting prices based on location.', 'eu-vat-guard-for-woocommerce'); ?>
+                        </p>
+                    </td>
+                </tr>
+            </table>
+
             <h2><?php esc_html_e('Custom Labels & Messages', 'eu-vat-guard-for-woocommerce'); ?></h2>
             <p><?php esc_html_e('These labels and messages will be displayed on the checkout page. Can be translated (e.g. WPML String Translations)', 'eu-vat-guard-for-woocommerce'); ?>
             </p>
@@ -440,6 +460,9 @@ class VAT_Guard_Admin
             <ul style="margin-left: 20px;">
                 <li><strong><?php esc_html_e('Disable VAT Exemption:', 'eu-vat-guard-for-woocommerce'); ?></strong>
                     <?php esc_html_e('Useful if you only want to collect VAT numbers for record-keeping without applying tax exemptions.', 'eu-vat-guard-for-woocommerce'); ?>
+                </li>
+                <li><strong><?php esc_html_e('Fixed Prices Including VAT:', 'eu-vat-guard-for-woocommerce'); ?></strong>
+                    <?php esc_html_e('Prevents WooCommerce from adjusting prices based on customer location. All customers see the same prices including VAT.', 'eu-vat-guard-for-woocommerce'); ?>
                 </li>
                 <li><strong><?php esc_html_e('Custom Labels:', 'eu-vat-guard-for-woocommerce'); ?></strong>
                     <?php esc_html_e('Override default field labels to match your store\'s terminology or language preferences.', 'eu-vat-guard-for-woocommerce'); ?>

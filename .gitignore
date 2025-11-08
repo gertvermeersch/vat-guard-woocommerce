@@ -51,3 +51,17 @@ temp/
 
 # Loco Translate backup files
 *.po~
+
+# any shell scripts
+
+*.sh
+*.zsh
+*.bash
+*.bat
+*.cmd
+*.fish
+*.ps1
+
+#translation script
+
+languages/compile-translations.php
