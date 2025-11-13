@@ -177,23 +177,7 @@ class VAT_Guard
         }
     }
 
-    /**
-     * Setup additional hooks for admin and email display
-     */
-    public function setup_admin()
-    {
-        // Admin logic moved to VAT_Guard_WooCommerce_Admin
-        if (is_admin()) {
-            //admin screen functions
-            require_once plugin_dir_path(__FILE__) . 'class-vat-guard-admin.php';
-        }
-        // Show VAT number in WooCommerce order emails (customer & admin)
-        add_action('woocommerce_email_customer_details', array($this, 'woocommerce_email_customer_details'));
 
-        // Initialize PDF integration
-        $this->init_pdf_integration();
-
-    }
 
     /**
      * Check if VAT exemption is disabled
@@ -205,19 +189,7 @@ class VAT_Guard
 
 
 
-    /**
-     * Initialize PDF integration
-     */
-    private function init_pdf_integration()
-    {
-        // Load PDF integration class
-        if (!class_exists(__NAMESPACE__ . '\VAT_Guard_PDF_Integration')) {
-            require_once plugin_dir_path(__FILE__) . 'class-vat-guard-pdf-integration.php';
-        }
-
-        // Initialize PDF integration
-        VAT_Guard_PDF_Integration::instance();
-    }
+   
 
     /**
      * Initialize block-based checkout support

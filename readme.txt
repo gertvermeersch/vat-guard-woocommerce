@@ -5,7 +5,7 @@ Requires: woocommerce
 Requires at least: 5.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.3.3
+Stable tag: 1.3.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,12 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 
 == Changelog ==
 
+= 1.3.4 =
+* **Technical** - Removed duplicate PDF integration initialization from main class
+* **Technical** - Improved code structure with PDF integration exclusively initialized through admin class
+* **Technical** - Reduced redundant code execution during plugin initialization
+* **Performance** - Optimized PDF integration to load only during AJAX requests when needed
+
 = 1.3.3 =
 * **Added** - VAT information now displays on order confirmation pages and My Account order views
 * **Added** - Smart display logic: when block checkout is enabled, only shows VAT exemption status
@@ -141,6 +147,9 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 * Admin settings interface
 
 == Upgrade Notice ==
+
+= 1.3.4 =
+Code optimization update: Improved plugin structure and performance with cleaner separation of concerns. Recommended for all users.
 
 = 1.3.0 =
 Major code refactoring with proper namespacing and improved code structure. Fully backward compatible. Includes translation updates and enhanced admin interface. Recommended for all users.

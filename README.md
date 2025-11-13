@@ -105,11 +105,22 @@ php compile-translations.php
 This plugin uses:
 - **Text Domain**: `eu-vat-guard-for-woocommerce`
 - **Plugin Slug**: `eu-vat-guard-for-woocommerce`
-- **Stable Tag**: `1.3.0`
+- **Stable Tag**: `1.3.4`
 
 ## Changelog
 
-### Version 1.3.0 *(Latest)*
+### Version 1.3.4 *(Latest)*
+- 🔧 **Technical**: Removed duplicate PDF integration initialization from main class
+- 🔧 **Technical**: Improved code structure with PDF integration exclusively initialized through admin class
+- 🔧 **Technical**: Reduced redundant code execution during plugin initialization
+
+### Version 1.3.3
+- ✨ **Added**: VAT information display on order confirmation and My Account pages
+- 🎨 **Enhanced**: Smart display logic for block vs classic checkout
+- 🔧 **Changed**: All meta keys now use `_eu_vat_guard_` prefix
+- 🐛 **Fixed**: Admin error notices, block integration, and VAT rate importer issues
+
+### Version 1.3.0
 - 🏗️ **Major**: Implemented proper PHP namespacing (`Stormlabs\EUVATGuard`)
 - 📦 **New**: Added comprehensive plugin constants for better code organization
 - 🔧 **Improved**: Enhanced code structure following WordPress best practices

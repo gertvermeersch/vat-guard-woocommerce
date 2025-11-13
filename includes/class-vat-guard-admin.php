@@ -36,8 +36,30 @@ class VAT_Guard_Admin
 
             // Display admin notices for VAT validation errors
             add_action('admin_notices', array($this, 'display_vat_validation_notices'));
+        
+              // Show VAT number in WooCommerce order emails (customer & admin)
+            add_action('woocommerce_email_customer_details', array($this, 'woocommerce_email_customer_details'));
+
+          
+        } else if(is_admin() && wp_doing_ajax()) {
+              // Initialize PDF integration
+            $this->init_pdf_integration();
         }
         require_once('class-vat-guard-helper.php');
+    }
+
+     /**
+     * Initialize PDF integration
+     */
+    private function init_pdf_integration()
+    {
+        // Load PDF integration class
+        if (!class_exists(__NAMESPACE__ . '\VAT_Guard_PDF_Integration')) {
+            require_once plugin_dir_path(__FILE__) . 'class-vat-guard-pdf-integration.php';
+        }
+
+        // Initialize PDF integration
+        VAT_Guard_PDF_Integration::instance();
     }
 
     /**
