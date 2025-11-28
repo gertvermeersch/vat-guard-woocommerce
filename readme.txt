@@ -83,6 +83,10 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 
 == Changelog ==
 
+= 1.3.5 =
+* **Compatibility** - Tested and confirmed compatible with WordPress 6.9
+* **Technical** - Updated version number for WordPress 6.9 release compatibility
+
 = 1.3.4 =
 * **Technical** - Removed duplicate PDF integration initialization from main class
 * **Technical** - Improved code structure with PDF integration exclusively initialized through admin class
@@ -147,6 +151,9 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 * Admin settings interface
 
 == Upgrade Notice ==
+
+= 1.3.5 =
+WordPress 6.9 compatibility update. Tested and confirmed working with the latest WordPress version.
 
 = 1.3.4 =
 Code optimization update: Improved plugin structure and performance with cleaner separation of concerns. Recommended for all users.

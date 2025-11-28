@@ -5,10 +5,11 @@ All notable changes to EU VAT Guard for WooCommerce will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.5] - 2025-11-28
+## [1.3.5] - 2024-11-28
 
-### Technical
-- **Compatible with WP 6.9**: Testen with WP 6.9-RC3
+### Compatibility
+- **WordPress 6.9**: Tested and confirmed compatible with WordPress 6.9
+- **Technical**: Updated version number for WordPress 6.9 release compatibility
 
 ## [1.3.4] - 2025-11-13
 

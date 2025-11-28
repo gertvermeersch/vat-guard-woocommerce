@@ -105,11 +105,15 @@ php compile-translations.php
 This plugin uses:
 - **Text Domain**: `eu-vat-guard-for-woocommerce`
 - **Plugin Slug**: `eu-vat-guard-for-woocommerce`
-- **Stable Tag**: `1.3.4`
+- **Stable Tag**: `1.3.5`
 
 ## Changelog
 
-### Version 1.3.4 *(Latest)*
+### Version 1.3.5 *(Latest)*
+- ✅ **Compatibility**: Tested and confirmed compatible with WordPress 6.9
+- 🔧 **Technical**: Updated version number for WordPress 6.9 release compatibility
+
+### Version 1.3.4
 - 🔧 **Technical**: Removed duplicate PDF integration initialization from main class
 - 🔧 **Technical**: Improved code structure with PDF integration exclusively initialized through admin class
 - 🔧 **Technical**: Reduced redundant code execution during plugin initialization
