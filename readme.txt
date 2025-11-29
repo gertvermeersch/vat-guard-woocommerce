@@ -5,7 +5,7 @@ Requires: woocommerce
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.3.7
+Stable tag: 1.3.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,10 +83,6 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 
 == Changelog ==
 
-= 1.3.7 =
-* **Technical** - Version synchronization and code consistency updates
-* **Maintenance** - Updated version constant to match plugin header
-
 = 1.3.6 =
 * **Improved** - Updated admin interface with direct links to WordPress.org support and reviews
 * **Enhanced** - Better user experience for getting help and leaving feedback
@@ -159,9 +155,6 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 * Admin settings interface
 
 == Upgrade Notice ==
-
-= 1.3.7 =
-Maintenance release with version synchronization. Safe update for all users.
 
 = 1.3.6 =
 Minor admin interface improvement with better support and feedback links. Recommended for all users.
