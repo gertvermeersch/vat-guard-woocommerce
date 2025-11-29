@@ -5,6 +5,24 @@ All notable changes to EU VAT Guard for WooCommerce will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.7] - 2024-11-29
+
+### Technical
+- **Version Synchronization**: Updated version constant to match plugin header version
+- **Code Consistency**: Ensured all version references are synchronized across codebase
+- **Maintenance**: Minor version bump for consistency
+
+## [1.3.6] - 2024-11-29
+
+### Improved
+- **Admin Interface**: Updated admin page with direct links to WordPress.org support and reviews
+- **User Experience**: Replaced email contact with convenient support forum and review links
+- **Accessibility**: Better access to help resources and feedback channels
+
+### Technical
+- Enhanced admin interface for better community engagement
+- Improved user guidance for support and feedback
+
 ## [1.3.5] - 2024-11-28
 
 ### Compatibility

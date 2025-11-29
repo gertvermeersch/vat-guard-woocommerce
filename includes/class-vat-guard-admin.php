@@ -287,8 +287,10 @@ class VAT_Guard_Admin
 
             <div
                 style="background:#e7f7e7;border-left:4px solid #46b450;padding:16px 24px;margin:24px 0 32px 0;font-size:1.1em;">
-                <?php esc_html_e('Thank you for using VAT Guard for WooCommerce! Your support helps us keep improving. If you have feedback or suggestions, contact us at', 'eu-vat-guard-for-woocommerce'); ?>
-                <a href="mailto:dev@stormlabs.be" style="color: #2271b1; text-decoration: none;">dev@stormlabs.be</a>
+                <?php esc_html_e('Thank you for using VAT Guard for WooCommerce! Your support helps us keep improving.', 'eu-vat-guard-for-woocommerce'); ?>
+                <a href="https://wordpress.org/support/plugin/eu-vat-guard-for-woocommerce/" target="_blank" style="color: #2271b1; text-decoration: none; font-weight: 600;"><?php esc_html_e('Get Support', 'eu-vat-guard-for-woocommerce'); ?></a>
+                <?php esc_html_e('or', 'eu-vat-guard-for-woocommerce'); ?>
+                <a href="https://wordpress.org/plugins/eu-vat-guard-for-woocommerce/#reviews" target="_blank" style="color: #2271b1; text-decoration: none; font-weight: 600;"><?php esc_html_e('Leave a Review', 'eu-vat-guard-for-woocommerce'); ?></a>
             </div>
 
             <h2 class="nav-tab-wrapper">
@@ -304,6 +306,10 @@ class VAT_Guard_Admin
                     class="nav-tab <?php echo $active_tab == 'documentation' ? 'nav-tab-active' : ''; ?>">
                     <?php esc_html_e('How It Works', 'eu-vat-guard-for-woocommerce'); ?>
                 </a>
+                <a href="?page=eu-vat-guard&tab=help"
+                    class="nav-tab <?php echo $active_tab == 'help' ? 'nav-tab-active' : ''; ?>">
+                    <?php esc_html_e('Help', 'eu-vat-guard-for-woocommerce'); ?>
+                </a>
             </h2>
 
             <?php if ($active_tab == 'settings'): ?>
@@ -312,6 +318,8 @@ class VAT_Guard_Admin
                 <?php $this->render_advanced_tab(); ?>
             <?php elseif ($active_tab == 'documentation'): ?>
                 <?php $this->render_documentation_tab(); ?>
+            <?php elseif ($active_tab == 'help'): ?>
+                <?php $this->render_help_tab(); ?>
             <?php endif; ?>
         </div>
         <?php
@@ -603,6 +611,150 @@ class VAT_Guard_Admin
                 </p>
                 <p><strong><?php esc_html_e('Website:', 'eu-vat-guard-for-woocommerce'); ?></strong>
                     <a href="https://stormlabs.be/" target="_blank" style="color: #2271b1;">stormlabs.be</a>
+                </p>
+            </div>
+
+        </div>
+        <?php
+    }
+
+    private function render_help_tab()
+    {
+        ?>
+        <div style="max-width: 800px;">
+            <h2><?php esc_html_e('Help & Support', 'eu-vat-guard-for-woocommerce'); ?></h2>
+
+            <div style="background: #fff; border: 1px solid #ddd; padding: 30px; margin: 20px 0; border-radius: 5px;">
+                <h3 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.5em;">💬</span>
+                    <?php esc_html_e('Get Support', 'eu-vat-guard-for-woocommerce'); ?>
+                </h3>
+                <p><?php esc_html_e('Need help with the plugin? Have questions about VAT compliance or configuration?', 'eu-vat-guard-for-woocommerce'); ?></p>
+                <p><?php esc_html_e('Visit our support forum on WordPress.org where our team and community can help you:', 'eu-vat-guard-for-woocommerce'); ?></p>
+                <p style="margin: 20px 0;">
+                    <a href="https://wordpress.org/support/plugin/eu-vat-guard-for-woocommerce/" 
+                       target="_blank" 
+                       class="button button-primary button-hero"
+                       style="text-decoration: none;">
+                        <?php esc_html_e('Visit Support Forum', 'eu-vat-guard-for-woocommerce'); ?>
+                    </a>
+                </p>
+                <p class="description">
+                    <?php esc_html_e('Before posting, please search existing topics - your question might already be answered!', 'eu-vat-guard-for-woocommerce'); ?>
+                </p>
+            </div>
+
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 30px; margin: 20px 0; border-radius: 5px;">
+                <h3 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.5em;">⭐</span>
+                    <?php esc_html_e('Love This Plugin?', 'eu-vat-guard-for-woocommerce'); ?>
+                </h3>
+                <p><?php esc_html_e('If EU VAT Guard has helped your business, please consider leaving a review. Your feedback helps us improve and helps other store owners discover the plugin.', 'eu-vat-guard-for-woocommerce'); ?></p>
+                <p style="margin: 20px 0;">
+                    <a href="https://wordpress.org/plugins/eu-vat-guard-for-woocommerce/#reviews" 
+                       target="_blank" 
+                       class="button button-secondary button-hero"
+                       style="text-decoration: none;">
+                        <?php esc_html_e('Leave a Review', 'eu-vat-guard-for-woocommerce'); ?>
+                    </a>
+                </p>
+                <p class="description">
+                    <?php esc_html_e('It only takes a minute and means the world to us! 🙏', 'eu-vat-guard-for-woocommerce'); ?>
+                </p>
+            </div>
+
+            <div style="background: #e7f7e7; border: 1px solid #46b450; padding: 30px; margin: 20px 0; border-radius: 5px;">
+                <h3 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.5em;">📚</span>
+                    <?php esc_html_e('Documentation', 'eu-vat-guard-for-woocommerce'); ?>
+                </h3>
+                <p><?php esc_html_e('Learn more about how VAT Guard works and how to configure it for your store:', 'eu-vat-guard-for-woocommerce'); ?></p>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li>
+                        <a href="?page=eu-vat-guard&tab=documentation" style="color: #2271b1; text-decoration: none;">
+                            <?php esc_html_e('How It Works - VAT Exemption Rules', 'eu-vat-guard-for-woocommerce'); ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page=eu-vat-guard&tab=settings" style="color: #2271b1; text-decoration: none;">
+                            <?php esc_html_e('Basic Settings - Configure Required Fields', 'eu-vat-guard-for-woocommerce'); ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page=eu-vat-guard&tab=advanced" style="color: #2271b1; text-decoration: none;">
+                            <?php esc_html_e('Advanced Settings - Custom Labels & Exemption Rules', 'eu-vat-guard-for-woocommerce'); ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div style="background: #e8f4fd; border: 1px solid #bee5eb; padding: 30px; margin: 20px 0; border-radius: 5px;">
+                <h3 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.5em;">🚀</span>
+                    <?php esc_html_e('Common Questions', 'eu-vat-guard-for-woocommerce'); ?>
+                </h3>
+                <div style="margin-top: 20px;">
+                    <h4><?php esc_html_e('Does this work with WooCommerce blocks?', 'eu-vat-guard-for-woocommerce'); ?></h4>
+                    <p><?php esc_html_e('Yes! The plugin fully supports both classic checkout and the new block-based checkout. Enable "Block-based Checkout Support" in Settings.', 'eu-vat-guard-for-woocommerce'); ?></p>
+
+                    <h4><?php esc_html_e('What VAT number formats are supported?', 'eu-vat-guard-for-woocommerce'); ?></h4>
+                    <p><?php esc_html_e('All 27 EU member states VAT number formats are supported with proper validation.', 'eu-vat-guard-for-woocommerce'); ?></p>
+
+                    <h4><?php esc_html_e('Is VIES validation required?', 'eu-vat-guard-for-woocommerce'); ?></h4>
+                    <p><?php esc_html_e('No, VIES validation is optional. You can use format-only validation or enable real-time VIES checking in Settings.', 'eu-vat-guard-for-woocommerce'); ?></p>
+
+                    <h4><?php esc_html_e('Does this handle VAT exemptions automatically?', 'eu-vat-guard-for-woocommerce'); ?></h4>
+                    <p><?php esc_html_e('Yes, the plugin automatically applies VAT exemptions for valid B2B transactions between different EU countries. See the How It Works tab for details.', 'eu-vat-guard-for-woocommerce'); ?></p>
+                </div>
+            </div>
+
+            <div style="background: #f9f9f9; border: 1px solid #ddd; padding: 30px; margin: 20px 0; border-radius: 5px;">
+                <h3 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.5em;">🔗</span>
+                    <?php esc_html_e('Useful Links', 'eu-vat-guard-for-woocommerce'); ?>
+                </h3>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li>
+                        <a href="https://wordpress.org/plugins/eu-vat-guard-for-woocommerce/" target="_blank" style="color: #2271b1; text-decoration: none;">
+                            <?php esc_html_e('Plugin Page on WordPress.org', 'eu-vat-guard-for-woocommerce'); ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://wordpress.org/plugins/eu-vat-guard-for-woocommerce/#faq" target="_blank" style="color: #2271b1; text-decoration: none;">
+                            <?php esc_html_e('Frequently Asked Questions', 'eu-vat-guard-for-woocommerce'); ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://stormlabs.be/" target="_blank" style="color: #2271b1; text-decoration: none;">
+                            <?php esc_html_e('Stormlabs Website', 'eu-vat-guard-for-woocommerce'); ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://ec.europa.eu/taxation_customs/vies/" target="_blank" style="color: #2271b1; text-decoration: none;">
+                            <?php esc_html_e('EU VIES VAT Number Validation', 'eu-vat-guard-for-woocommerce'); ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div style="background: #fff; border: 2px solid #2271b1; padding: 30px; margin: 20px 0; border-radius: 5px; text-align: center;">
+                <h3 style="margin-top: 0; color: #2271b1;">
+                    <?php esc_html_e('Thank You for Using EU VAT Guard!', 'eu-vat-guard-for-woocommerce'); ?>
+                </h3>
+                <p><?php esc_html_e('We\'re committed to helping your business comply with EU VAT regulations. If you have any suggestions for improvements, we\'d love to hear from you.', 'eu-vat-guard-for-woocommerce'); ?></p>
+                <p style="margin-top: 20px;">
+                    <a href="https://wordpress.org/support/plugin/eu-vat-guard-for-woocommerce/" 
+                       target="_blank" 
+                       class="button button-primary"
+                       style="text-decoration: none; margin-right: 10px;">
+                        <?php esc_html_e('Get Support', 'eu-vat-guard-for-woocommerce'); ?>
+                    </a>
+                    <a href="https://wordpress.org/plugins/eu-vat-guard-for-woocommerce/#reviews" 
+                       target="_blank" 
+                       class="button button-secondary"
+                       style="text-decoration: none;">
+                        <?php esc_html_e('Leave a Review', 'eu-vat-guard-for-woocommerce'); ?>
+                    </a>
                 </p>
             </div>
 

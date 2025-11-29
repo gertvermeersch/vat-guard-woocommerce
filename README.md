@@ -105,11 +105,18 @@ php compile-translations.php
 This plugin uses:
 - **Text Domain**: `eu-vat-guard-for-woocommerce`
 - **Plugin Slug**: `eu-vat-guard-for-woocommerce`
-- **Stable Tag**: `1.3.5`
+- **Stable Tag**: `1.3.7`
 
 ## Changelog
 
-### Version 1.3.5 *(Latest)*
+### Version 1.3.7 *(Latest)*
+- 🎨 **Improved**: Links to help & support
+
+### Version 1.3.6
+- 🎨 **Improved**: Updated admin interface with direct links to WordPress.org support and reviews
+- ✨ **Enhanced**: Better user experience for getting help and leaving feedback
+
+### Version 1.3.5
 - ✅ **Compatibility**: Tested and confirmed compatible with WordPress 6.9
 - 🔧 **Technical**: Updated version number for WordPress 6.9 release compatibility
 
@@ -163,7 +170,7 @@ This plugin uses:
 ## Support
 
 - **WordPress.org**: [Plugin Support Forum](https://wordpress.org/support/plugin/eu-vat-guard-for-woocommerce/)
-- **Email**: dev@stormlabs.be
+- **Reviews**: [Leave a Review](https://wordpress.org/plugins/eu-vat-guard-for-woocommerce/#reviews)
 - **Website**: [https://stormlabs.be/](https://stormlabs.be/)
 
 ## License
