@@ -28,6 +28,8 @@ class VAT_Guard_Admin
         if (is_admin() && !wp_doing_ajax()) {
             add_action('admin_menu', [$this, 'add_admin_menu']);
             add_action('admin_init', [$this, 'register_settings']);
+            add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_styles']);
+            
             // Add VAT field to admin order billing address editing
             add_action('woocommerce_admin_order_data_after_billing_address', array($this, 'add_vat_field_to_admin_order'));
 
@@ -36,16 +38,23 @@ class VAT_Guard_Admin
 
             // Display admin notices for VAT validation errors
             add_action('admin_notices', array($this, 'display_vat_validation_notices'));
-        
-              // Show VAT number in WooCommerce order emails (customer & admin)
-            add_action('woocommerce_email_customer_details', array($this, 'woocommerce_email_customer_details'));
-
-          
         } else if(is_admin() && wp_doing_ajax()) {
               // Initialize PDF integration
             $this->init_pdf_integration();
         }
         require_once('class-vat-guard-helper.php');
+        require_once('class-vat-guard-admin-ui.php');
+    }
+
+    /**
+     * Enqueue admin styles
+     */
+    public function enqueue_admin_styles($hook)
+    {
+        // Only load on VAT Guard admin pages
+        if (strpos($hook, 'eu-vat-guard') !== false) {
+            VAT_Guard_Admin_UI::enqueue_styles();
+        }
     }
 
      /**
@@ -280,37 +289,37 @@ class VAT_Guard_Admin
         $active_tab = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'settings';
         ?>
         <div class="wrap">
-            <h1 style="display:flex;align-items:center;gap:12px;">
-                <span style="font-size:2rem;">🛡️</span>
-                <?php esc_html_e('EU VAT Guard for WooCommerce', 'eu-vat-guard-for-woocommerce'); ?>
-            </h1>
+            <?php
+            VAT_Guard_Admin_UI::page_header(
+                __('EU VAT Guard for WooCommerce', 'eu-vat-guard-for-woocommerce'),
+                '🛡️'
+            );
 
-            <div
-                style="background:#e7f7e7;border-left:4px solid #46b450;padding:16px 24px;margin:24px 0 32px 0;font-size:1.1em;">
-                <?php esc_html_e('Thank you for using VAT Guard for WooCommerce! Your support helps us keep improving.', 'eu-vat-guard-for-woocommerce'); ?>
-                <a href="https://wordpress.org/support/plugin/eu-vat-guard-for-woocommerce/" target="_blank" style="color: #2271b1; text-decoration: none; font-weight: 600;"><?php esc_html_e('Get Support', 'eu-vat-guard-for-woocommerce'); ?></a>
-                <?php esc_html_e('or', 'eu-vat-guard-for-woocommerce'); ?>
-                <a href="https://wordpress.org/plugins/eu-vat-guard-for-woocommerce/#reviews" target="_blank" style="color: #2271b1; text-decoration: none; font-weight: 600;"><?php esc_html_e('Leave a Review', 'eu-vat-guard-for-woocommerce'); ?></a>
-            </div>
+            VAT_Guard_Admin_UI::support_banner(
+                __('Thank you for using VAT Guard for WooCommerce! Your support helps us keep improving.', 'eu-vat-guard-for-woocommerce'),
+                array(
+                    array(
+                        'url' => 'https://wordpress.org/support/plugin/eu-vat-guard-for-woocommerce/',
+                        'label' => __('Get Support', 'eu-vat-guard-for-woocommerce'),
+                        'target' => '_blank'
+                    ),
+                    array(
+                        'url' => 'https://wordpress.org/plugins/eu-vat-guard-for-woocommerce/#reviews',
+                        'label' => __('Leave a Review', 'eu-vat-guard-for-woocommerce'),
+                        'target' => '_blank'
+                    )
+                )
+            );
 
-            <h2 class="nav-tab-wrapper">
-                <a href="?page=eu-vat-guard&tab=settings"
-                    class="nav-tab <?php echo $active_tab == 'settings' ? 'nav-tab-active' : ''; ?>">
-                    <?php esc_html_e('Settings', 'eu-vat-guard-for-woocommerce'); ?>
-                </a>
-                <a href="?page=eu-vat-guard&tab=advanced"
-                    class="nav-tab <?php echo $active_tab == 'advanced' ? 'nav-tab-active' : ''; ?>">
-                    <?php esc_html_e('Advanced', 'eu-vat-guard-for-woocommerce'); ?>
-                </a>
-                <a href="?page=eu-vat-guard&tab=documentation"
-                    class="nav-tab <?php echo $active_tab == 'documentation' ? 'nav-tab-active' : ''; ?>">
-                    <?php esc_html_e('How It Works', 'eu-vat-guard-for-woocommerce'); ?>
-                </a>
-                <a href="?page=eu-vat-guard&tab=help"
-                    class="nav-tab <?php echo $active_tab == 'help' ? 'nav-tab-active' : ''; ?>">
-                    <?php esc_html_e('Help', 'eu-vat-guard-for-woocommerce'); ?>
-                </a>
-            </h2>
+            $tabs = array(
+                array('id' => 'settings', 'label' => __('Settings', 'eu-vat-guard-for-woocommerce')),
+                array('id' => 'advanced', 'label' => __('Advanced', 'eu-vat-guard-for-woocommerce')),
+                array('id' => 'documentation', 'label' => __('How It Works', 'eu-vat-guard-for-woocommerce')),
+                array('id' => 'help', 'label' => __('Help', 'eu-vat-guard-for-woocommerce')),
+            );
+
+            VAT_Guard_Admin_UI::tab_navigation($tabs, $active_tab);
+            ?>
 
             <?php if ($active_tab == 'settings'): ?>
                 <?php $this->render_settings_tab(); ?>
@@ -394,7 +403,7 @@ class VAT_Guard_Admin
         <form method="post" action="options.php">
             <?php settings_fields('eu_vat_guard_advanced_options'); ?>
 
-            <h2><?php esc_html_e('Exemption Rules', 'eu-vat-guard-for-woocommerce'); ?></h2>
+            <?php VAT_Guard_Admin_UI::section_header(__('Exemption Rules', 'eu-vat-guard-for-woocommerce')); ?>
             <table class="form-table" role="presentation">
                 <tr>
                     <th scope="row"><?php esc_html_e('Disable VAT Exemption', 'eu-vat-guard-for-woocommerce'); ?></th>
@@ -409,7 +418,7 @@ class VAT_Guard_Admin
                 </tr>
             </table>
 
-            <h2><?php esc_html_e('Pricing Options', 'eu-vat-guard-for-woocommerce'); ?></h2>
+            <?php VAT_Guard_Admin_UI::section_header(__('Pricing Options', 'eu-vat-guard-for-woocommerce')); ?>
             <table class="form-table" role="presentation">
                 <tr>
                     <th scope="row"><?php esc_html_e('Fixed Prices Including VAT', 'eu-vat-guard-for-woocommerce'); ?></th>
@@ -424,7 +433,7 @@ class VAT_Guard_Admin
                 </tr>
             </table>
 
-            <h2><?php esc_html_e('Custom Labels & Messages', 'eu-vat-guard-for-woocommerce'); ?></h2>
+            <?php VAT_Guard_Admin_UI::section_header(__('Custom Labels & Messages', 'eu-vat-guard-for-woocommerce')); ?>
             <p><?php esc_html_e('These labels and messages will be displayed on the checkout page. Can be translated (e.g. WPML String Translations)', 'eu-vat-guard-for-woocommerce'); ?>
             </p>
             <table class="form-table" role="presentation">
@@ -485,36 +494,32 @@ class VAT_Guard_Admin
             <?php submit_button(); ?>
         </form>
 
-        <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; margin: 20px 0; border-radius: 5px;">
-            <h3 style="margin-top: 0;"><?php esc_html_e('⚙️ Advanced Settings Info', 'eu-vat-guard-for-woocommerce'); ?></h3>
-            <ul style="margin-left: 20px;">
-                <li><strong><?php esc_html_e('Disable VAT Exemption:', 'eu-vat-guard-for-woocommerce'); ?></strong>
-                    <?php esc_html_e('Useful if you only want to collect VAT numbers for record-keeping without applying tax exemptions.', 'eu-vat-guard-for-woocommerce'); ?>
-                </li>
-                <li><strong><?php esc_html_e('Fixed Prices Including VAT:', 'eu-vat-guard-for-woocommerce'); ?></strong>
-                    <?php esc_html_e('Prevents WooCommerce from adjusting prices based on customer location. All customers see the same prices including VAT.', 'eu-vat-guard-for-woocommerce'); ?>
-                </li>
-                <li><strong><?php esc_html_e('Custom Labels:', 'eu-vat-guard-for-woocommerce'); ?></strong>
-                    <?php esc_html_e('Override default field labels to match your store\'s terminology or language preferences.', 'eu-vat-guard-for-woocommerce'); ?>
-                </li>
-                <li><strong><?php esc_html_e('Custom Messages:', 'eu-vat-guard-for-woocommerce'); ?></strong>
-                    <?php esc_html_e('Customize the VAT exemption message shown to customers during checkout.', 'eu-vat-guard-for-woocommerce'); ?>
-                </li>
-                <li><strong><?php esc_html_e('WPML Compatibility:', 'eu-vat-guard-for-woocommerce'); ?></strong>
-                    <?php esc_html_e('Custom strings are automatically registered with WPML for translation when saved.', 'eu-vat-guard-for-woocommerce'); ?>
-                </li>
-            </ul>
-        </div>
+        <?php
+        VAT_Guard_Admin_UI::info_box(
+            'warning',
+            '<ul style="margin-left: 20px;">
+                <li><strong>' . esc_html__('Disable VAT Exemption:', 'eu-vat-guard-for-woocommerce') . '</strong> ' .
+                    esc_html__('Useful if you only want to collect VAT numbers for record-keeping without applying tax exemptions.', 'eu-vat-guard-for-woocommerce') . '</li>
+                <li><strong>' . esc_html__('Fixed Prices Including VAT:', 'eu-vat-guard-for-woocommerce') . '</strong> ' .
+                    esc_html__('Prevents WooCommerce from adjusting prices based on customer location. All customers see the same prices including VAT.', 'eu-vat-guard-for-woocommerce') . '</li>
+                <li><strong>' . esc_html__('Custom Labels:', 'eu-vat-guard-for-woocommerce') . '</strong> ' .
+                    esc_html__('Override default field labels to match your store\'s terminology or language preferences.', 'eu-vat-guard-for-woocommerce') . '</li>
+                <li><strong>' . esc_html__('Custom Messages:', 'eu-vat-guard-for-woocommerce') . '</strong> ' .
+                    esc_html__('Customize the VAT exemption message shown to customers during checkout.', 'eu-vat-guard-for-woocommerce') . '</li>
+                <li><strong>' . esc_html__('WPML Compatibility:', 'eu-vat-guard-for-woocommerce') . '</strong> ' .
+                    esc_html__('Custom strings are automatically registered with WPML for translation when saved.', 'eu-vat-guard-for-woocommerce') . '</li>
+            </ul>',
+            __('⚙️ Advanced Settings Info', 'eu-vat-guard-for-woocommerce')
+        );
 
-        <?php if (function_exists('icl_register_string')): ?>
-            <div style="background: #d1ecf1; border: 1px solid #bee5eb; padding: 20px; margin: 20px 0; border-radius: 5px;">
-                <h3 style="margin-top: 0;"><?php esc_html_e('🌍 WPML Translation', 'eu-vat-guard-for-woocommerce'); ?></h3>
-                <p><?php esc_html_e('WPML is active! Custom strings will be automatically registered for translation when you save them. You can translate them in:', 'eu-vat-guard-for-woocommerce'); ?>
-                </p>
-                <p><strong>WPML → String Translation → EU VAT Guard</strong></p>
-            </div>
-        <?php endif; ?>
-    <?php
+        if (function_exists('icl_register_string')) {
+            VAT_Guard_Admin_UI::info_box(
+                'info',
+                '<p>' . esc_html__('WPML is active! Custom strings will be automatically registered for translation when you save them. You can translate them in:', 'eu-vat-guard-for-woocommerce') . '</p>
+                <p><strong>WPML → String Translation → EU VAT Guard</strong></p>',
+                __('🌍 WPML Translation', 'eu-vat-guard-for-woocommerce')
+            );
+        }
     }
 
     private function render_documentation_tab()

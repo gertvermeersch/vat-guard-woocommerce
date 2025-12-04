@@ -5,6 +5,26 @@ All notable changes to EU VAT Guard for WooCommerce will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.7] - 2024-12-04
+
+### Enhanced
+- **Help & Support Tab**: Completely redesigned with comprehensive documentation and resources
+- **Admin Interface**: Better organized navigation and clearer section headers
+- **User Guidance**: Added common questions section for quick answers to frequent issues
+- **Documentation Access**: Direct links to all documentation tabs and external resources
+- **Support Experience**: Improved prompts for getting help and leaving reviews
+
+### Added
+- Common questions section covering block checkout, VAT formats, VIES validation, and automatic exemptions
+- Useful links section with direct access to WordPress.org plugin page, FAQ, and VIES validation
+- Better visual organization with icons and color-coded information boxes
+- Centralized thank you message with clear call-to-action buttons
+
+### Technical
+- Improved admin class structure with dedicated help tab rendering
+- Enhanced HTML structure for better accessibility and readability
+- Consistent styling across all admin tabs
+
 ## [1.3.6] - 2024-11-29
 
 ### Improved

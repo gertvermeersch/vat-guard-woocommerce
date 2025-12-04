@@ -1,0 +1,233 @@
+/**
+ * EU VAT Guard Admin UI Styles
+ * Standardized styling for admin pages
+ */
+
+/* Page Header */
+.vat-guard-page-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.vat-guard-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+/* Info Boxes */
+.vat-guard-box {
+    padding: 20px 24px;
+    margin: 20px 0;
+    border-radius: 4px;
+    border-left: 4px solid;
+}
+
+.vat-guard-box-success {
+    background: #e7f7e7;
+    border-color: #46b450;
+}
+
+.vat-guard-box-info {
+    background: #e8f4fd;
+    border-color: #2271b1;
+}
+
+.vat-guard-box-warning {
+    background: #fff3cd;
+    border-color: #ffc107;
+}
+
+.vat-guard-box-danger {
+    background: #f8d7da;
+    border-color: #dc3545;
+}
+
+.vat-guard-box-neutral {
+    background: #f9f9f9;
+    border-color: #ddd;
+}
+
+.vat-guard-box-title {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.1em;
+}
+
+.vat-guard-box-content {
+    line-height: 1.6;
+}
+
+.vat-guard-box-content p:last-child,
+.vat-guard-box-content ul:last-child {
+    margin-bottom: 0;
+}
+
+/* Section Headers */
+.vat-guard-section-title {
+    margin-top: 30px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Support Banner */
+.vat-guard-support-banner {
+    background: #e7f7e7;
+    border-left: 4px solid #46b450;
+    padding: 16px 24px;
+    margin: 24px 0 32px 0;
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+.vat-guard-support-link {
+    color: #2271b1;
+    text-decoration: none;
+    font-weight: 600;
+    margin: 0 4px;
+}
+
+.vat-guard-support-link:hover {
+    text-decoration: underline;
+}
+
+.vat-guard-separator {
+    margin: 0 4px;
+}
+
+/* Status Badges */
+.vat-guard-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 3px;
+}
+
+.vat-guard-status-success {
+    color: #46b450;
+    background: #e7f7e7;
+}
+
+.vat-guard-status-error {
+    color: #dc3232;
+    background: #f8d7da;
+}
+
+.vat-guard-status-warning {
+    color: #996800;
+    background: #fff3cd;
+}
+
+.vat-guard-status-neutral {
+    color: #666;
+    background: #f0f0f0;
+}
+
+.vat-guard-status-icon {
+    font-size: 1.1em;
+    line-height: 1;
+}
+
+/* Feature Lists */
+.vat-guard-feature-list {
+    margin: 15px 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+.vat-guard-feature-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.vat-guard-feature-icon {
+    color: #46b450;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* Action Buttons */
+.vat-guard-action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+}
+
+/* Statistics Table */
+.vat-guard-stats-table {
+    margin: 20px 0;
+}
+
+.vat-guard-stat-label {
+    width: 60%;
+}
+
+.vat-guard-stat-value {
+    width: 40%;
+}
+
+/* Collapsible Sections */
+.vat-guard-collapsible {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 15px 0;
+    background: #fff;
+}
+
+.vat-guard-collapsible-title {
+    padding: 15px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+    background: #f9f9f9;
+    border-radius: 4px 4px 0 0;
+}
+
+.vat-guard-collapsible-title:hover {
+    background: #f0f0f0;
+}
+
+.vat-guard-collapsible[open] .vat-guard-collapsible-title {
+    border-bottom: 1px solid #ddd;
+    border-radius: 4px 4px 0 0;
+}
+
+.vat-guard-collapsible-content {
+    padding: 20px;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 782px) {
+    .vat-guard-page-title {
+        font-size: 1.5em;
+    }
+    
+    .vat-guard-icon {
+        font-size: 1.5rem;
+    }
+    
+    .vat-guard-box {
+        padding: 15px 18px;
+    }
+    
+    .vat-guard-support-banner {
+        padding: 12px 18px;
+        font-size: 1em;
+    }
+    
+    .vat-guard-action-buttons {
+        flex-direction: column;
+    }
+    
+    .vat-guard-action-buttons .button {
+        width: 100%;
+    }
+}
