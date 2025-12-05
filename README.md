@@ -105,9 +105,13 @@ php compile-translations.php
 This plugin uses:
 - **Text Domain**: `eu-vat-guard-for-woocommerce`
 - **Plugin Slug**: `eu-vat-guard-for-woocommerce`
-- **Stable Tag**: `1.3.7`
+- **Stable Tag**: `1.3.8`
 
 ## Changelog
+
+### Version 1.3.8
+- 🐛 **Fixed**: Block checkout setting now properly saves as string type for better compatibility
+- 🔧 **Technical**: Improved settings registration for block checkout option
 
 ### Version 1.3.7
 - 🎨 **Enhanced**: Completely redesigned Help & Support tab with comprehensive documentation
@@ -115,7 +119,6 @@ This plugin uses:
 - 📚 **Added**: Common questions section in Help tab for quick answers
 - 🔗 **Added**: Useful links section with direct access to documentation and resources
 - 💬 **Enhanced**: More intuitive support and review prompts throughout admin interface
-- **Fixed**: Admin email hook
 
 ### Version 1.3.6
 - 🎨 **Improved**: Updated admin interface with direct links to WordPress.org support and reviews

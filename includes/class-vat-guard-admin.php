@@ -175,41 +175,55 @@ class VAT_Guard_Admin
     {
         // Basic settings group
         register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_require_company', [
-            'type' => 'boolean',
-            'default' => true,
-            'sanitize_callback' => 'rest_sanitize_boolean'
+            'type' => 'string',
+            'default' => '1',
+            'sanitize_callback' => function($value) {
+                return $value ? '1' : '0';
+            }
         ]);
         register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_require_vat', [
-            'type' => 'boolean',
-            'default' => true,
-            'sanitize_callback' => 'rest_sanitize_boolean'
+            'type' => 'string',
+            'default' => '1',
+            'sanitize_callback' => function($value) {
+                return $value ? '1' : '0';
+            }
         ]);
         register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_require_vies', [
-            'type' => 'boolean',
-            'default' => false,
-            'sanitize_callback' => 'rest_sanitize_boolean'
+            'type' => 'string',
+            'default' => '0',
+            'sanitize_callback' => function($value) {
+                return $value ? '1' : '0';
+            }
         ]);
         register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_ignore_vies_error', [
-            'type' => 'boolean',
-            'default' => false,
-            'sanitize_callback' => 'rest_sanitize_boolean'
+            'type' => 'string',
+            'default' => '0',
+            'sanitize_callback' => function($value) {
+                return $value ? '1' : '0';
+            }
         ]);
         register_setting('eu_vat_guard_basic_options', 'eu_vat_guard_enable_block_checkout', [
-            'type' => 'boolean',
-            'default' => true,
-            'sanitize_callback' => 'rest_sanitize_boolean'
+            'type' => 'string',
+            'default' => '1',
+            'sanitize_callback' => function($value) {
+                return $value ? '1' : '0';
+            }
         ]);
 
         // Advanced settings group
         register_setting('eu_vat_guard_advanced_options', 'eu_vat_guard_disable_exemption', [
-            'type' => 'boolean',
-            'default' => false,
-            'sanitize_callback' => 'rest_sanitize_boolean'
+            'type' => 'string',
+            'default' => '0',
+            'sanitize_callback' => function($value) {
+                return $value ? '1' : '0';
+            }
         ]);
         register_setting('eu_vat_guard_advanced_options', 'eu_vat_guard_fixed_prices', [
-            'type' => 'boolean',
-            'default' => false,
-            'sanitize_callback' => 'rest_sanitize_boolean'
+            'type' => 'string',
+            'default' => '0',
+            'sanitize_callback' => function($value) {
+                return $value ? '1' : '0';
+            }
         ]);
         register_setting('eu_vat_guard_advanced_options', 'eu_vat_guard_company_label', [
             'type' => 'string',

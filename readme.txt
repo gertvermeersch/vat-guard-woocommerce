@@ -5,7 +5,7 @@ Requires: woocommerce
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.3.7
+Stable tag: 1.3.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,10 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 4. VAT information displayed in order admin
 
 == Changelog ==
+
+= 1.3.8 =
+* **Fixed** - Block checkout setting now properly saves as string type for better compatibility
+* **Technical** - Improved settings registration for block checkout option
 
 = 1.3.7 =
 * **Enhanced** - Completely redesigned Help & Support tab with comprehensive documentation
@@ -162,6 +166,9 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 * Admin settings interface
 
 == Upgrade Notice ==
+
+= 1.3.8 =
+Bug fix for block checkout setting compatibility. Recommended for all users.
 
 = 1.3.7 =
 Enhanced admin interface with comprehensive Help & Support tab, common questions, and better documentation access. Recommended for all users.

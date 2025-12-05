@@ -5,6 +5,18 @@ All notable changes to EU VAT Guard for WooCommerce will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.8] - 2024-12-05
+
+### Fixed
+- **Settings Compatibility**: Fixed checkbox settings not saving properly on some server configurations
+- **Block Checkout Setting**: Block checkout option now properly saves across all WordPress environments
+- **Settings Registration**: All checkbox settings now use string type ('1' or '0') for better compatibility
+
+### Technical
+- Changed all checkbox settings from boolean to string type for consistent behavior
+- Updated sanitize callbacks to convert checkbox values to '1' or '0' strings
+- Ensures reliable settings storage across different PHP/WordPress configurations
+
 ## [1.3.7] - 2024-12-04
 
 ### Enhanced
