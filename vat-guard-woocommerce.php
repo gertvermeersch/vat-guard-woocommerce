@@ -2,7 +2,7 @@
 /*
 Plugin Name: EU VAT Guard for WooCommerce
 Description: Manage EU VAT numbers and company information for WooCommerce customers and B2B. Adds company and VAT fields to registration, account, and checkout, exempts VAT (reverse charge) where applicable and provides admin tools for VAT management.
-Version: 1.3.8
+Version: 1.3.9
 Author: Stormlabs
 Author URI: https://stormlabs.be/
 License: GPLv2 or later
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('EU_VAT_GUARD_VERSION', '1.3.8');
+define('EU_VAT_GUARD_VERSION', '1.3.9');
 define('EU_VAT_GUARD_PLUGIN_FILE', __FILE__);
 define('EU_VAT_GUARD_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('EU_VAT_GUARD_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -50,6 +50,32 @@ require_once EU_VAT_GUARD_PLUGIN_DIR . 'includes/class-vat-guard.php';
 if (is_admin()) {
     require_once EU_VAT_GUARD_PLUGIN_DIR . 'includes/class-vat-guard-rate-importer.php';
 }
+
+/**
+ * Plugin activation hook - Initialize default options
+ */
+function eu_vat_guard_activate() {
+    // Initialize options with defaults if they don't exist
+    $default_options = array(
+        'eu_vat_guard_require_company' => '1',
+        'eu_vat_guard_require_vat' => '1',
+        'eu_vat_guard_require_vies' => '0',
+        'eu_vat_guard_ignore_vies_error' => '0',
+        'eu_vat_guard_enable_block_checkout' => '1',
+        'eu_vat_guard_disable_exemption' => '0',
+        'eu_vat_guard_fixed_prices' => '0',
+        'eu_vat_guard_company_label' => '',
+        'eu_vat_guard_vat_label' => '',
+        'eu_vat_guard_exemption_message' => ''
+    );
+    
+    foreach ($default_options as $option_name => $default_value) {
+        if (false === get_option($option_name, false)) {
+            add_option($option_name, $default_value, '', false);
+        }
+    }
+}
+register_activation_hook(__FILE__, 'Stormlabs\EUVATGuard\eu_vat_guard_activate');
 
 // Initialize the plugin
 add_action('plugins_loaded', function () {

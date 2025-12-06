@@ -5,7 +5,7 @@ Requires: woocommerce
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.3.8
+Stable tag: 1.3.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,22 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 4. VAT information displayed in order admin
 
 == Changelog ==
+
+= 1.3.13 =
+* **Added** - Plugin activation hook now initializes default option values for better first-time setup
+* **Improved** - New installations come with sensible defaults pre-configured
+* **Improved** - Existing installations also benefit from default options initialization
+* **Technical** - Refactored activation code with helper functions for better maintainability
+* **Technical** - Default options set during activation: company/VAT required, VIES disabled, block checkout enabled
+* **Technical** - Options initialization also runs on admin_init for existing installations
+
+= 1.3.9 =
+* **Fixed** - Checkbox settings not saving properly on some server configurations
+* **Fixed** - Options now properly initialize in database on plugin activation
+* **Technical** - Added hidden input fields to ensure unchecked checkboxes submit '0' value
+* **Technical** - Added activation hook to initialize all options with default values
+* **Technical** - Added admin_init fallback to initialize missing options for existing installations
+* **Improved** - Enhanced form reliability across different PHP/WordPress environments
 
 = 1.3.8 =
 * **Fixed** - Block checkout setting now properly saves as string type for better compatibility
@@ -166,6 +182,24 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 * Admin settings interface
 
 == Upgrade Notice ==
+
+= 1.3.13 =
+Improved first-time installation with automatic default settings. Existing installations are not affected.
+
+= 1.3.12 =
+Bug fix for block checkout setting registration. Recommended for all users.
+
+= 1.3.11 =
+Code quality improvement with cleaner form implementation. Recommended for all users.
+
+= 1.3.10 =
+Bug fix for checkbox settings not saving properly on some server configurations. Recommended for all users.
+
+= 1.3.9 =
+Code quality improvement with refactored settings sanitization. Recommended for all users.
+
+= 1.3.9 =
+Critical bug fix for checkbox settings not saving properly. Includes option initialization on activation. Recommended for all users.
 
 = 1.3.8 =
 Bug fix for block checkout setting compatibility. Recommended for all users.

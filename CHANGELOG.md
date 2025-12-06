@@ -5,6 +5,51 @@ All notable changes to EU VAT Guard for WooCommerce will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Plugin activation hook that initializes default option values on first installation
+- Default settings are now pre-configured for optimal out-of-the-box experience
+- Existing installations also benefit from default options initialization on admin_init
+
+### Changed
+- Improved first-time installation experience with sensible defaults
+- Options are only created if they don't already exist (preserves existing settings)
+- Refactored activation code for better maintainability and reusability
+
+### Technical
+- Added `eu_vat_guard_get_default_options()` helper function that returns default option values
+- Added `eu_vat_guard_init_options()` function that initializes options if they don't exist
+- Modified `eu_vat_guard_activate()` to call `eu_vat_guard_init_options()`
+- Added `admin_init` hook (priority 5) to run `eu_vat_guard_init_options()` for existing installations
+- Default options include: require_company (enabled), require_vat (enabled), require_vies (disabled), ignore_vies_error (disabled), enable_block_checkout (enabled), disable_exemption (disabled), fixed_prices (disabled)
+- Empty string defaults for custom labels (company_label, vat_label, exemption_message)
+- Better code organization with separation of concerns between default values and initialization logic
+
+## [1.3.9] - 2024-12-06
+
+### Fixed
+- **Checkbox Settings**: Fixed checkbox settings not saving properly on some server configurations
+- **Option Initialization**: Options now properly initialize in database on plugin activation
+- **Settings Persistence**: Resolved issue where `update_option()` would fail for non-existent options
+
+### Added
+- **Activation Hook**: Added plugin activation hook to initialize all options with default values
+
+### Improved
+- **Code Quality**: Refactored settings sanitization for better maintainability
+- **Architecture**: Simplified checkbox sanitization using inline callbacks in `register_setting()`
+- **Code Organization**: Streamlined settings registration by removing redundant filter hooks and methods
+
+### Technical
+- All checkbox settings use string type ('1' or '0') for WordPress Settings API compatibility
+- Options are now created in database during activation, preventing update failures
+- Enhanced form reliability with hidden fields for unchecked checkbox handling
+- Replaced separate `sanitize_checkbox()` method with inline sanitization callbacks
+- Removed redundant `admin_init` hook for checkbox handling
+- Removed `sanitize_option_{$option}` filter hooks in favor of direct `sanitize_callback` in `register_setting()`
+- Improved code readability and reduced complexity in `class-vat-guard-admin.php`
+
 ## [1.3.8] - 2024-12-05
 
 ### Fixed
