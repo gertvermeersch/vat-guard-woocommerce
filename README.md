@@ -69,7 +69,7 @@
 ### Requirements
 - WordPress 5.0+
 - WooCommerce 4.0+
-- PHP 7.2+
+- PHP 8.2+
 - SOAP extension (for VIES validation)
 
 ### File Structure
@@ -105,9 +105,12 @@ php compile-translations.php
 This plugin uses:
 - **Text Domain**: `eu-vat-guard-for-woocommerce`
 - **Plugin Slug**: `eu-vat-guard-for-woocommerce`
-- **Stable Tag**: `1.4.5`
+- **Stable Tag**: `1.4.6`
 
 ## Changelog
+
+### Version 1.4.6
+- **Changed**: Decreased minimum PHP version to 8.2
 
 ### Version 1.4.5
 - **Fixed**: Greek VAT numbers now compare the EU VAT prefix `EL` against WooCommerce's Greece country code `GR` during billing, shipping, and exemption checks

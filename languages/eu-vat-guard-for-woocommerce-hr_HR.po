@@ -3,7 +3,7 @@
 # This file is distributed under the GPL2 license.
 msgid ""
 msgstr ""
-"Project-Id-Version: VAT Guard for WooCommerce 1.0.0\n"
+"Project-Id-Version: VAT Guard for WooCommerce 1.4.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/eu-vat-guard-for-"
 "woocommerce\n"
 "POT-Creation-Date: 2025-12-05T11:59:52+00:00\n"
