@@ -386,7 +386,12 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
         if ('eu-vat-guard/vat_number' === $key) {
             // Sanitize VAT number
             $vat = VAT_Guard_Helper::sanitize_vat_field($value);
-            $wc_object->update_meta_data(EU_VAT_GUARD_META_ORDER_VAT, $vat, true);
+            if ($wc_object instanceof \WC_Customer) {
+                // Keep the plugin's canonical user meta synchronized, including when the field is cleared.
+                $wc_object->update_meta_data(EU_VAT_GUARD_META_VAT_NUMBER, $vat);
+            } elseif ($wc_object instanceof \WC_Order) {
+                $wc_object->update_meta_data(EU_VAT_GUARD_META_ORDER_VAT, $vat);
+            }
             //also save in the session
             if (WC()->session) {
                 if ($vat === '') {
@@ -397,7 +402,8 @@ class VAT_Guard_Block_Integration implements IntegrationInterface
             }
             //save customer object
             if (WC()->customer) {
-                WC()->customer->update_meta_data('_wc_other/eu-vat-guard/vat_number', $vat);
+                WC()->customer->update_meta_data(EU_VAT_GUARD_META_BLOCK_VAT, $vat);
+                WC()->customer->update_meta_data(EU_VAT_GUARD_META_VAT_NUMBER, $vat);
                 WC()->customer->save();
             }
         }

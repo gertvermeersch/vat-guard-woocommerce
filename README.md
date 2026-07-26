@@ -105,9 +105,13 @@ php compile-translations.php
 This plugin uses:
 - **Text Domain**: `eu-vat-guard-for-woocommerce`
 - **Plugin Slug**: `eu-vat-guard-for-woocommerce`
-- **Stable Tag**: `1.4.6`
+- **Stable Tag**: `1.4.7`
 
 ## Changelog
+
+### Version 1.4.7
+- **Fixed**: Prevented the VAT number field from appearing twice on the Account Details page when block checkout support is enabled
+- **Fixed**: Kept WooCommerce's block checkout VAT field synchronized with the plugin's canonical customer VAT data, including when clearing the field
 
 ### Version 1.4.6
 - **Changed**: Decreased minimum PHP version to 8.2

@@ -3,9 +3,9 @@ Contributors: stormlabs, bytefarmer
 Tags: reverse charge, vat, eu, tax, b2b
 Requires: woocommerce
 Requires at least: 5.0
-Tested up to: 7.0
+Tested up to: 7.0.2
 Requires PHP: 8.2
-Stable tag: 1.4.6
+Stable tag: 1.4.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,10 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 4. VAT information displayed in order admin
 
 == Changelog ==
+
+= 1.4.7 =
+* **Fixed** - Prevented the VAT number field from appearing twice on the Account Details page when block checkout support is enabled
+* **Fixed** - Kept WooCommerce's block checkout VAT field synchronized with the plugin's canonical customer VAT data, including when clearing the field
 
 = 1.4.6 =
 * **Changed** - Decreased PHP minimum version to 8.2
@@ -218,6 +222,9 @@ Yes, the plugin automatically applies VAT exemptions for valid B2B transactions 
 * Admin settings interface
 
 == Upgrade Notice ==
+
+= 1.4.7 =
+Fixes duplicate VAT fields on Account Details and keeps customer VAT data synchronized with WooCommerce block checkout.
 
 = 1.4.5 =
 Fixed Greek VAT country matching for VAT numbers using the EU `EL` prefix with WooCommerce's `GR` country code.

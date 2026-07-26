@@ -4,7 +4,7 @@
 
 EU VAT Guard for WooCommerce is a free WordPress plugin that handles B2B EU VAT number validation, WooCommerce checkout integration, and reverse-charge VAT exemption. It is the required dependency for the companion Pro plugin (`eu-vat-guard-for-woocommerce-pro`).
 
-**Current version:** 1.4.6
+**Current version:** 1.4.7
 **Text domain:** `eu-vat-guard-for-woocommerce`
 **Main plugin file:** `vat-guard-woocommerce.php`
 **Plugin constant prefix:** `EU_VAT_GUARD_`
@@ -209,8 +209,9 @@ All options use `get_option()` / `update_option()` with these keys:
 ### User Meta
 | Key | Description |
 |---|---|
-| `vat_number` | Customer's VAT number (no prefix — legacy BC) |
-| `company_name` | Customer's company name (no prefix — legacy BC) |
+| `_eu_vat_guard_vat_number` | Canonical customer VAT number used by the plugin |
+| `_eu_vat_guard_company_name` | Customer company name used by the plugin |
+| `_wc_other/eu-vat-guard/vat_number` | WooCommerce additional checkout field mirror; synchronized with the canonical VAT number |
 
 ---
 
@@ -235,6 +236,8 @@ Block checkout support is opt-in via the `eu_vat_guard_enable_block_checkout` op
 
 When enabled:
 - `VAT_Guard_Block_Integration` registers with WooCommerce Blocks
+- WooCommerce automatically reuses the registered contact VAT field on Account Details; the legacy account VAT input is therefore suppressed
+- Account and checkout updates synchronize the WooCommerce field with `_eu_vat_guard_vat_number`
 - Custom block fields added to Store API schema
 - REST endpoint `POST /vat-guard/v1/validate` handles validation
 - `vat-guard-block-checkout.js` handles frontend interaction

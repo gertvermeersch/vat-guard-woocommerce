@@ -70,10 +70,9 @@ class VAT_Guard_Account
     public function add_account_fields()
     {
         $company_name = get_user_meta(get_current_user_id(), EU_VAT_GUARD_META_COMPANY_NAME, true);
-        $vat_number = get_user_meta(get_current_user_id(), EU_VAT_GUARD_META_VAT_NUMBER, true);
+        $uses_additional_checkout_field = $this->uses_additional_checkout_vat_field();
 
         $require_company = get_option('eu_vat_guard_require_company', 1);
-        $require_vat = get_option('eu_vat_guard_require_vat', 1);
         ?>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
             <label for="company_name"><?php echo esc_html(VAT_Guard_Helper::get_company_label());
@@ -81,10 +80,10 @@ class VAT_Guard_Account
             <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="company_name"
                 id="company_name" value="<?php echo esc_attr($company_name); ?>" />
         </p>
-        <?php //if (!get_option('eu_vat_guard_enable_block_checkout', 0)) { 
-                // TODO: check if we still need this condition check
-                // ?>
-
+        <?php if (!$uses_additional_checkout_field) {
+            $vat_number = get_user_meta(get_current_user_id(), EU_VAT_GUARD_META_VAT_NUMBER, true);
+            $require_vat = get_option('eu_vat_guard_require_vat', 1);
+            ?>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
             <label for="vat_number"><?php echo esc_html(VAT_Guard_Helper::get_vat_label());
             if ($require_vat) { ?><span class="required">*</span> <?php } ?></label>
@@ -92,7 +91,20 @@ class VAT_Guard_Account
                 value="<?php echo esc_attr($vat_number); ?>" />
         </p>
         <?php
-        //  }
+        }
+    }
+
+    /**
+     * Check whether WooCommerce owns the account VAT field through its additional checkout fields API.
+     *
+     * Contact fields registered with this API are automatically rendered on the Account Details page.
+     *
+     * @return bool
+     */
+    private function uses_additional_checkout_vat_field()
+    {
+        return (bool) get_option(EU_VAT_GUARD_OPTION_ENABLE_BLOCK_CHECKOUT, 0)
+            && function_exists('woocommerce_register_additional_checkout_field');
     }
 
      /* Validate registration fields for company name and VAT number
@@ -143,16 +155,20 @@ class VAT_Guard_Account
     {
         $require_company = get_option('eu_vat_guard_require_company', 1);
         $require_vat = get_option('eu_vat_guard_require_vat', 1);
+        $save_vat_number = !(
+            'woocommerce_save_account_details' === current_filter()
+            && $this->uses_additional_checkout_vat_field()
+        );
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WordPress handles nonce verification for registration forms
-        $vat_number = isset($_POST['vat_number']) ? VAT_Guard_Helper::sanitize_vat_field(wp_unslash($_POST['vat_number'])) : '';
+        $vat_number = $save_vat_number && isset($_POST['vat_number']) ? VAT_Guard_Helper::sanitize_vat_field(wp_unslash($_POST['vat_number'])) : '';
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WordPress handles nonce verification for registration forms
         $company_name = isset($_POST['company_name']) ? sanitize_text_field(wp_unslash($_POST['company_name'])) : '';
 
-        if ($require_vat && empty($vat_number)) {
+        if ($save_vat_number && $require_vat && empty($vat_number)) {
             wc_add_notice(__('Please enter your VAT number.', 'eu-vat-guard-for-woocommerce'), 'error');
             return;
         }
-        if (!empty($vat_number)) {
+        if ($save_vat_number && !empty($vat_number)) {
             $error_message = '';
             if (!VAT_Guard_Helper::is_valid_eu_vat_number($vat_number, $error_message)) {
                 wc_add_notice($error_message, 'error');
@@ -166,7 +182,7 @@ class VAT_Guard_Account
         if (!empty($company_name)) {
             update_user_meta($customer_id, EU_VAT_GUARD_META_COMPANY_NAME, $company_name);
         }
-        if (!empty($vat_number)) {
+        if ($save_vat_number && !empty($vat_number)) {
             update_user_meta($customer_id, EU_VAT_GUARD_META_VAT_NUMBER, $vat_number);
         }
     }

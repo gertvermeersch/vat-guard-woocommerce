@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: EU VAT Guard for WooCommerce 1.4.6\n"
+"Project-Id-Version: EU VAT Guard for WooCommerce 1.4.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/eu-vat-guard-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
